@@ -5,6 +5,7 @@ import { drawPerson, DEFAULT_POSE, drawHorse, drawTapLeg, drawHansPortrait, draw
 import * as TX from './textures.js';
 import { SETS } from './world.js';
 import { resolver, compile } from './timeline.js';
+import { CARDS } from './cards.js';
 
 const W = 1080, H = 1920;
 const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
@@ -99,9 +100,9 @@ const LIGHTS = {
   // bright grey-white overcast, soft short shadows, falling snow, cool rim
   snow: { bg: '#d9dee6', fog: '#cfd6df', near: 12, far: 42, sun: '#f4f6fb', sunI: 1.2, sunPos: [5, 12, 7], hemiS: '#e8edf5', hemiG: '#6c7380', hemiI: 1.3, lamp: 0.15, spot: 0, beam: 0, rim: '#e6eeff', tint: '#f4f6fa', exp: 1.05, mote: 0.9, motes: 'snow', long: 0.25, vig: '#1a2230', vigA: 0.3, shimmer: 0 },
   // hard high sun, short dark shadows, saturated sky, warm bounce, a little heat haze
-  tropic: { bg: '#5ec3f0', fog: '#9fd9f2', near: 22, far: 60, sun: '#fff1d0', sunI: 3.4, sunPos: [3, 14, 5], hemiS: '#bfe8ff', hemiG: '#a07848', hemiI: 1.0, lamp: 0, spot: 0, beam: 0, rim: '#fff2c8', tint: '#fff8ec', exp: 1.05, mote: 0.3, motes: 'heat', long: 0.35, vig: '#3a2400', vigA: 0.28, shimmer: 3 },
+  tropic: { bg: '#5ec3f0', fog: '#9fd9f2', near: 30, far: 95, sun: '#fff1d0', sunI: 3.4, sunPos: [3, 14, 5], hemiS: '#bfe8ff', hemiG: '#a07848', hemiI: 1.0, lamp: 0, spot: 0, beam: 0, rim: '#fff2c8', tint: '#fff8ec', exp: 1.05, mote: 0.3, motes: 'heat', long: 0.35, vig: '#3a2400', vigA: 0.28, shimmer: 3 },
   // warmer yellow, more haze, softer shadows than tropic (so the two ports feel different)
-  tropicHaze: { bg: '#e9c98a', fog: '#e2bf86', near: 12, far: 40, sun: '#ffd99a', sunI: 2.3, sunPos: [-6, 10, 6], hemiS: '#ffe6b8', hemiG: '#7a5a38', hemiI: 1.15, lamp: 0, spot: 0, beam: 0, rim: '#ffd38a', tint: '#fff0d8', exp: 1.0, mote: 0.45, motes: 'heat', long: 0.3, vig: '#3a2400', vigA: 0.32, shimmer: 2 },
+  tropicHaze: { bg: '#e9c98a', fog: '#e2bf86', near: 18, far: 75, sun: '#ffd99a', sunI: 2.3, sunPos: [-6, 10, 6], hemiS: '#ffe6b8', hemiG: '#7a5a38', hemiI: 1.15, lamp: 0, spot: 0, beam: 0, rim: '#ffd38a', tint: '#fff0d8', exp: 1.0, mote: 0.45, motes: 'heat', long: 0.3, vig: '#3a2400', vigA: 0.32, shimmer: 2 },
   // overexposed white-orange sun, orange far fog, strong heat shimmer
   blaze: { bg: '#ffb35c', fog: '#ff9a45', near: 18, far: 55, sun: '#fff0c8', sunI: 3.8, sunPos: [0, 6, -14], hemiS: '#ffe1b0', hemiG: '#8a4a20', hemiI: 1.2, lamp: 0, spot: 0, beam: 0, rim: '#fff0b0', tint: '#fff2e0', exp: 1.18, mote: 0.5, motes: 'heat', long: 0.6, vig: '#5a1e00', vigA: 0.4, shimmer: 6 },
   // dark cool interior, white-gold shaft from the hatch (uses the set's spot + beam), motes in the shaft
@@ -875,6 +876,7 @@ export async function setup(beatsUrl, tlUrl) {
     TM.setTransform(1, 0, 0, 1, 0, 0); TM.filter = `blur(${px}px)`; TM.drawImage(glCanvas, -40, -40, W + 80, H + 80); TM.filter = 'none';
     O.drawImage(tmp, 0, 0); O.fillStyle = `rgba(0,0,0,${darken})`; O.fillRect(0, 0, W, H);
   }
+  const cardCanvas = {};
   function drawHud(h, shot, t, hp) {
     const u = clamp((t - shot.t0) / (shot.t1 - shot.t0)); const sc = h.s ? lerp(h.s[0], h.s[1], ease.inout(u)) : 1;
     if (h.kind === 'hansPortrait' && hp) {
@@ -915,6 +917,19 @@ export async function setup(beatsUrl, tlUrl) {
       O.restore();
       // ripple to show the relax moment
       if (t >= relaxT && t < relaxT + 0.6) { const a = (t - relaxT) / 0.6; O.strokeStyle = `rgba(255,255,255,${0.6 * (1 - a)})`; O.lineWidth = 10; O.beginPath(); O.arc(W / 2 + 40, H * 0.47, 120 + a * 300, 0, 7); O.stroke(); }
+    } else if (h.kind === 'card') { // S02 cards: { art: year|news|letter|map|thermo, x, y, w (of frame width), rot, blur, level/route: [from, to], unroll }
+      const C = CARDS[h.art]; if (!C) return;
+      const [cw, ch] = C.size; const cv = cardCanvas[h.art] || (cardCanvas[h.art] = Object.assign(document.createElement('canvas'), { width: cw, height: ch }));
+      const k = t - shot.t0, len = shot.t1 - shot.t0, e = ease.inout(u);
+      const st = {}; if (h.level) st.level = lerp(h.level[0], h.level[1], e); if (h.route) st.route = lerp(h.route[0], h.route[1], e); if (h.text) st.text = h.text;
+      const cx2 = cv.getContext('2d'); cx2.setTransform(1, 0, 0, 1, 0, 0); cx2.clearRect(0, 0, cw, ch); C.draw(cx2, st);
+      if (h.blur !== false) blurredBackdrop(12, 0.3);
+      const pop = h.pop === false ? 1 : backOut(clamp(k / 0.28)); const ww = W * (h.w ?? 0.8) * sc * pop, hh = ww * ch / cw;
+      O.save(); O.translate(W * (h.x ?? 0.5), H * (h.y ?? 0.45)); O.rotate(h.rot ?? 0);
+      O.shadowColor = 'rgba(0,0,0,.45)'; O.shadowBlur = 36; O.shadowOffsetY = 16;
+      if (h.unroll) { const r2 = ease.out(clamp(k / 0.5)); O.beginPath(); O.rect(-ww / 2, -hh / 2, ww * r2, hh); O.clip(); O.drawImage(cv, -ww / 2, -hh / 2, ww, hh); O.shadowColor = 'transparent'; if (r2 < 1) { O.fillStyle = '#c9b48a'; O.fillRect(-ww / 2 + ww * r2 - 18, -hh / 2, 36, hh); } }
+      else O.drawImage(cv, -ww / 2, -hh / 2, ww, hh);
+      O.restore();
     } else if (h.kind === 'newspaper') {
       blurredBackdrop(10, 0.35);
       const k = t - shot.t0, len = shot.t1 - shot.t0;

@@ -565,3 +565,129 @@ export function shipSilhouette(masts = 2, seed = 1, col = '#3b4048') {
   });
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
+
+// =====================================================================
+// S02 textures, part 2: tropical ports, packing materials, interiors, backdrops
+// =====================================================================
+export function sawdust(rep = [2, 2]) {
+  const c = canvas(512, 512), k = c.getContext('2d'); const r = rnd(71);
+  k.fillStyle = '#c8a26a'; k.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 9000; i++) { const v = r(); k.fillStyle = v < 0.4 ? 'rgba(150,110,60,.7)' : v < 0.8 ? 'rgba(230,200,150,.7)' : 'rgba(110,80,45,.6)'; k.fillRect(r() * 512, r() * 512, 1 + r() * 3, 1 + r() * 2); }
+  return tex(c, rep);
+}
+export function riceHusks(rep = [2, 2]) {
+  const c = canvas(512, 512), k = c.getContext('2d'); const r = rnd(73);
+  k.fillStyle = '#b98a3e'; k.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 2600; i++) { const x = r() * 512, y = r() * 512, a = r() * 3.14; k.fillStyle = r() < 0.5 ? '#e0b860' : r() < 0.5 ? '#8a6428' : '#f0d27a'; k.beginPath(); k.ellipse(x, y, 5, 2, a, 0, 7); k.fill(); }
+  return tex(c, rep);
+}
+export function straw(rep = [1, 1]) {
+  const c = canvas(256, 256), k = c.getContext('2d'), r = rnd(19);
+  k.fillStyle = '#ecd48a'; k.fillRect(0, 0, 256, 256);
+  for (let i = 0; i < 700; i++) { k.strokeStyle = `rgba(${r() > .5 ? '170,140,60' : '255,245,190'},.7)`; k.lineWidth = 2.2; const x = r() * 256, y = r() * 256; k.beginPath(); k.moveTo(x, y); k.lineTo(x + (r() - .5) * 8, y + 20 + r() * 30); k.stroke(); }
+  return tex(c, rep);
+}
+// terracotta roof tiles (rows of half-round tiles)
+export function terracotta(rep = [2, 2]) {
+  const c = canvas(512, 512), k = c.getContext('2d'); const r = rnd(79);
+  k.fillStyle = '#7a3420'; k.fillRect(0, 0, 512, 512);
+  for (let y = 0; y < 512; y += 40) for (let x = (y / 40 % 2) * 16; x < 540; x += 32) { const v = 0.85 + r() * 0.3; const g = k.createLinearGradient(x, 0, x + 30, 0); g.addColorStop(0, `rgb(${[150, 64, 38].map((q) => q * v | 0)})`); g.addColorStop(0.5, `rgb(${[205, 100, 62].map((q) => Math.min(255, q * v) | 0)})`); g.addColorStop(1, `rgb(${[140, 58, 34].map((q) => q * v | 0)})`); k.fillStyle = g; k.beginPath(); k.roundRect(x, y, 30, 38, 12); k.fill(); k.fillStyle = 'rgba(0,0,0,.25)'; k.fillRect(x, y + 34, 30, 4); }
+  return tex(c, rep);
+}
+// canvas awning: stripes (colours) with a scalloped edge band at the bottom; plain when one colour
+export function awning(cols = ['#c0392b', '#f4efe2'], stripe = 64) {
+  const c = canvas(512, 512), k = c.getContext('2d'); const r = rnd(cols.length * 13);
+  for (let x = 0; x < 512; x += stripe) { k.fillStyle = cols[(x / stripe) % cols.length]; k.fillRect(x, 0, stripe, 512); }
+  for (let i = 0; i < 160; i++) { k.fillStyle = `rgba(0,0,0,${r() * 0.05})`; k.beginPath(); k.arc(r() * 512, r() * 512, 10 + r() * 30, 0, 7); k.fill(); }
+  k.fillStyle = 'rgba(0,0,0,.18)'; k.fillRect(0, 470, 512, 6);
+  const t = tex(c); return t;
+}
+// palm frond on transparent (v along the frond, leaflets both sides)
+export function palmLeaf(col = '#2f7a35') {
+  const c = canvas(256, 1024), k = c.getContext('2d'); const r = rnd(83);
+  k.strokeStyle = '#5a4a20'; k.lineWidth = 8; k.beginPath(); k.moveTo(128, 1024); k.lineTo(128, 20); k.stroke();
+  for (let y = 980; y > 40; y -= 22) { const L = 110 * Math.sin((1024 - y) / 1024 * Math.PI) ** 0.6 + 10; for (const s of [-1, 1]) { k.fillStyle = r() < 0.5 ? col : '#3f9445'; k.beginPath(); k.moveTo(128, y); k.quadraticCurveTo(128 + s * L * 0.6, y - 20, 128 + s * L, y - 50 - r() * 10); k.quadraticCurveTo(128 + s * L * 0.5, y - 8, 128, y - 8); k.fill(); k.strokeStyle = 'rgba(20,40,20,.8)'; k.lineWidth = 2.5; k.stroke(); } }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+// painted backdrop card (transparent sky): kind 'pelee' (Martinique: volcano with cloud cap, green hills, church tower)
+// or 'calcutta' (low neoclassical skyline, church spire, the Ochterlony column, haze)
+export function backdrop(kind) {
+  const Wd = 2048, Ht = 640; const c = canvas(Wd, Ht), k = c.getContext('2d'); const r = rnd(kind.length * 31);
+  const ridge = (y0, amp, col, f) => { k.fillStyle = col; k.beginPath(); k.moveTo(0, Ht); for (let x = 0; x <= Wd; x += 16) k.lineTo(x, y0 + f(x) * amp); k.lineTo(Wd, Ht); k.closePath(); k.fill(); };
+  if (kind === 'pelee') {
+    // the volcano: broad cone with a cloud cap, then two ranges of green hills
+    k.fillStyle = '#5f8a6a'; k.beginPath(); k.moveTo(300, Ht); k.quadraticCurveTo(820, 260, 980, 120); k.lineTo(1120, 118); k.quadraticCurveTo(1300, 250, 1800, Ht); k.closePath(); k.fill();
+    k.strokeStyle = 'rgba(40,70,50,.5)'; k.lineWidth = 4; for (let i = 0; i < 9; i++) { k.beginPath(); k.moveTo(1000 + i * 15, 140); k.quadraticCurveTo(900 + i * 60, 380, 700 + i * 110, Ht); k.stroke(); }
+    k.fillStyle = 'rgba(255,255,255,.95)'; for (const [x, y, s] of [[1000, 112, 70], [1070, 96, 80], [1140, 116, 62], [940, 124, 50], [1200, 128, 44]]) { k.beginPath(); k.ellipse(x, y, s * 1.4, s * 0.55, 0, 0, 7); k.fill(); }
+    ridge(420, 40, '#4f8a4a', (x) => Math.sin(x / 140) * 0.8 + Math.sin(x / 61) * 0.3);
+    ridge(500, 25, '#3f7a3c', (x) => Math.sin(x / 90 + 1) * 0.7 + Math.sin(x / 37) * 0.2);
+    // church with a tower among the hills
+    k.fillStyle = '#efe7d6'; k.fillRect(1380, 470, 120, 80); k.fillRect(1470, 400, 44, 150); k.fillStyle = '#9a4a30'; k.beginPath(); k.moveTo(1464, 400); k.lineTo(1492, 360); k.lineTo(1520, 400); k.fill(); k.beginPath(); k.moveTo(1374, 470); k.lineTo(1440, 440); k.lineTo(1506, 470); k.fill();
+  } else {
+    // haze sky band, then a low neoclassical skyline (flat roofs, balustrades, porticoes), a spire and a tall column
+    ridge(520, 0, 'rgba(0,0,0,0)', () => 0);
+    let x = 0; while (x < Wd) { const w = 90 + r() * 160, h = 70 + r() * 110; const y = Ht - 40 - h; k.fillStyle = r() < 0.5 ? '#e8d6a8' : '#efe4c8'; k.fillRect(x, y, w, h + 40); k.fillStyle = 'rgba(120,100,70,.35)'; for (let j = x + 12; j < x + w - 10; j += 22) k.fillRect(j, y + 22, 8, h - 30); k.fillStyle = '#d9c590'; k.fillRect(x - 4, y - 10, w + 8, 10); for (let j = x; j < x + w; j += 10) k.fillRect(j, y - 22, 4, 12); k.fillRect(x - 4, y - 24, w + 8, 4); x += w + 6; }
+    // portico with a pediment
+    k.fillStyle = '#f2ead2'; k.fillRect(560, 400, 260, 200); k.fillStyle = '#d9c590'; k.beginPath(); k.moveTo(548, 400); k.lineTo(690, 340); k.lineTo(832, 400); k.fill(); k.fillStyle = 'rgba(120,100,70,.4)'; for (let j = 578; j < 810; j += 34) k.fillRect(j, 410, 12, 190);
+    // church spire
+    k.fillStyle = '#efe4c8'; k.fillRect(1180, 330, 70, 270); k.beginPath(); k.moveTo(1176, 330); k.lineTo(1215, 170); k.lineTo(1254, 330); k.fill();
+    // the Ochterlony Monument (1828): column on a plinth with a small cupola
+    k.fillStyle = '#f0e6cc'; k.fillRect(1560, 520, 90, 80); k.fillRect(1585, 210, 40, 310); k.fillRect(1575, 196, 60, 16); k.fillRect(1590, 150, 30, 46); k.beginPath(); k.arc(1605, 150, 18, Math.PI, 0); k.fill();
+    // trees between the buildings
+    for (let i = 0; i < 16; i++) { const tx = r() * Wd; k.fillStyle = r() < 0.5 ? '#6f8a4a' : '#5a7a3e'; k.beginPath(); k.ellipse(tx, Ht - 60, 50 + r() * 40, 40 + r() * 20, 0, 0, 7); k.fill(); }
+    const g = k.createLinearGradient(0, 0, 0, Ht); g.addColorStop(0, 'rgba(233,201,138,0)'); g.addColorStop(1, 'rgba(233,201,138,.45)'); k.fillStyle = g; k.fillRect(0, 0, Wd, Ht);
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+// sunny garden seen through the kitchen window (opaque): sky, hedge, fruit trees, flowers, a fence
+export function garden() {
+  const c = canvas(1024, 768), k = c.getContext('2d'); const r = rnd(89);
+  const g = k.createLinearGradient(0, 0, 0, 768); g.addColorStop(0, '#9fd3f2'); g.addColorStop(0.55, '#d8efff'); g.addColorStop(0.56, '#7fb35a'); g.addColorStop(1, '#5f9a44'); k.fillStyle = g; k.fillRect(0, 0, 1024, 768);
+  for (let i = 0; i < 4; i++) { const x = 120 + i * 260; k.fillStyle = '#6b4a2a'; k.fillRect(x - 10, 300, 20, 160); k.fillStyle = i % 2 ? '#4f8f3c' : '#5aa045'; k.beginPath(); k.ellipse(x, 270, 110, 90, 0, 0, 7); k.fill(); for (let j = 0; j < 8; j++) { k.fillStyle = '#d9473a'; k.beginPath(); k.arc(x - 80 + r() * 160, 220 + r() * 100, 9, 0, 7); k.fill(); } }
+  k.fillStyle = '#efe6d0'; for (let x = 0; x < 1024; x += 40) k.fillRect(x, 470, 16, 120); k.fillRect(0, 500, 1024, 12); k.fillRect(0, 560, 1024, 12);
+  for (let i = 0; i < 120; i++) { k.fillStyle = ['#f4d35e', '#ee6c4d', '#ffffff', '#c77dff'][i % 4]; k.beginPath(); k.arc(r() * 1024, 620 + r() * 140, 5 + r() * 5, 0, 7); k.fill(); }
+  return tex(c);
+}
+// window view for the ice-house workshop: 'snow' | 'leaves' (summer)
+export function season(kind) {
+  const c = canvas(512, 512), k = c.getContext('2d'); const r = rnd(kind === 'snow' ? 91 : 93);
+  if (kind === 'snow') { const g = k.createLinearGradient(0, 0, 0, 512); g.addColorStop(0, '#c9d6e4'); g.addColorStop(0.6, '#e8eef6'); g.addColorStop(0.61, '#f6f9fc'); g.addColorStop(1, '#ffffff'); k.fillStyle = g; k.fillRect(0, 0, 512, 512); for (let i = 0; i < 5; i++) { const x = 40 + i * 110; k.fillStyle = '#3a2a20'; k.fillRect(x - 6, 140, 12, 180); k.strokeStyle = '#3a2a20'; k.lineWidth = 4; for (let j = 0; j < 4; j++) { k.beginPath(); k.moveTo(x, 200 + j * 25); k.lineTo(x + (j % 2 ? 40 : -40), 160 + j * 25); k.stroke(); } } for (let i = 0; i < 200; i++) { k.fillStyle = '#fff'; k.beginPath(); k.arc(r() * 512, r() * 512, 2 + r() * 2, 0, 7); k.fill(); } }
+  else { const g = k.createLinearGradient(0, 0, 0, 512); g.addColorStop(0, '#8fd0f5'); g.addColorStop(0.6, '#c9ecff'); g.addColorStop(0.61, '#79b552'); g.addColorStop(1, '#5d9a3e'); k.fillStyle = g; k.fillRect(0, 0, 512, 512); for (let i = 0; i < 5; i++) { const x = 40 + i * 110; k.fillStyle = '#5a3e26'; k.fillRect(x - 6, 160, 12, 160); k.fillStyle = i % 2 ? '#3f8a3a' : '#4fa045'; k.beginPath(); k.ellipse(x, 150, 60, 70, 0, 0, 7); k.fill(); } }
+  return tex(c);
+}
+// log end: rings, bark edge
+export function logEnd() {
+  const c = canvas(256, 256), k = c.getContext('2d'); const r = rnd(97);
+  k.fillStyle = '#4a3420'; k.beginPath(); k.arc(128, 128, 128, 0, 7); k.fill();
+  k.fillStyle = '#d9b47a'; k.beginPath(); k.arc(128, 128, 112, 0, 7); k.fill();
+  k.strokeStyle = 'rgba(140,96,50,.7)'; for (let rr = 8; rr < 110; rr += 7 + r() * 5) { k.lineWidth = 1.5 + r() * 2; k.beginPath(); k.arc(128 + (r() - .5) * 3, 128 + (r() - .5) * 3, rr, 0, 7); k.stroke(); }
+  k.strokeStyle = 'rgba(90,60,30,.6)'; k.lineWidth = 2; for (let i = 0; i < 3; i++) { const a = r() * 6.3; k.beginPath(); k.moveTo(128, 128); k.lineTo(128 + Math.cos(a) * 100, 128 + Math.sin(a) * 100); k.stroke(); }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+// bark (vertical streaks)
+export function bark(col = [92, 70, 50]) {
+  const c = canvas(256, 512), k = c.getContext('2d'); const r = rnd(101);
+  k.fillStyle = `rgb(${col})`; k.fillRect(0, 0, 256, 512);
+  for (let i = 0; i < 90; i++) { k.strokeStyle = `rgba(${r() > .5 ? '30,20,10' : '160,130,100'},${0.3 + r() * 0.4})`; k.lineWidth = 2 + r() * 4; const x = r() * 256; k.beginPath(); k.moveTo(x, 0); k.bezierCurveTo(x + 10, 170, x - 10, 340, x + 5, 512); k.stroke(); }
+  return tex(c);
+}
+// slate board with chalk lettering (bins: "1 · HAY" …); the number is drawn green (numbers are green)
+export function slate(num, word) {
+  const c = canvas(512, 300), k = c.getContext('2d');
+  k.fillStyle = '#6b4a2a'; k.fillRect(0, 0, 512, 300); k.fillStyle = '#2b3236'; k.fillRect(18, 18, 476, 264);
+  k.fillStyle = 'rgba(255,255,255,.05)'; for (let i = 0; i < 40; i++) k.fillRect(30 + i * 11, 30, 4, 240);
+  k.textAlign = 'center'; k.textBaseline = 'middle';
+  k.font = 'bold 120px serif'; k.fillStyle = '#7ef08a'; k.fillText(String(num), 256, 100);
+  let px = 96; k.font = `bold ${px}px serif`; while (k.measureText(word).width > 440) { px *= 0.94; k.font = `bold ${px}px serif`; }
+  k.fillStyle = '#f2f2ea'; k.fillText(word, 256, 215);
+  const t = tex(c); t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; return t;
+}
+// dashed white outline of a modern fridge (graphic joke, transparent)
+export function fridgeOutline() {
+  const c = canvas(512, 1024), k = c.getContext('2d');
+  k.setLineDash([38, 22]); k.lineCap = 'round'; k.strokeStyle = '#ffffff'; k.lineWidth = 16; k.shadowColor = 'rgba(0,0,0,.45)'; k.shadowBlur = 8;
+  k.beginPath(); k.roundRect(40, 30, 432, 964, 40); k.stroke(); k.beginPath(); k.moveTo(40, 380); k.lineTo(472, 380); k.stroke();
+  k.setLineDash([]); k.lineWidth = 18; k.beginPath(); k.moveTo(410, 180); k.lineTo(410, 300); k.moveTo(410, 460); k.lineTo(410, 640); k.stroke();
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+export { woodcutShip, agedPaper };
