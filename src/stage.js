@@ -153,9 +153,10 @@ export async function setup(beatsUrl, tlUrl) {
   const lightOf = (s) => s.light || beats[s.beat].light || 'warm';
   const sets = {};
   for (const name of new Set([DEFAULT_SET, ...SHOTS.map(setOf)])) {
-    const builder = SETS[name] || SETS.empty;
-    if (!SETS[name]) console.warn(`set "${name}" has no builder yet; using an empty floor`);
-    sets[name] = builder(scene, (meta.sets || {})[name] || {});
+    const so = (meta.sets || {})[name] || {}; // `base` builds this name with another set's builder (two dressings of one set)
+    const builder = SETS[name] || SETS[so.base] || SETS.empty;
+    if (!SETS[name] && !SETS[so.base]) console.warn(`set "${name}" has no builder yet; using an empty floor`);
+    sets[name] = builder(scene, so);
     sets[name].name = name;
   }
   let curSet = null;
@@ -301,6 +302,10 @@ export async function setup(beatsUrl, tlUrl) {
     for (const [name, keys] of Object.entries(m)) for (const [at, p, hd, how] of keys) (moverKeys[name] = moverKeys[name] || []).push({ t: R(at, bi), p, hd: hd || 0, sail: how === 'sail', beat: bi });
   });
   for (const k of Object.values(moverKeys)) k.sort((a, b) => a.t - b.t);
+  // openers: `open: { hatch: [[at, v]], sails: [[at, v]] }` (eases between keys of one beat, like doors)
+  const openKeys = {};
+  beats.forEach((b, bi) => { for (const [name, keys] of Object.entries(b.open || {})) for (const [at, v] of keys) (openKeys[name] = openKeys[name] || []).push({ t: R(at, bi), v, beat: bi }); });
+  for (const k of Object.values(openKeys)) k.sort((a, b) => a.t - b.t);
 
   // ---------- effects: puddles, drips, heat arrows (beat `fx` entries; they live in that beat's set) ----------
   const FX = [];
@@ -382,10 +387,12 @@ export async function setup(beatsUrl, tlUrl) {
       const g = S.movers[name]; if (!g) continue;
       let i = -1; for (let j = 0; j < keys.length; j++) if (keys[j].t <= t) i = j;
       if (i < 0) continue;
-      let p = keys[i].p, hd = keys[i].hd; const n = keys[i + 1];
-      if (n && n.sail) { const u = ease.inout(clamp((t - keys[i].t) / (n.t - keys[i].t))); p = [lerp(p[0], n.p[0], u), lerp(p[1], n.p[1], u), lerp(p[2] || 0, n.p[2] || 0, u)]; hd = lerp(hd, n.hd, u); }
-      g.position.set(p[0], (p[2] || 0) + Math.sin(t * 1.3) * 0.04, p[1]);
-      g.rotation.set(Math.sin(t * 1.1 + 1) * 0.025, hd, Math.sin(t * 0.9) * 0.035);
+      let p = keys[i].p, hd = keys[i].hd, speed = 0; const n = keys[i + 1];
+      if (n && n.sail) { const r = clamp((t - keys[i].t) / (n.t - keys[i].t)), u = ease.inout(r); p = [lerp(p[0], n.p[0], u), lerp(p[1], n.p[1], u), lerp(p[2] || 0, n.p[2] || 0, u)]; hd = lerp(hd, n.hd, u); speed = r > 0 && r < 1 ? 4 * r * (1 - r) : 0; }
+      const bob = g.userData.bob ?? 1; // movers can ask for a gentler bob (a docked ship)
+      g.userData.speed = speed; g.userData.baseY = p[2] || 0;
+      g.position.set(p[0], (p[2] || 0) + Math.sin(t * 1.3) * 0.04 * bob, p[1]);
+      g.rotation.set(Math.sin(t * 1.1 + 1) * 0.025 * bob, hd, Math.sin(t * 0.9) * 0.035 * bob);
     }
   }
 
@@ -648,8 +655,10 @@ export async function setup(beatsUrl, tlUrl) {
       S.screen.position.set(v[0], 0, v[1] ?? rest[1]); S.screen.rotation.y = v[2] ?? rest[2];
     }
     S.doors(keyLerp(doorKeys, t, 0));
+    for (const [name, fn] of Object.entries(S.open)) fn(keyLerp(openKeys[name] || [], t, S.openRest[name] ?? 0));
     if (S.motes) { S.motes.rotation.y = t * 0.01; S.motes.position.y = Math.sin(t * 0.3) * 0.1; }
     updateFx(t, setName);
+    if (S.tick) S.tick(t, L, camera);
     updateParticles(L.motes, L.mote, t);
 
     // sun-shadow direction for long shadows
@@ -794,7 +803,7 @@ export async function setup(beatsUrl, tlUrl) {
     const vg = O.createRadialGradient(W / 2, H * 0.48, H * 0.32, W / 2, H * 0.5, H * 0.72);
     vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, rgba(L.vig, +L.vigA.toFixed(4)));
     O.fillStyle = vg; O.fillRect(0, 0, W, H);
-    captions(t, shot);
+    if (meta.captions !== false) captions(t, shot);
     return out;
   }
 

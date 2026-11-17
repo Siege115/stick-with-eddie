@@ -260,9 +260,48 @@ export function newspaper(drawHorse) {
   return c;
 }
 
+// S02 handbills (Boston 1806 / 1833): plain letterpress, a woodcut-style picture, no dates or prices
+function woodcutShip(k, cx, cy, s, masts = 2) {
+  k.save(); k.translate(cx, cy); k.scale(s, s); k.fillStyle = '#1b1b1b'; k.strokeStyle = '#1b1b1b'; k.lineCap = 'round';
+  k.beginPath(); k.moveTo(-150, 20); k.lineTo(150, 15); k.quadraticCurveTo(140, 55, 115, 60); k.lineTo(-120, 60); k.quadraticCurveTo(-145, 50, -150, 20); k.fill();
+  k.lineWidth = 4; k.beginPath(); k.moveTo(145, 18); k.lineTo(190, -15); k.stroke();
+  const xs = masts === 3 ? [-80, 10, 95] : [-55, 65];
+  for (const x of xs) { k.lineWidth = 5; k.beginPath(); k.moveTo(x, 18); k.lineTo(x, -150); k.stroke(); for (const [y, w] of [[-130, 30], [-85, 45], [-35, 60]]) { k.lineWidth = 2; k.beginPath(); k.moveTo(x - w, y + 30); k.quadraticCurveTo(x, y + 44, x + w, y + 30); k.lineTo(x + w * 0.9, y); k.lineTo(x - w * 0.9, y); k.closePath(); k.stroke(); for (let h = 4; h < 30; h += 7) { k.beginPath(); k.moveTo(x - w * 0.8, y + h); k.lineTo(x + w * 0.8, y + h); k.stroke(); } } }
+  k.lineWidth = 2; for (let y = 75; y < 110; y += 9) { k.beginPath(); for (let x = -190; x < 190; x += 20) { k.moveTo(x, y); k.quadraticCurveTo(x + 5, y - 5, x + 10, y); } k.stroke(); }
+  k.restore();
+}
+const POSTERS_1806 = {
+  cod: (k, W) => {
+    k.font = 'bold 86px serif'; k.fillText('FRESH COD', W / 2, 120); k.font = 'bold 74px serif'; k.fillText('DAILY', W / 2, 205);
+    k.save(); k.translate(W / 2, 360); k.fillStyle = '#1b1b1b'; k.beginPath(); k.ellipse(0, 0, 150, 52, 0, 0, 7); k.fill(); k.beginPath(); k.moveTo(140, 0); k.lineTo(210, -55); k.lineTo(200, 55); k.closePath(); k.fill();
+    k.fillStyle = '#efe7d2'; k.beginPath(); k.arc(-105, -12, 9, 0, 7); k.fill(); k.strokeStyle = '#efe7d2'; k.lineWidth = 3; for (let x = -60; x < 120; x += 22) { k.beginPath(); k.arc(x, 0, 20, -0.9, 0.9); k.stroke(); } k.restore();
+    k.font = 'italic 40px serif'; k.fillText('at the end of the wharf', W / 2, 520); k.font = 'bold 46px serif'; k.fillText('ASK FOR THE FISHMONGER', W / 2, 610);
+  },
+  passage: (k, W) => {
+    k.font = 'bold 74px serif'; k.fillText('PASSAGE', W / 2, 105); k.font = 'bold 50px serif'; k.fillText('TO NEW YORK', W / 2, 170);
+    woodcutShip(k, W / 2, 330, 1.05);
+    k.font = 'italic 40px serif'; k.fillText('a fast sailing packet', W / 2, 515); k.font = 'bold 50px serif'; k.fillText('ENQUIRE WITHIN', W / 2, 615);
+  },
+  auction: (k, W) => {
+    k.fillStyle = '#7a1414'; k.font = 'bold 92px serif'; k.fillText('AUCTION', W / 2, 125); k.fillStyle = '#1b1b1b'; k.font = 'bold 78px serif'; k.fillText('TODAY', W / 2, 215);
+    k.fillRect(70, 245, W - 140, 6);
+    k.font = 'bold 44px serif'; ['SAILCLOTH · ROPE', 'BARRELS · CASKS', 'ONE SHIP\'S BELL'].forEach((ln, i) => k.fillText(ln, W / 2, 330 + i * 70));
+    k.fillRect(70, 520, W - 140, 6); k.font = 'italic 42px serif'; k.fillText('at the Coffee House', W / 2, 600);
+  },
+  calcutta: (k, W) => {
+    k.font = 'bold 60px serif'; k.fillText('BOUND FOR', W / 2, 100); k.fillStyle = '#7a1414'; k.font = 'bold 84px serif'; k.fillText('CALCUTTA', W / 2, 185); k.fillStyle = '#1b1b1b';
+    woodcutShip(k, W / 2, 350, 1.05, 3);
+    k.font = 'italic 40px serif'; k.fillText('the fine ship now loading', W / 2, 530); k.font = 'bold 48px serif'; k.fillText('ENQUIRE ON BOARD', W / 2, 620);
+  },
+  teas: (k, W) => {
+    k.font = 'bold 86px serif'; k.fillText('FINE TEAS', W / 2, 120); k.font = 'italic 44px serif'; k.fillText('just landed', W / 2, 180);
+    k.save(); k.translate(W / 2, 360); k.fillStyle = '#1b1b1b'; k.fillRect(-110, -110, 220, 200); k.fillStyle = '#e8dcc0'; k.fillRect(-92, -92, 184, 164); k.fillStyle = '#1b1b1b'; k.font = 'bold 54px serif'; k.fillText('TEA', 0, -10); k.font = 'bold 30px serif'; k.fillText('CHEST', 0, 40); k.restore();
+    k.font = 'bold 46px serif'; k.fillText('GREEN · BLACK', W / 2, 540); k.font = 'italic 40px serif'; k.fillText('sold by the pound', W / 2, 610);
+  },
+};
 export function poster(kind) {
   const W = 512, H = 720; const c = canvas(W, H), k = c.getContext('2d'); const r = rnd(kind.length * 7);
-  const bg = { circus: '#e9c46a', coffee: '#f1e3c6', lost: '#f6f1e3', concert: '#c9d8c5' }[kind];
+  const bg = { circus: '#e9c46a', coffee: '#f1e3c6', lost: '#f6f1e3', concert: '#c9d8c5', cod: '#efe7d2', passage: '#f2ead4', auction: '#e9dcbc', calcutta: '#f1e6cc', teas: '#e8dcc0' }[kind];
   agedPaper(k, W, H, kind.length * 13, bg);
   k.textAlign = 'center'; k.fillStyle = '#1b1b1b';
   if (kind === 'circus') {
@@ -279,6 +318,8 @@ export function poster(kind) {
     k.fillStyle = '#7a5230'; k.beginPath(); k.ellipse(W / 2, 360, 120, 70, 0, 0, 7); k.fill(); k.beginPath(); k.arc(W / 2 + 110, 300, 50, 0, 7); k.fill();
     for (const x of [-70, -30, 40, 80]) k.fillRect(W / 2 + x, 410, 18, 70);
     k.fillStyle = '#1b1b1b'; k.font = 'italic 40px serif'; k.fillText('answers to "Fritz"', W / 2, 560); k.font = 'bold 44px serif'; k.fillText('REWARD', W / 2, 630);
+  } else if (POSTERS_1806[kind]) {
+    POSTERS_1806[kind](k, W, H);
   } else {
     k.font = 'bold 66px serif'; k.fillText('BRASS BAND', W / 2, 110); k.font = 'italic 40px serif'; k.fillText('in the park on Sunday', W / 2, 165);
     k.strokeStyle = '#b8860b'; k.lineWidth = 22; k.beginPath(); k.arc(W / 2, 380, 120, 0.3, 5.5); k.stroke(); k.fillStyle = '#b8860b'; k.beginPath(); k.moveTo(W / 2 + 110, 330); k.lineTo(W / 2 + 200, 270); k.lineTo(W / 2 + 200, 420); k.closePath(); k.fill();
@@ -315,4 +356,211 @@ export function sign2(text, bg, fg) {
   k.fillStyle = bg; k.fillRect(0, 0, 512, 145); k.strokeStyle = fg; k.lineWidth = 6; k.strokeRect(10, 10, 492, 125);
   k.fillStyle = fg; k.font = 'bold 84px serif'; k.textAlign = 'center'; k.textBaseline = 'middle'; k.fillText(text, 256, 78);
   return tex(c);
+}
+
+// =====================================================================
+// S02 textures: signs that fit their board, water, hull planks, sails, rigging, snow, ice, night sky, gull
+// =====================================================================
+
+// painted sign that always fits: lines = 'TEXT' or ['BIG', 'small line'].
+// o: { w, h (px), bg, fg, border (colour or null), font, grain (wood grain on bg), shadow (carved look) }
+export function signText(lines, o = {}) {
+  lines = [].concat(lines);
+  const Wd = o.w ?? 1024, Ht = o.h ?? 256; const c = canvas(Wd, Ht), k = c.getContext('2d'); const r = rnd(lines.join('').length * 31 + 7);
+  k.fillStyle = o.bg ?? '#2c3e2f'; k.fillRect(0, 0, Wd, Ht);
+  if (o.grain !== false) { k.strokeStyle = 'rgba(0,0,0,.16)'; k.lineWidth = 2; for (let i = 0; i < 18; i++) { const y = r() * Ht; k.beginPath(); k.moveTo(0, y); k.bezierCurveTo(Wd * 0.3, y + 5, Wd * 0.6, y - 5, Wd, y + 2); k.stroke(); } }
+  const fg = o.fg ?? '#f1e2b8', pad = Ht * 0.09;
+  if (o.border !== null) { k.strokeStyle = o.border ?? fg; k.lineWidth = Math.max(4, Ht * 0.035); k.strokeRect(pad * 0.6, pad * 0.6, Wd - pad * 1.2, Ht - pad * 1.2); }
+  const fam = o.font ?? 'serif'; const sizes = lines.length === 1 ? [0.56] : [0.46, 0.24];
+  const total = sizes.reduce((a, b) => a + b, 0) + (lines.length - 1) * 0.06; let y = Ht / 2 - (total * Ht) / 2;
+  k.textAlign = 'center'; k.textBaseline = 'middle';
+  lines.forEach((ln, i) => {
+    let px = Ht * sizes[i]; const weight = i === 0 ? 'bold ' : 'italic ';
+    k.font = `${weight}${px}px ${fam}`; while (k.measureText(ln).width > Wd - pad * 3.2 && px > 8) { px *= 0.94; k.font = `${weight}${px}px ${fam}`; }
+    const cy = y + (Ht * sizes[i]) / 2;
+    if (o.shadow !== false) { k.fillStyle = 'rgba(0,0,0,.45)'; k.fillText(ln, Wd / 2 + px * 0.04, cy + px * 0.05); }
+    k.fillStyle = fg; k.fillText(ln, Wd / 2, cy);
+    y += Ht * (sizes[i] + 0.06);
+  });
+  const t = tex(c); t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; return t;
+}
+
+// stern board: ship name big, home port below, carved gold scrolls at the ends
+export function sternBoard(name, port = 'BOSTON') {
+  const Wd = 1024, Ht = 300; const c = canvas(Wd, Ht), k = c.getContext('2d');
+  const g = k.createLinearGradient(0, 0, 0, Ht); g.addColorStop(0, '#1f3328'); g.addColorStop(1, '#13221a'); k.fillStyle = g; k.fillRect(0, 0, Wd, Ht);
+  k.strokeStyle = '#d9a53a'; k.lineWidth = 10; k.strokeRect(14, 14, Wd - 28, Ht - 28); k.lineWidth = 3; k.strokeRect(30, 30, Wd - 60, Ht - 60);
+  for (const sx of [1, -1]) { // scrolls
+    k.save(); k.translate(sx > 0 ? 95 : Wd - 95, Ht / 2); k.scale(sx, 1); k.strokeStyle = '#e0b04a'; k.lineWidth = 9; k.lineCap = 'round';
+    k.beginPath(); k.arc(0, 0, 34, 0.3, Math.PI * 1.9); k.stroke(); k.beginPath(); k.arc(-6, -4, 16, Math.PI, Math.PI * 2.6); k.stroke();
+    k.beginPath(); k.moveTo(30, 18); k.quadraticCurveTo(60, 40, 40, 70); k.stroke(); k.beginPath(); k.moveTo(30, -18); k.quadraticCurveTo(60, -40, 40, -70); k.stroke(); k.restore();
+  }
+  k.textAlign = 'center'; k.textBaseline = 'middle';
+  let px = 150; k.font = `bold ${px}px serif`; while (k.measureText(name).width > Wd - 300) { px *= 0.95; k.font = `bold ${px}px serif`; }
+  k.fillStyle = 'rgba(0,0,0,.6)'; k.fillText(name, Wd / 2 + 5, 118 + 6); k.fillStyle = '#f3c75a'; k.fillText(name, Wd / 2, 118);
+  k.font = 'bold 64px serif'; k.fillStyle = 'rgba(0,0,0,.6)'; k.fillText(port, Wd / 2 + 3, 232 + 4); k.fillStyle = '#efe2bd'; k.fillText(port, Wd / 2, 232);
+  const t = tex(c); t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; return t;
+}
+
+// hull side: black strakes with seams, butt joints and nails; an ochre band near the top (v = 1 is the rail top)
+export function hull(o = {}) {
+  const Wd = 1024, Ht = 512; const c = canvas(Wd, Ht), k = c.getContext('2d'); const r = rnd(41);
+  const base = o.base ?? [30, 30, 34], band = o.band ?? '#c8962e', bandTop = o.bandTop ?? 0.06, bandBot = o.bandBot ?? 0.2;
+  const rows = 20, h = Ht / rows;
+  for (let y = 0; y < rows; y++) {
+    const v = 0.85 + r() * 0.3; k.fillStyle = `rgb(${base.map((q) => Math.round(q * v))})`; k.fillRect(0, y * h, Wd, h);
+    k.fillStyle = 'rgba(255,255,255,.06)'; k.fillRect(0, y * h + 2, Wd, 3);
+    k.fillStyle = 'rgba(0,0,0,.6)'; k.fillRect(0, y * h, Wd, 2);
+    let x = -r() * 300; while (x < Wd) { x += 260 + r() * 200; k.fillRect(x, y * h, 3, h); for (const yy of [0.3, 0.7]) { k.fillStyle = 'rgba(140,140,150,.5)'; k.fillRect(x - 9, y * h + h * yy, 3, 3); k.fillRect(x + 7, y * h + h * yy, 3, 3); k.fillStyle = 'rgba(0,0,0,.6)'; } }
+  }
+  // ochre band (planks still show through) with thin black mouldings
+  k.fillStyle = band; k.globalAlpha = 0.92; k.fillRect(0, Ht * bandTop, Wd, Ht * (bandBot - bandTop)); k.globalAlpha = 1;
+  k.fillStyle = 'rgba(0,0,0,.35)'; for (let y = Ht * bandTop; y < Ht * bandBot; y += h) k.fillRect(0, y, Wd, 2);
+  k.fillStyle = '#111'; k.fillRect(0, Ht * bandTop - 6, Wd, 6); k.fillRect(0, Ht * bandBot, Wd, 6);
+  k.fillStyle = '#5a3a20'; k.fillRect(0, 0, Wd, Ht * bandTop - 6); // cap rail edge
+  return tex(c);
+}
+
+// sailcloth: off-white canvas with vertical panel seams, reef points band near the top
+export function sailcloth(tint = '#efe6cf') {
+  const c = canvas(512, 512), k = c.getContext('2d'); const r = rnd(17);
+  k.fillStyle = tint; k.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 300; i++) { k.fillStyle = `rgba(120,100,60,${r() * 0.05})`; k.beginPath(); k.arc(r() * 512, r() * 512, 6 + r() * 30, 0, 7); k.fill(); }
+  k.strokeStyle = 'rgba(110,90,60,.45)'; k.lineWidth = 3; for (let x = 0; x <= 512; x += 64) { k.beginPath(); k.moveTo(x, 0); k.lineTo(x, 512); k.stroke(); }
+  k.fillStyle = 'rgba(90,70,40,.6)'; for (let x = 20; x < 512; x += 40) k.fillRect(x, 70, 4, 18);
+  k.strokeStyle = 'rgba(90,70,40,.7)'; k.lineWidth = 8; k.strokeRect(0, 0, 512, 512);
+  return tex(c);
+}
+
+// shroud ladder: `n` shrouds (vertical) with ratlines (horizontal) on a transparent card
+export function ratlines(n = 5, rungs = 16) {
+  const c = canvas(256, 1024), k = c.getContext('2d');
+  k.strokeStyle = '#1b1610'; k.lineCap = 'round';
+  k.lineWidth = 9; for (let i = 0; i < n; i++) { const x = 8 + i * (240 / (n - 1)); k.beginPath(); k.moveTo(x, 0); k.lineTo(x, 1024); k.stroke(); }
+  k.lineWidth = 5; for (let j = 0; j < rungs; j++) { const y = 30 + j * (1000 / rungs); k.beginPath(); k.moveTo(8, y); k.lineTo(248, y + 4); k.stroke(); }
+  const t = tex(c); t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; return t;
+}
+
+// water: painted wave stripes. kind: 'harbour' | 'sea' | 'river' | 'tropic'. layer 'top' = transparent highlights only
+export const WATER = { harbour: ['#3f5f5c', '#5f817b', '#2b4644'], sea: ['#1d4f7a', '#3f78a6', '#123656'], river: ['#5d5a3a', '#7d7a52', '#45412a'], tropic: ['#1fa3a8', '#56cfc8', '#127a86'] };
+export function water(kind = 'harbour', layer = 'base') {
+  const [b, l, d] = WATER[kind] || WATER.harbour; const c = canvas(512, 512), k = c.getContext('2d'); const r = rnd(layer === 'base' ? 61 : 67);
+  if (layer === 'base') { k.fillStyle = b; k.fillRect(0, 0, 512, 512); }
+  const strokes = layer === 'base' ? 140 : 70;
+  for (let i = 0; i < strokes; i++) {
+    const x = r() * 512, y = r() * 512, w = 30 + r() * 90, a = layer === 'base' ? 0.7 : 0.55;
+    k.strokeStyle = layer === 'base' ? (r() > 0.45 ? l : d) : 'rgba(255,255,255,1)'; k.globalAlpha = a * (0.5 + r() * 0.5); k.lineWidth = layer === 'base' ? 4 + r() * 4 : 2 + r() * 2; k.lineCap = 'round';
+    for (const dx of [0, -512, 512]) for (const dy of [0, -512, 512]) { k.beginPath(); k.moveTo(x + dx, y + dy); k.bezierCurveTo(x + dx + w * 0.3, y + dy - 6, x + dx + w * 0.6, y + dy + 6, x + dx + w, y + dy); k.stroke(); }
+  }
+  k.globalAlpha = 1; return tex(c);
+}
+// foam: broken white ring texture (u around, v across) on transparent
+export function foam(seed = 3) {
+  const c = canvas(1024, 64), k = c.getContext('2d'); const r = rnd(seed);
+  for (let i = 0; i < 420; i++) { const x = r() * 1024, y = 8 + r() * 48, s = 3 + r() * 9; k.fillStyle = `rgba(255,255,255,${0.5 + r() * 0.5})`; k.beginPath(); k.ellipse(x, y, s * 1.8, s * 0.7, 0, 0, 7); k.fill(); }
+  const t = tex(c); return t;
+}
+
+// snow: white with blue speckle and a few sparkles
+export function snow(rep = [4, 4]) {
+  const c = canvas(512, 512), k = c.getContext('2d'); const r = rnd(23);
+  k.fillStyle = '#f3f6fb'; k.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 260; i++) { k.fillStyle = `rgba(150,170,205,${r() * 0.18})`; k.beginPath(); k.arc(r() * 512, r() * 512, 3 + r() * 24, 0, 7); k.fill(); }
+  for (let i = 0; i < 120; i++) { k.fillStyle = '#ffffff'; k.fillRect(r() * 512, r() * 512, 2, 2); }
+  return tex(c, rep);
+}
+// grey slush / wet patch decal (transparent edges)
+export function slush() {
+  const c = canvas(256, 256), k = c.getContext('2d'); const r = rnd(29);
+  for (let i = 0; i < 40; i++) { const x = 60 + r() * 136, y = 60 + r() * 136, s = 20 + r() * 50; const g = k.createRadialGradient(x, y, 1, x, y, s); g.addColorStop(0, 'rgba(95,95,100,.55)'); g.addColorStop(1, 'rgba(95,95,100,0)'); k.fillStyle = g; k.fillRect(0, 0, 256, 256); }
+  for (let i = 0; i < 25; i++) { k.fillStyle = 'rgba(235,240,248,.7)'; k.beginPath(); k.arc(70 + r() * 116, 70 + r() * 116, 2 + r() * 6, 0, 7); k.fill(); }
+  const t = tex(c); t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; return t;
+}
+// ice block face: blue-white, inner cracks and bubbles, bright edge
+export function ice(seed = 5) {
+  const c = canvas(512, 512), k = c.getContext('2d'); const r = rnd(seed * 13 + 1);
+  const g = k.createLinearGradient(0, 0, 512, 512); g.addColorStop(0, '#d9f1ff'); g.addColorStop(0.5, '#a9d8f2'); g.addColorStop(1, '#86c0e6'); k.fillStyle = g; k.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 30; i++) { k.fillStyle = `rgba(255,255,255,${0.08 + r() * 0.14})`; k.beginPath(); k.arc(r() * 512, r() * 512, 20 + r() * 70, 0, 7); k.fill(); }
+  k.strokeStyle = 'rgba(255,255,255,.75)'; k.lineWidth = 2.5;
+  for (let i = 0; i < 9; i++) { let x = r() * 512, y = r() * 512; k.beginPath(); k.moveTo(x, y); for (let j = 0; j < 5; j++) { x += (r() - 0.5) * 120; y += (r() - 0.5) * 120; k.lineTo(x, y); } k.stroke(); }
+  for (let i = 0; i < 70; i++) { const x = r() * 512, y = r() * 512, s = 2 + r() * 6; k.strokeStyle = 'rgba(255,255,255,.8)'; k.lineWidth = 1.5; k.beginPath(); k.arc(x, y, s, 0, 7); k.stroke(); }
+  k.strokeStyle = 'rgba(255,255,255,.95)'; k.lineWidth = 16; k.strokeRect(0, 0, 512, 512);
+  return tex(c);
+}
+// pond ice sheet: grey-blue with scribed grid lines (where the cutters marked blocks) and drifts of snow dust
+export function iceSheet(grid = 8) {
+  const c = canvas(1024, 1024), k = c.getContext('2d'); const r = rnd(83);
+  k.fillStyle = '#9fc4dc'; k.fillRect(0, 0, 1024, 1024);
+  for (let i = 0; i < 90; i++) { const x = r() * 1024, y = r() * 1024, s = 40 + r() * 160; const g = k.createRadialGradient(x, y, 1, x, y, s); g.addColorStop(0, `rgba(240,246,252,${0.25 + r() * 0.35})`); g.addColorStop(1, 'rgba(240,246,252,0)'); k.fillStyle = g; k.fillRect(0, 0, 1024, 1024); }
+  for (let i = 0; i < 25; i++) { k.strokeStyle = 'rgba(255,255,255,.5)'; k.lineWidth = 1.5; let x = r() * 1024, y = r() * 1024; k.beginPath(); k.moveTo(x, y); for (let j = 0; j < 4; j++) { x += (r() - 0.5) * 200; y += (r() - 0.5) * 200; k.lineTo(x, y); } k.stroke(); }
+  k.strokeStyle = 'rgba(40,70,100,.55)'; k.lineWidth = 3;
+  for (let i = 0; i <= grid; i++) { const p = i * 1024 / grid; k.beginPath(); k.moveTo(p, 0); k.lineTo(p + (r() - 0.5) * 6, 1024); k.stroke(); k.beginPath(); k.moveTo(0, p); k.lineTo(1024, p + (r() - 0.5) * 6); k.stroke(); }
+  k.strokeStyle = 'rgba(255,255,255,.4)'; k.lineWidth = 1.5;
+  for (let i = 0; i <= grid; i++) { const p = i * 1024 / grid + 3; k.beginPath(); k.moveTo(p, 0); k.lineTo(p, 1024); k.stroke(); k.beginPath(); k.moveTo(0, p); k.lineTo(1024, p); k.stroke(); }
+  return tex(c);
+}
+// night sky for a dome: navy gradient (v = 0 bottom … 1 top), stars, a faint band of haze at the horizon
+export function nightSky() {
+  const c = canvas(2048, 1024), k = c.getContext('2d'); const r = rnd(97);
+  const g = k.createLinearGradient(0, 0, 0, 1024); g.addColorStop(0, '#050b1e'); g.addColorStop(0.45, '#0b1a3c'); g.addColorStop(0.5, '#1a2c55'); g.addColorStop(1, '#1a2c55'); k.fillStyle = g; k.fillRect(0, 0, 2048, 1024);
+  for (let i = 0; i < 900; i++) { const y = r() * 470, s = r() < 0.06 ? 2.6 : 1.2 + r(); k.fillStyle = `rgba(255,255,${220 + Math.round(r() * 35)},${0.4 + r() * 0.6})`; k.beginPath(); k.arc(r() * 2048, y, s, 0, 7); k.fill(); }
+  const t = tex(c); t.wrapT = THREE.ClampToEdgeWrapping; return t;
+}
+// moon disc with craters and a soft glow
+export function moon() {
+  const c = canvas(256, 256), k = c.getContext('2d');
+  const g = k.createRadialGradient(128, 128, 40, 128, 128, 128); g.addColorStop(0, 'rgba(220,230,255,.55)'); g.addColorStop(1, 'rgba(220,230,255,0)'); k.fillStyle = g; k.fillRect(0, 0, 256, 256);
+  k.fillStyle = '#f4f1e4'; k.beginPath(); k.arc(128, 128, 44, 0, 7); k.fill();
+  k.fillStyle = 'rgba(180,175,160,.6)'; for (const [x, y, s] of [[112, 116, 10], [142, 136, 7], [126, 150, 5], [146, 110, 5]]) { k.beginPath(); k.arc(x, y, s, 0, 7); k.fill(); }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+// clapboard siding (horizontal painted boards)
+export function clapboard(col = [200, 190, 165]) {
+  const c = canvas(512, 512), k = c.getContext('2d'); const r = rnd(43);
+  for (let y = 0; y < 512; y += 32) { const v = 0.9 + r() * 0.15; k.fillStyle = `rgb(${col.map((q) => Math.round(q * v))})`; k.fillRect(0, y, 512, 32); k.fillStyle = 'rgba(0,0,0,.28)'; k.fillRect(0, y + 28, 512, 4); k.fillStyle = 'rgba(255,255,255,.12)'; k.fillRect(0, y, 512, 4); }
+  for (let i = 0; i < 160; i++) { k.fillStyle = `rgba(60,40,20,${r() * 0.07})`; k.beginPath(); k.arc(r() * 512, r() * 512, 4 + r() * 24, 0, 7); k.fill(); }
+  return tex(c);
+}
+// wooden shingle roof
+export function shingles(col = [92, 70, 58]) {
+  const c = canvas(512, 512), k = c.getContext('2d'); const r = rnd(47);
+  k.fillStyle = `rgb(${col.map((q) => Math.round(q * 0.6))})`; k.fillRect(0, 0, 512, 512);
+  for (let y = 0; y < 16; y++) { let x = (y % 2) * -16 - r() * 10; while (x < 512) { const w = 24 + r() * 18, v = 0.8 + r() * 0.35; k.fillStyle = `rgb(${col.map((q) => Math.round(q * v))})`; k.fillRect(x + 1, y * 32 + 1, w - 2, 30); k.fillStyle = 'rgba(0,0,0,.3)'; k.fillRect(x + 1, y * 32 + 26, w - 2, 5); x += w; } }
+  return tex(c);
+}
+// stone quay blocks
+export function stoneBlocks(col = [128, 124, 116]) {
+  const c = canvas(512, 512), k = c.getContext('2d'); const r = rnd(53);
+  k.fillStyle = '#4a4740'; k.fillRect(0, 0, 512, 512);
+  for (let y = 0; y < 8; y++) { let x = (y % 2) * -40 - r() * 20; while (x < 512) { const w = 70 + r() * 50, v = 0.8 + r() * 0.3; k.fillStyle = `rgb(${col.map((q) => Math.round(q * v))})`; k.fillRect(x + 3, y * 64 + 3, w - 6, 58); k.fillStyle = 'rgba(255,255,255,.08)'; k.fillRect(x + 3, y * 64 + 3, w - 6, 6); x += w; } }
+  return tex(c);
+}
+// cut-out gull (side view): wings 'up' | 'down' | 'sit'. White body, grey wings, ink outline, yellow beak.
+export function gull(pose = 'up') {
+  const c = canvas(256, 128), k = c.getContext('2d'); k.lineJoin = 'round'; k.lineCap = 'round';
+  const ink_ = '#151515';
+  const wing = (up) => { k.beginPath(); k.moveTo(118, 70); k.quadraticCurveTo(88, up ? 20 : 96, 40, up ? 14 : 108); k.quadraticCurveTo(84, up ? 46 : 84, 134, 74); k.closePath(); k.fillStyle = '#c9ced6'; k.fill(); k.lineWidth = 5; k.strokeStyle = ink_; k.stroke(); k.fillStyle = '#2a2a2a'; k.beginPath(); k.moveTo(40, up ? 14 : 108); k.lineTo(58, up ? 20 : 100); k.lineTo(52, up ? 28 : 94); k.closePath(); k.fill(); };
+  if (pose !== 'sit') wing(pose === 'up');
+  k.beginPath(); k.ellipse(140, 74, 44, 18, -0.08, 0, 7); k.fillStyle = '#ffffff'; k.fill(); k.lineWidth = 5; k.strokeStyle = ink_; k.stroke(); // body
+  k.beginPath(); k.arc(184, 62, 14, 0, 7); k.fill(); k.stroke(); // head
+  k.fillStyle = '#f2b632'; k.beginPath(); k.moveTo(196, 60); k.lineTo(214, 64); k.lineTo(196, 68); k.closePath(); k.fill(); k.lineWidth = 3; k.stroke();
+  k.fillStyle = ink_; k.beginPath(); k.arc(186, 58, 2.6, 0, 7); k.fill();
+  k.beginPath(); k.moveTo(98, 76); k.lineTo(78, 70); k.lineTo(84, 84); k.closePath(); k.fillStyle = '#e8e8e8'; k.fill(); k.lineWidth = 4; k.stroke(); // tail
+  if (pose === 'sit') { k.fillStyle = '#c9ced6'; k.beginPath(); k.ellipse(130, 70, 34, 11, -0.1, 0, 7); k.fill(); k.lineWidth = 4; k.stroke(); k.strokeStyle = '#d98b2b'; k.lineWidth = 4; for (const x of [134, 148]) { k.beginPath(); k.moveTo(x, 90); k.lineTo(x, 108); k.stroke(); } }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+// flat ship silhouette for the far harbour (masts, yards, furled sails), on transparent
+export function shipSilhouette(masts = 2, seed = 1, col = '#3b4048') {
+  const c = canvas(512, 512), k = c.getContext('2d'); const r = rnd(seed * 7 + 3);
+  k.fillStyle = col; k.strokeStyle = col; k.lineCap = 'round';
+  k.beginPath(); k.moveTo(40, 430); k.lineTo(470, 420); k.quadraticCurveTo(455, 470, 420, 480); k.lineTo(90, 480); k.quadraticCurveTo(55, 470, 40, 430); k.fill();
+  k.lineWidth = 6; k.beginPath(); k.moveTo(460, 425); k.lineTo(510, 380); k.stroke(); // bowsprit
+  const xs = masts === 3 ? [130, 270, 390] : [180, 360];
+  xs.forEach((x, i) => {
+    const top = 60 + r() * 30 + (masts === 3 && i === 0 ? 50 : 0);
+    k.lineWidth = 7; k.beginPath(); k.moveTo(x, 430); k.lineTo(x, top); k.stroke();
+    for (const [y, w] of [[top + 40, 50], [top + 130, 80], [top + 230, 105]]) { k.lineWidth = 5; k.beginPath(); k.moveTo(x - w, y); k.lineTo(x + w, y); k.stroke(); k.lineWidth = 12; k.beginPath(); k.moveTo(x - w * 0.85, y + 6); k.lineTo(x + w * 0.85, y + 6); k.stroke(); }
+    k.lineWidth = 2; k.beginPath(); k.moveTo(x, top); k.lineTo(x - 110, 428); k.moveTo(x, top); k.lineTo(x + 110, 426); k.stroke();
+  });
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }

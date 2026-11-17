@@ -92,14 +92,16 @@ export function windowKit(g, opts = {}) {
       w.add(box(1.0, 1.5, 0.14, warm ? warmPane : pane, 0, 0, 0.01, 0, false));
     }
     w.add(box(0.06, 1.5, 0.18, frameMat, 0, 0, 0.02)); w.add(box(1.0, 0.06, 0.18, frameMat, 0, 0.2, 0.02));
+    if (opts.panes) { for (const px of [-0.25, 0.25]) w.add(box(0.03, 1.5, 0.16, frameMat, px, 0, 0.02, 0, false)); for (const py of [-0.3, 0.6]) w.add(box(1.0, 0.03, 0.16, frameMat, 0, py, 0.02, 0, false)); }
     w.add(box(1.45, 0.12, 0.3, frameMat, 0, -0.92, 0.08));
-    if (flowerBoxes && warm === false && ((x * 7 + z) | 0) % 3 === 0) { // flower box
+    if (flowerBoxes && warm === false && ((x * 7 + z) | 0) % 3 === 0 && !(opts.snowSill)) { // flower box
       const boxWood = std({ map: T.wood([120, 70, 38], 3, false) });
       w.add(ink(box(1.12, 0.22, 0.3, boxWood, 0, -0.76, 0.22), 1.03));
       for (const bx of [-0.42, 0.42]) w.add(box(0.05, 0.24, 0.32, std({ color: 0x2b2f33, metalness: 0.5 }), bx, -0.8, 0.22)); // iron brackets
       const cols = [[0xe63946, 0xffffff], [0xffd166, 0xf4a1c1], [0x9b5de5, 0xffd166], [0xf4a1c1, 0xe63946]][Math.abs(Math.round(x * 3 + z)) % 4];
       planter(w, 0, -0.65, 0.22, 1.05, 0.26, Math.abs(Math.round(x * 13 + z * 7)) + 3, cols);
     }
+    if (opts.snowSill) w.add(snowSlab(1.4, 0.3, 0.07, 0, -0.84, 0.1)); // winter: snow on the sill
     w.userData.win = true;
     g.add(w); return w;
   };
@@ -288,5 +290,191 @@ export function dustMotes(parent, r, o = {}) {
 // group: THREE.Group (shown only while a shot uses this set); lamps: [{glow, pl}]; spot/beam/motes: optional;
 // doors(v): optional opener; center: shadow-camera centre; shade(x, z): extra darkening for a person at x,z.
 export function setHandle(group, extra = {}) {
-  return { group, lamps: [], spot: null, beam: null, motes: null, doors: () => {}, board: null, screen: null, center: [0, 0, 0], shadowSize: 15, spotCenter: null, shade: null, movers: {}, ...extra };
+  // open: { name: (v) => {} } openers driven by beat `open: { name: [[at, v]] }` keys (rest value openRest[name] ?? 0)
+  // tick(t, L, camera): per-frame animation of the set (water, gulls, smoke); called after movers are placed
+  return { group, lamps: [], spot: null, beam: null, motes: null, doors: () => {}, board: null, screen: null, center: [0, 0, 0], shadowSize: 15, spotCenter: null, shade: null, movers: {}, open: {}, openRest: {}, tick: null, ...extra };
+}
+
+// =====================================================================
+// S02 additions: offset ink, ropes, snow, gabled houses, lanterns
+// =====================================================================
+// ink outline that keeps the same thickness on long shapes: back faces pushed out along smooth normals by d metres
+export function inkOffset(mesh, d = 0.05, color = 0x14100c) {
+  let g = mesh.geometry.clone(); g.deleteAttribute('uv'); if (g.index) g = g.toNonIndexed();
+  // merge-by-position normals so hard edges get a closed shell
+  const pos = g.attributes.position, n = pos.count, key = (i) => `${pos.getX(i).toFixed(3)},${pos.getY(i).toFixed(3)},${pos.getZ(i).toFixed(3)}`;
+  g.computeVertexNormals(); const nor = g.attributes.normal, acc = new Map();
+  for (let i = 0; i < n; i++) { const k = key(i); const a = acc.get(k) || [0, 0, 0]; a[0] += nor.getX(i); a[1] += nor.getY(i); a[2] += nor.getZ(i); acc.set(k, a); }
+  for (let i = 0; i < n; i++) { const a = acc.get(key(i)); const l = Math.hypot(...a) || 1; pos.setXYZ(i, pos.getX(i) + a[0] / l * d, pos.getY(i) + a[1] / l * d, pos.getZ(i) + a[2] / l * d); }
+  const o = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color, side: THREE.BackSide })); mesh.add(o); return mesh;
+}
+// straight rope / spar between two points (cylinder), optional sag (tube)
+const ROPE_M = new THREE.MeshStandardMaterial({ color: 0x2a2018, roughness: 0.9 });
+export function rope(parent, a, b, r = 0.025, mat = ROPE_M, sag = 0) {
+  a = new THREE.Vector3(...a); b = new THREE.Vector3(...b);
+  let m;
+  if (sag) { const mid = a.clone().lerp(b, 0.5); mid.y -= sag; m = new THREE.Mesh(new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(a, mid, b), 12, r, 5), mat); }
+  else { const len = a.distanceTo(b); m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, 6), mat); m.position.copy(a).lerp(b, 0.5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize()); }
+  m.castShadow = true; parent.add(m); return m;
+}
+// coil of rope lying flat
+export function ropeCoil(parent, x, y, z, r = 0.32, turns = 4, mat) {
+  mat = mat || std({ color: 0xb08a55, roughness: 1 });
+  const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g);
+  for (let i = 0; i < turns; i++) { const t = new THREE.Mesh(new THREE.TorusGeometry(r * (1 - i * 0.16), 0.045, 6, 22), mat); t.rotation.x = -Math.PI / 2; t.position.y = 0.045 + i * 0.07; t.castShadow = true; g.add(i === 0 ? ink(t, 1.06) : t); }
+  return g;
+}
+// snow material (shared)
+let SNOW_M = null;
+export const snowMat = () => (SNOW_M = SNOW_M || std({ map: T.snow([2, 2]), roughness: 1, color: 0xffffff }));
+// a soft slab of snow (rounded edges, one smooth shape) w × d, thickness h, sitting at (x, y, z) (y = bottom)
+export function snowSlab(w, d, h, x, y, z, ry = 0, parent = null) {
+  const r = Math.min(h * 0.9, w * 0.25, d * 0.25);
+  const s = new THREE.Shape(); const hw = w / 2, hd = d / 2;
+  s.moveTo(-hw + r, -hd); s.lineTo(hw - r, -hd); s.quadraticCurveTo(hw, -hd, hw, -hd + r); s.lineTo(hw, hd - r); s.quadraticCurveTo(hw, hd, hw - r, hd); s.lineTo(-hw + r, hd); s.quadraticCurveTo(-hw, hd, -hw, hd - r); s.lineTo(-hw, -hd + r); s.quadraticCurveTo(-hw, -hd, -hw + r, -hd);
+  const bev = Math.min(h * 0.6, r * 0.9);
+  const geo = new THREE.ExtrudeGeometry(s, { depth: Math.max(0.001, h - bev), bevelEnabled: true, bevelThickness: bev, bevelSize: bev * 0.6, bevelSegments: 3, curveSegments: 6 });
+  geo.rotateX(-Math.PI / 2); geo.translate(0, bev, 0);
+  const m = new THREE.Mesh(geo, snowMat()); m.position.set(x, y, z); m.rotation.y = ry; m.castShadow = true; m.receiveShadow = true;
+  if (parent) parent.add(m); return m;
+}
+// smooth snow pile / bank: a flattened dome (lathe), radius r, height h, stretched sx along x
+export function snowPile(parent, x, z, r = 0.8, h = 0.45, sx = 1, ry = 0, y = 0) {
+  const pts = []; for (let i = 0; i <= 12; i++) { const a = i / 12 * Math.PI / 2; pts.push(new THREE.Vector2(Math.cos(a) * r * (1 + 0.08 * Math.sin(a * 3)), Math.sin(a) ** 0.8 * h)); }
+  pts.unshift(new THREE.Vector2(r * 1.04, -0.02));
+  const m = new THREE.Mesh(new THREE.LatheGeometry(pts.reverse(), 24), snowMat());
+  m.scale.set(sx, 1, 1); m.position.set(x, y, z); m.rotation.y = ry; m.castShadow = true; m.receiveShadow = true;
+  parent.add(inkOffset(m, 0.025)); return m;
+}
+// icicles along an edge from a to b (cones), seeded
+export function icicles(parent, a, b, n, r) {
+  const m = std({ color: 0xd8eeff, roughness: 0.15, metalness: 0.1, emissive: 0x1a3046 });
+  for (let i = 0; i < n; i++) { const u = (i + 0.5) / n; const L = 0.12 + r() * 0.35; const c = new THREE.Mesh(new THREE.ConeGeometry(0.035 + r() * 0.02, L, 6), m); c.rotation.x = Math.PI; c.position.set(lerpN(a[0], b[0], u), lerpN(a[1], b[1], u) - L / 2, lerpN(a[2], b[2], u)); parent.add(c); }
+}
+const lerpN = (a, b, t) => a + (b - a) * t;
+
+// gabled building: walls (texture repeated per metre), roof pitches, gable ends. Front (gable end) faces +z in local space.
+// o: { w, d, h (eaves), roofH, wall (material maker (repX, repY) => mat), roof (mat), snow (bool), trim (colour) }
+export function gableHouse(parent, x, z, ry, o) {
+  const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = ry; parent.add(g);
+  const { w, d, h, roofH } = o;
+  g.add(box(w, h, d, o.wall(w / 4, h / 4), 0, h / 2, 0));
+  // gable triangles (front and back) as one prism with the same wall texture
+  const tri = new THREE.Shape(); tri.moveTo(-w / 2, 0); tri.lineTo(w / 2, 0); tri.lineTo(0, roofH); tri.closePath();
+  const pg = new THREE.ExtrudeGeometry(tri, { depth: d, bevelEnabled: false }); pg.translate(0, 0, -d / 2);
+  // planar UVs in metres for the gable
+  const uv = pg.attributes.uv, ps = pg.attributes.position; for (let i = 0; i < uv.count; i++) uv.setXY(i, ps.getX(i) / 4, ps.getY(i) / 4);
+  const gm = new THREE.Mesh(pg, o.wall(1, 1)); gm.position.y = h; gm.castShadow = true; gm.receiveShadow = true; g.add(gm);
+  // roof pitches
+  const slope = Math.hypot(w / 2, roofH), ang = Math.atan2(roofH, w / 2), ov = 0.35;
+  for (const s of [-1, 1]) {
+    const p = box(slope + ov, 0.16, d + ov * 2, o.roof, s * (w / 4 + ov * Math.cos(ang) / 2 - 0.02), h + roofH / 2 + 0.06 - ov * Math.sin(ang) / 2, 0); p.rotation.z = -s * ang; g.add(ink(p, 1.01));
+    if (o.snow) { const sn = snowSlab(slope * 0.98, d + ov * 1.6, 0.14, 0, 0, 0); sn.position.set(s * (w / 4 + ov * Math.cos(ang) / 2 - 0.02) - s * Math.sin(ang) * 0.09, h + roofH / 2 + 0.06 - ov * Math.sin(ang) / 2 + Math.cos(ang) * 0.08, 0); sn.rotation.z = -s * ang; g.add(sn); }
+  }
+  g.add(box(0.22, 0.22, d + ov * 2.2, std({ color: o.ridge ?? 0x3a2a20 }), 0, h + roofH + 0.06, 0)); // ridge board
+  if (o.trim != null) { const tm = std({ color: o.trim }); for (const zz of [d / 2 + 0.02, -d / 2 - 0.02]) { for (const s of [-1, 1]) { const b2 = box(slope + 0.2, 0.18, 0.08, tm, s * w / 4, h + roofH / 2, zz); b2.rotation.z = -s * ang; g.add(b2); } g.add(box(w + 0.1, 0.16, 0.08, tm, 0, h, zz)); } }
+  g.userData = { w, d, h, roofH };
+  return g;
+}
+// wooden lantern pole with a hanging lantern (pond, wharf). Returns a lamp handle {glow, pl, glass, group}
+export function lanternPole(parent, x, z, o = {}) {
+  const wood = o.wood || std({ map: T.wood([100, 70, 45], 3) });
+  const g = new THREE.Group(); g.position.set(x, o.y ?? 0, z); g.rotation.y = o.ry ?? 0; parent.add(g);
+  const H = o.h ?? 2.4;
+  g.add(ink(box(0.12, H, 0.12, wood, 0, H / 2, 0), 1.04));
+  g.add(ink(box(0.7, 0.09, 0.09, wood, 0.3, H - 0.1, 0), 1.04));
+  const brace = box(0.06, 0.4, 0.06, wood, 0.12, H - 0.3, 0); brace.rotation.z = -0.8; g.add(brace);
+  const L = hangingLantern(g, 0.58, H - 0.18, 0, o);
+  return L;
+}
+// a hanging (or standing) lantern: tin cap + ring, four glass sides, a flame; hook point at (x, y, z)
+export function hangingLantern(parent, x, y, z, o = {}) {
+  const tin = std({ color: 0x2b2b2b, metalness: 0.5, roughness: 0.5 });
+  const glass = new THREE.MeshBasicMaterial({ color: 0xffd98a });
+  glowTex = glowTex || T.radial('rgba(255,210,140,.9)', 'rgba(255,170,80,0)');
+  const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g);
+  g.add(rope(g, [0, 0, 0], [0, -0.12, 0], 0.012, tin));
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.035, 0.01, 6, 12), tin); ring.position.y = -0.02; g.add(ring);
+  const cap = new THREE.Mesh(new THREE.ConeGeometry(0.13, 0.12, 4), tin); cap.rotation.y = Math.PI / 4; cap.position.y = -0.17; g.add(ink(cap, 1.08));
+  g.add(box(0.2, 0.26, 0.2, glass, 0, -0.36, 0, 0, false));
+  for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) g.add(box(0.022, 0.28, 0.022, tin, sx * 0.1, -0.36, sz * 0.1));
+  g.add(ink(box(0.24, 0.04, 0.24, tin, 0, -0.51, 0), 1.06));
+  const fl = new THREE.Mesh(new THREE.SphereGeometry(0.03, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffa62b })); fl.scale.y = 1.8; fl.position.y = -0.38; g.add(fl);
+  const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+  glow.scale.set(1.2, 1.2, 1); glow.position.y = -0.36; g.add(glow);
+  const pl = new THREE.PointLight(0xffa850, 6, o.range ?? 7, 1.6); pl.position.y = -0.36; g.add(pl);
+  return { glow, pl, glass, group: g };
+}
+
+// ---------------- harbour / winter props (S02) ----------------
+// mooring bollard: squat wooden post with an iron cap
+export function bollard(parent, x, z, y = 0, snowCap = false) {
+  const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g);
+  g.add(ink(cyl(0.2, 0.24, 0.62, std({ map: T.wood([90, 62, 40], 3) }), 0, 0.31, 0, 12), 1.06));
+  g.add(ink(cyl(0.26, 0.24, 0.1, std({ color: 0x2b2d31, metalness: 0.5, roughness: 0.5 }), 0, 0.66, 0, 12), 1.06));
+  if (snowCap) { const pts = []; for (let i = 0; i <= 8; i++) { const a = i / 8 * Math.PI / 2; pts.push(new THREE.Vector2(Math.cos(a) * 0.27, Math.sin(a) * 0.12)); } const sc = new THREE.Mesh(new THREE.LatheGeometry(pts.reverse(), 14), snowMat()); sc.position.y = 0.7; sc.castShadow = true; g.add(sc); }
+  return g;
+}
+// grain/coffee sack: soft squashed pillow with a tied neck
+export function sack(parent, x, y, z, ry = 0, col = 0xc9b07a, label = null) {
+  const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.y = ry; parent.add(g);
+  const m = new THREE.Mesh(new THREE.SphereGeometry(0.34, 16, 12), std({ map: T.hay(), color: col, roughness: 1 })); m.scale.set(1, 0.55, 0.7); m.position.y = 0.19; m.castShadow = true; g.add(inkOffset(m, 0.02));
+  const neck = new THREE.Mesh(new THREE.ConeGeometry(0.09, 0.16, 8), std({ color: col })); neck.rotation.z = -Math.PI / 2; neck.position.set(0.38, 0.2, 0); g.add(neck);
+  return g;
+}
+// lobster pot: slatted half-barrel trap
+export function lobsterPot(parent, x, z, ry = 0, y = 0) {
+  const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.y = ry; parent.add(g);
+  const w = std({ map: T.wood([150, 120, 80], 3, false) });
+  g.add(ink(box(0.8, 0.05, 0.5, w, 0, 0.025, 0), 1.04));
+  for (const xx of [-0.36, 0, 0.36]) { const a = new THREE.Mesh(new THREE.TorusGeometry(0.25, 0.022, 5, 12, Math.PI), w); a.position.set(xx, 0.04, 0); a.rotation.y = Math.PI / 2; g.add(a); }
+  for (let i = 0; i < 6; i++) { const a = i / 5 * Math.PI; g.add(box(0.8, 0.03, 0.04, w, 0, 0.04 + Math.sin(a) * 0.25, Math.cos(a) * 0.25)); }
+  return g;
+}
+// wicker basket (fish or cargo), optional fish heads showing
+export function basket(parent, x, z, y = 0, fish = false) {
+  const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g);
+  g.add(ink(cyl(0.3, 0.24, 0.42, std({ map: T.hay(), color: 0xa0743a }), 0, 0.21, 0, 14), 1.05));
+  g.add(cyl(0.31, 0.31, 0.05, std({ color: 0x7a5228 }), 0, 0.42, 0, 14));
+  if (fish) for (let i = 0; i < 5; i++) { const f = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 6), std({ color: i % 2 ? 0x8a97a3 : 0xa7b2bb, metalness: 0.3, roughness: 0.4 })); f.scale.set(1.6, 0.45, 0.6); f.position.set(-0.12 + (i % 3) * 0.12, 0.44, -0.1 + Math.floor(i / 3) * 0.18); f.rotation.y = i; g.add(f); }
+  return g;
+}
+// capstan: drum with a cap and four bars
+export function capstan(parent, x, z, y = 0) {
+  const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g);
+  const w = std({ map: T.wood([120, 84, 52], 4) });
+  g.add(ink(cyl(0.32, 0.4, 0.9, w, 0, 0.45, 0, 12), 1.05)); g.add(ink(cyl(0.45, 0.42, 0.18, w, 0, 0.98, 0, 12), 1.05));
+  for (let i = 0; i < 4; i++) { const b = box(2.0, 0.07, 0.07, w, 0, 1.0, 0); b.rotation.y = i * Math.PI / 4; g.add(b); }
+  for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; g.add(box(0.06, 0.8, 0.1, w, Math.cos(a) * 0.38, 0.45, Math.sin(a) * 0.38, -a)); }
+  return g;
+}
+// a spare anchor leaning on something (rz tilt)
+export function anchorProp(parent, x, z, ry = 0, rz = 0.35, y = 0) {
+  const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.set(0, ry, rz); parent.add(g);
+  const iron = std({ color: 0x2a2c30, metalness: 0.5, roughness: 0.55 });
+  g.add(ink(box(0.12, 1.8, 0.12, iron, 0, 1.0, 0), 1.06));
+  const arm = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.07, 6, 16, Math.PI), iron); arm.rotation.z = Math.PI; arm.position.y = 0.6; g.add(ink(arm, 1.06));
+  for (const ax of [-0.55, 0.55]) { const fl = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.3, 3), iron); fl.position.set(ax, 0.72, 0); g.add(fl); }
+  g.add(ink(box(1.3, 0.12, 0.12, std({ map: T.wood([100, 70, 45], 3) }), 0, 1.75, 0), 1.06));
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.03, 6, 12), iron); ring.position.y = 1.98; g.add(ring);
+  return g;
+}
+// doorway in a facade (local coords of a building group, front face at z): frame, dark recess, one or two leaves
+// returns opener (v) that swings the leaves in
+export function doorway(g, x, z, w = 1.4, h = 2.3, o = {}) {
+  const frame = std({ color: o.frame ?? 0x3a2a1c }), leafM = std({ map: T.wood(o.wood ?? [96, 64, 40], 5) });
+  g.add(box(w + 0.1, h + 0.05, 0.3, new THREE.MeshStandardMaterial({ color: 0x0c0806, roughness: 1 }), x, h / 2, z - 0.1, 0, false)); // dark interior
+  for (const s of [-1, 1]) g.add(ink(box(0.14, h + 0.1, 0.16, frame, x + s * (w / 2 + 0.07), (h + 0.1) / 2, z + 0.04), 1.04));
+  g.add(ink(box(w + 0.42, 0.18, 0.2, frame, x, h + 0.12, z + 0.05), 1.04));
+  const leaves = []; const n = o.double ? 2 : 1;
+  for (let i = 0; i < n; i++) {
+    const s = n === 1 ? -1 : (i ? 1 : -1); const lw = w / n;
+    const hinge = new THREE.Group(); hinge.position.set(x + s * w / 2, 0, z + 0.04); g.add(hinge);
+    const leaf = box(lw, h, 0.07, leafM, -s * lw / 2, h / 2, 0); hinge.add(leaf);
+    hinge.add(box(lw * 0.9, 0.09, 0.03, frame, -s * lw / 2, h * 0.25, 0.05)); hinge.add(box(lw * 0.9, 0.09, 0.03, frame, -s * lw / 2, h * 0.75, 0.05));
+    hinge.add(box(0.06, 0.06, 0.05, std({ color: 0x222222, metalness: 0.6 }), -s * (lw - 0.15), h * 0.5, 0.06));
+    leaves.push([hinge, s]);
+  }
+  const open = (v) => { for (const [hg, s] of leaves) hg.rotation.y = s * (o.inward ? -1 : 1) * v * 1.6 * -1; };
+  open(o.openAt ?? 0); return open;
 }
