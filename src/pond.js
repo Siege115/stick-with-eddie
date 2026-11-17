@@ -100,6 +100,7 @@ export function buildPond(scene, opts = {}) {
       tg.add(cyl(0.035, 0.035, 0.05, iron, 0, 0.0, 0, 8)); for (const s of [-1, 1]) tg.add(ink(box(0.18, 0.05, 0.05, wd, s * 0.22, 0.12, 0), 1.08)); }
     { const ax = new THREE.Group(); ax.position.set(1.3, 0.62, 0.18); ax.rotation.z = 0.3; rack.add(ax); ax.add(ink(box(0.05, 0.9, 0.05, wd, 0, 0.45, 0), 1.08)); ax.add(ink(box(0.22, 0.12, 0.04, steel, 0.08, 0.86, 0), 1.08)); }
     K.ropeCoil(rack, 1.05, 0.0, 0.45, 0.3, 4);
+    H.lamps.push(K.hangingLantern(rack, -1.62, 2.05, 0.35, { range: 6 })); rack.add(box(0.05, 0.05, 0.3, std({ color: 0x222222 }), -1.62, 2.06, 0.2)); // lights the tools
   }
 
   // ---------------- by the shed: cut blocks stacked, the plank ramp from the ice, a hand sledge ----------------

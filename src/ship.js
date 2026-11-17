@@ -91,7 +91,7 @@ export function buildShip(kind = 'favorite', o = {}) {
   group.add(box(0.08, 0.1, B * 0.66, std({ color: 0xd9a53a, metalness: 0.4 }), xT, tT - 0.12, 0)); // gilded taffrail moulding
   const winM = std({ color: 0x1a2430, roughness: 0.2, metalness: 0.3 }), winF = std({ color: 0xe8dcc0 });
   for (let k = -1.5; k <= 1.5; k++) { const z = k * 0.62; group.add(box(0.06, 0.42, 0.46, winF, xT + 0.01, tT - 1.4, z, 0, false)); group.add(box(0.07, 0.32, 0.36, winM, xT - 0.005, tT - 1.4, z, 0, false)); group.add(box(0.08, 0.32, 0.03, winF, xT - 0.01, tT - 1.4, z, 0, false)); }
-  group.add(ink(box(0.35, 3.6, 0.22, std({ map: T.wood([60, 50, 40], 3) }), xT - 0.2, tT - 2.1, 0), 1.02)); // rudder
+  { const rTop = tT - 1.75, rBot = KEEL + 0.3; group.add(ink(box(0.35, rTop - rBot, 0.22, std({ map: T.wood([60, 50, 40], 3) }), xT - 0.2, (rTop + rBot) / 2, 0), 1.02)); } // rudder (its head stays below the stern windows and the name)
   // ---------------- bow: stem post, bowsprit + jibboom, catheads with anchors, windlass ----------------
   const spar = std({ map: T.wood([150, 110, 66], 3) });
   const bx0 = L / 2 - 1.4, by0 = top(L / 2 - 1.4) - 0.05, ang = 0.26, dir = [Math.cos(ang), Math.sin(ang)];
@@ -128,7 +128,8 @@ export function buildShip(kind = 'favorite', o = {}) {
     for (let j = 0; j < nv; j++) for (let i = 0; i < nu; i++) { const a = j * (nu + 1) + i; ix.push(a, a + nu + 1, a + 1, a + 1, a + nu + 1, a + nu + 2); }
     const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(p, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(u2, 2)); g.setIndex(ix); g.computeVertexNormals(); return g;
   };
-  const yard = (x, y, len, r) => { for (const s of [1, -1]) { const m = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.45, r, len / 2, 8), spar); m.rotation.x = s * Math.PI / 2; m.position.set(x, y, s * len / 4); m.castShadow = true; group.add(inkOffset(m, 0.025)); } };
+  const yardGroups = [], braceRopes = [];
+  const yard = (parent, x, y, len, r) => { for (const s of [1, -1]) { const m = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.45, r, len / 2, 8), spar); m.rotation.x = s * Math.PI / 2; m.position.set(x, y, s * len / 4); m.castShadow = true; parent.add(inkOffset(m, 0.025)); } };
   masts.forEach((M, mi) => {
     const s = M.s, x = M.x, Hl = 8 * s, Ht = 5.4 * s, Hg = 4.0 * s;
     const yTop = DECK + Hl, yTm = yTop + Ht - 0.9, yTg = yTm + Hg - 0.6;
@@ -140,16 +141,17 @@ export function buildShip(kind = 'favorite', o = {}) {
     group.add(ink(cyl(0.12 * s, 0.12 * s, 0.14, spar, x + 0.08, yTg + 0.62, 0, 10), 1.1)); // truck
     // yards: course, topsail, topgallant
     const Y = [{ y: yTop - 0.95, len: B * 1.55 * s }, { y: yTm - 0.7, len: B * 1.2 * s }, { y: yTg - 0.35, len: B * 0.85 * s }];
-    Y.forEach((q, k) => yard(x + 0.25, q.y, q.len, (0.16 - k * 0.035) * s));
+    const yg = new THREE.Group(); yg.position.x = x; group.add(yg); yardGroups.push(yg); // yards + square sails swing together (braced when sailing)
+    Y.forEach((q, k) => yard(yg, 0.25, q.y, q.len, (0.16 - k * 0.035) * s));
     // sails hang from each yard down to the yard below (the course to just above the bulwark)
     Y.forEach((q, k) => {
       const yb = k === 0 ? top(x) + 0.9 : Y[k - 1].y + 0.25, h = q.y - yb - 0.12;
       const wt = q.len * 0.9, wb = k === 0 ? q.len * 0.98 : Y[k - 1].len * 0.9;
-      const m = new THREE.Mesh(sailGeo(wt, wb, h, Math.min(1.1, h * 0.2)), sailM); m.position.set(x + 0.4, q.y - 0.12, 0); m.castShadow = true; group.add(m);
-      const roll = new THREE.Mesh(new THREE.CapsuleGeometry(0.15 * s, wt * 0.92, 4, 10), furlM); roll.rotation.x = Math.PI / 2; roll.position.set(x + 0.42, q.y + 0.05, 0); roll.castShadow = true; group.add(ink(roll, 1.05));
+      const m = new THREE.Mesh(sailGeo(wt, wb, h, Math.min(1.1, h * 0.2)), sailM); m.position.set(0.4, q.y - 0.12, 0); m.castShadow = true; yg.add(m);
+      const roll = new THREE.Mesh(new THREE.CapsuleGeometry(0.15 * s, wt * 0.92, 4, 10), furlM); roll.rotation.x = Math.PI / 2; roll.position.set(0.42, q.y + 0.05, 0); roll.castShadow = true; yg.add(ink(roll, 1.05));
       SAILS.push({ mesh: m, roll, stagger: [0.3, 0, 0.15][k] + mi * 0.06, kind: 'square' });
     });
-    mastInfo.push({ x, yTop, yTm, yTg, s, Y });
+    mastInfo.push({ x, yTop, yTm, yTg, s, Y, yg });
     // pin rail with belaying pins + a coil at the mast foot
     group.add(ink(box(0.12, 0.08, 1.4, spar, x + 0.7, DECK + 0.7, 0), 1.05)); for (const zz of [-0.5, -0.17, 0.17, 0.5]) group.add(cyl(0.025, 0.025, 0.3, spar, x + 0.7, DECK + 0.78, zz, 6));
     for (const zz of [-0.7, 0.7]) group.add(box(0.1, 0.7, 0.1, spar, x + 0.7, DECK + 0.35, zz));
@@ -198,7 +200,7 @@ export function buildShip(kind = 'favorite', o = {}) {
   rope(group, [F.x, F.yTop - 0.3, 0], at(1.6), 0.04); rope(group, [F.x, F.yTm - 0.2, 0], at(BS - 0.2), 0.03); rope(group, [F.x + 0.05, F.yTg - 0.2, 0], at(BS + JB - 0.4), 0.025);
   for (let i = 1; i < mastInfo.length; i++) { const A = mastInfo[i], P = mastInfo[i - 1]; rope(group, [A.x, A.yTop - 0.3, 0], [P.x - 0.4, DECK + 0.6, 0], 0.04); rope(group, [A.x, A.yTm - 0.2, 0], [P.x, P.yTop - 0.2, 0], 0.03); rope(group, [A.x, A.yTg - 0.2, 0], [P.x, P.yTm - 0.3, 0], 0.022); }
   // braces from the main course and topsail yard arms to the rail aft (a handful, not hundreds)
-  { const M = mastInfo[1]; for (const sd of [1, -1]) for (const q of M.Y.slice(0, 2)) { const xa = Math.max(-L / 2 + 1, M.x - 5); rope(group, [M.x + 0.25, q.y, sd * q.len / 2 * 0.97], [xa, top(xa), sd * bw(xa)], 0.016); } }
+  { const M = mastInfo[1]; for (const sd of [1, -1]) for (const q of M.Y.slice(0, 2)) { const xa = Math.max(-L / 2 + 1, M.x - 5); const arm = [0.25, q.y, sd * q.len / 2 * 0.97], rail = [xa, top(xa), sd * bw(xa)]; braceRopes.push({ m: rope(group, [M.x + 0.25, q.y, arm[2]], rail, 0.016), yg: M.yg, arm, rail }); } }
   // bowsprit gear: martingale and bobstay
   rope(group, at(BS + JB - 0.4), [at(BS)[0] - 0.2, at(BS)[1] - 1.5, 0], 0.02); rope(group, [at(BS)[0] - 0.2, at(BS)[1] - 1.5, 0], at(BS - 0.1), 0.02); rope(group, at(1.8), [L / 2 - 0.3, 0.3, 0], 0.03);
 
@@ -289,6 +291,9 @@ export function buildShip(kind = 'favorite', o = {}) {
       else s.mesh.scale.setScalar(Math.max(0.02, e));
       s.roll.scale.set(lerp(1, 0.35, e), 1, lerp(1, 0.35, e));
     }
+    // brace the yards round as the sails set (square sails then read from abeam), braces follow the yard arms
+    const br = clamp(v) * 0.38; for (const yg of yardGroups) yg.rotation.y = br;
+    for (const b of braceRopes) { const c = Math.cos(br), sn = Math.sin(br); const a = new THREE.Vector3(b.yg.position.x + b.arm[0] * c + b.arm[2] * sn, b.arm[1], -b.arm[0] * sn + b.arm[2] * c), r2 = new THREE.Vector3(...b.rail); const len = a.distanceTo(r2); b.m.geometry.dispose(); b.m.geometry = new THREE.CylinderGeometry(0.016, 0.016, len, 6); b.m.position.copy(a).lerp(r2, 0.5); b.m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), r2.clone().sub(a).normalize()); }
   };
   sails(0); hatch(0);
   // per-frame: foam crawl, wake by speed (group.userData.speed set by the stage), flat follows position/heading
