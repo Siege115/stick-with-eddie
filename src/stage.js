@@ -61,6 +61,27 @@ const P = {
   relaxed: { lean: -0.02, brow: 0.5, mouth: 'smile', armL: { a: 0.12, b: 0.05 }, armR: { a: 0.12, b: 0.05 }, headTilt: 0.06 },
   march: { brow: -0.5, mouth: 'flat' },
   ride: { legL: { a: -0.5, b: 0.5 }, legR: { a: 0.5, b: -0.5 } },
+  // ---- S02 acting (art brief 2.1–2.4) ----
+  wave: { armR: { a: 2.6, b: 0.25 }, armL: { a: 0.15, b: 0.1 }, brow: 0.6, mouth: 'smile', hatLift: 1 },
+  hatLift: { armR: { a: 2.75, b: 0.1 }, armL: { a: 0.2, b: 0.2 }, brow: 0.8, mouth: 'grin', hatLift: 1, lean: -0.03 },
+  hatDroop: { armL: { a: 0.05, b: 0.05 }, armR: { a: 0.9, b: 1.4 }, brow: 1, mouth: 'frown', headTilt: 0.12, lean: 0.06, hatDroop: 1 },
+  presentIce: { armR: { a: 2.2, b: -0.35 }, armL: { a: 0.25, b: 0.2 }, brow: 0.8, mouth: 'grin', lookY: -1 },
+  sigh: { armL: { a: 0.05, b: 0 }, armR: { a: 0.05, b: 0 }, brow: 0.9, mouth: 'wobbly', headTilt: 0.1, lean: 0.05, sweat: 1, eyes: 0.6 },
+  saw: { armL: { a: 1.0, b: 0.9 }, armR: { a: 1.1, b: 0.7 }, lean: 0.12, brow: -0.3, mouth: 'flat', lookY: 1 },
+  tongsLift: { armL: { a: 0.7, b: 0.4 }, armR: { a: 0.7, b: 0.4 }, lean: 0.08, brow: -0.2, mouth: 'flat', lookY: 1 },
+  pushPole: { armL: { a: 1.3, b: 0.3 }, armR: { a: 1.0, b: 0.5 }, lean: 0.14, brow: -0.4, mouth: 'flat' },
+  hoist: { armL: { a: 2.5, b: 0.2 }, armR: { a: 2.2, b: 0.3 }, lean: -0.08, brow: -0.4, mouth: 'flat', lookY: -1 },
+  coilRope: { armL: { a: 0.8, b: 1.2 }, armR: { a: 0.9, b: 1.0 }, lean: 0.1, brow: 0.1, mouth: 'smile', lookY: 1 },
+  wheel: { armL: { a: 1.2, b: 0.5 }, armR: { a: 1.2, b: 0.5 }, brow: -0.2, mouth: 'flat' },
+  fan: { armR: { a: 0.85, b: 2.1 }, armL: { a: 0.15, b: 0.1 }, brow: 0.3, mouth: 'smile', headTilt: 0.05 },
+  holdAtArm: { armR: { a: 1.45, b: 0.05 }, armL: { a: 1.4, b: 0.1 }, brow: 0.9, mouth: 'smile', lean: -0.06, headTilt: -0.08 },
+  kneeSlap: { armL: { a: 0.2, b: 0.5 }, armR: { a: 0.3, b: 0.7 }, lean: 0.18, mouth: 'laugh', brow: 1, shake: 1, eyes: 0.1 },
+  shovel: { armL: { a: 0.9, b: 0.6 }, armR: { a: 0.5, b: 0.4 }, lean: 0.12, brow: -0.2, mouth: 'flat', lookY: 1 },
+  oldStand: { lean: 0.05, headTilt: 0.04, armR: { a: 0.35, b: 0.1 }, armL: { a: 0.15, b: 0.15 }, brow: 0.3, mouth: 'smile' },
+  holdUmbrella: { armR: { a: 2.3, b: 0.45 }, armL: { a: 0.2, b: 0.2 }, brow: 0.3, mouth: 'smile' },
+  holdParasol: { armR: { a: 2.3, b: 0.45 }, armL: { a: 0.25, b: 0.3 }, brow: 0.4, mouth: 'smile', headTilt: 0.04 },
+  holdLedger: { armL: { a: 0.7, b: 1.2 }, armR: { a: 0.3, b: 0.2 }, brow: 0.2, mouth: 'smile' },
+  carry: { armL: { a: 1.1, b: 0.4 }, armR: { a: 1.1, b: 0.4 }, brow: 0, mouth: 'flat' },
 };
 const MOODS = {
   watch: ['watch', 'akimbo', 'lean', 'point', 'whisper', 'handChin', 'clap', 'watch'],
@@ -77,7 +98,7 @@ function mergePose(base, part) {
 }
 function blendPose(a, b, u) {
   const o = { ...b };
-  for (const k of ['lean', 'bob', 'headTilt', 'turn', 'brow', 'eyes', 'lookX', 'lookY', 'sweat', 'squint', 'clap', 'write', 'shake', 'hop'])
+  for (const k of ['lean', 'bob', 'headTilt', 'turn', 'brow', 'eyes', 'lookX', 'lookY', 'sweat', 'squint', 'clap', 'write', 'shake', 'hop', 'hatLift', 'hatDroop'])
     o[k] = lerp(a[k] ?? DEFAULT_POSE[k] ?? 0, b[k] ?? DEFAULT_POSE[k] ?? 0, u);
   for (const k of ['armL', 'armR', 'legL', 'legR']) o[k] = { a: lerp(a[k].a, b[k].a, u), b: lerp(a[k].b, b[k].b, u) };
   if (u < 0.5) { o.mouth = a.mouth; }
@@ -114,7 +135,7 @@ const LIGHTS = {
   mayWarm: { bg: '#f4c890', fog: '#efc392', near: 26, far: 90, sun: '#ffe0b0', sunI: 2.8, sunPos: [-10, 9, 8], hemiS: '#ffeccc', hemiG: '#6b4a32', hemiI: 1.0, lamp: 0.7, spot: 0, beam: 0, rim: '#ffc27a', tint: '#fff1e2', exp: 1.0, mote: 0.3, motes: 'dust', long: 0.8, vig: '#1e0f00', vigA: 0.32, shimmer: 0 },
   seaDay: { bg: '#8fc3e8', fog: '#a9d2ee', near: 30, far: 110, sun: '#fff4dc', sunI: 3.0, sunPos: [-8, 12, 9], hemiS: '#d6ecff', hemiG: '#2c4a63', hemiI: 1.1, lamp: 0, spot: 0, beam: 0, rim: '#fff2c8', tint: '#fff8ec', exp: 1.0, mote: 0, motes: 'none', long: 0.3, vig: '#0a1a2a', vigA: 0.25, shimmer: 0 },
 };
-export { LIGHTS };
+export { LIGHTS, P as POSES };
 const col = (c) => new THREE.Color(c);
 const rgba = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; }; // sRGB hex → css
 const mod = (a, n) => ((a % n) + n) % n;
