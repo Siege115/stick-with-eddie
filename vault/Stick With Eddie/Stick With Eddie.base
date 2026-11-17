@@ -1,0 +1,127 @@
+filters:
+  and:
+    - file.hasTag("stick-with-eddie")
+properties:
+  file.name:
+    displayName: Name
+  type:
+    displayName: Type
+  category:
+    displayName: Category
+  status:
+    displayName: Status
+  id:
+    displayName: ID
+  story_year:
+    displayName: Story year
+  length_s:
+    displayName: Length (s)
+  posted:
+    displayName: Posted
+  post_date:
+    displayName: Post date
+  role:
+    displayName: Role
+  appears_in:
+    displayName: Appears in
+  built:
+    displayName: Built
+  era:
+    displayName: Era
+  lighting:
+    displayName: Lighting
+  used_in:
+    displayName: Used in
+  owns:
+    displayName: Owns
+  outputs:
+    displayName: Outputs
+  score:
+    displayName: Score
+  hook:
+    displayName: Hook
+views:
+  - type: table
+    name: Videos
+    filters:
+      and:
+        - type == "video"
+    order:
+      - file.name
+      - id
+      - status
+      - story_year
+      - length_s
+      - posted
+      - post_date
+      - characters
+      - sets
+  - type: cards
+    name: Characters
+    filters:
+      and:
+        - type == "character"
+    order:
+      - file.name
+      - role
+      - look
+      - appears_in
+  - type: table
+    name: Sets & Props
+    filters:
+      or:
+        - type == "set"
+        - type == "prop"
+    groupBy:
+      property: type
+      direction: ASC
+    order:
+      - file.name
+      - built
+      - era
+      - lighting
+      - used_in
+  - type: table
+    name: Studio Team
+    filters:
+      and:
+        - type == "team"
+    order:
+      - file.name
+      - owns
+      - outputs
+      - reports_to
+  - type: table
+    name: Idea Backlog
+    filters:
+      and:
+        - type == "idea"
+    order:
+      - file.name
+      - score
+      - status
+      - story_year
+      - hook
+  - type: table
+    name: Guides, Sound & Analytics
+    filters:
+      or:
+        - type == "guide"
+        - type == "sound"
+        - type == "analytics"
+        - type == "log"
+    groupBy:
+      property: category
+      direction: ASC
+    order:
+      - file.name
+      - category
+  - type: table
+    name: Everything
+    groupBy:
+      property: category
+      direction: ASC
+    order:
+      - file.name
+      - type
+      - status

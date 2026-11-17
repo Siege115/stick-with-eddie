@@ -28,6 +28,9 @@ A manager in charge of 12 specialists, like a professional YouTube team.
 Open this folder in Claude Code. The manager starts automatically (set in `.claude/settings.json`) and gives you a stand-up. You can also start it directly with `claude --agent youtube-manager`.
 The agents live in `.claude/agents/`, and the shared studio files in `studio/` (`STUDIO.md` is the rulebook; `PIPELINE.md`, `SCHEDULE.md` and `IDEAS.md` track the work).
 
+### Knowledge base (Obsidian)
+The `vault/Stick With Eddie/` folder is an Obsidian knowledge base: `Stick With Eddie.base` gives table and card views of every video, character, set, prop, team member, guide, idea and log note. Copy the folder into your Obsidian vault. Bases needs Obsidian 1.9 or later.
+
 ### Use it in any other chat
 - **One file:** upload or paste [`YOUTUBE-STUDIO-TEAM.md`](YOUTUBE-STUDIO-TEAM.md) into a Claude chat or Project (add `CHANNEL-BIBLE.md` too). Claude runs as the manager and switches into each specialist role.
 - **As a skill:** upload [`dist/youtube-studio.zip`](dist/youtube-studio.zip) in claude.ai → Settings → Capabilities → Skills.
