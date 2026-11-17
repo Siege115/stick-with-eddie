@@ -187,6 +187,11 @@ export function buildWharf(scene, opts = {}) {
     K.rope(moored, [4.6, 0.62, sz + 2.5], [sx - ship.bw(-3) + 0.1, WATER_Y + ship.top(-3), sz - 3], 0.03, undefined, 0.2);
     H.open.moored = (v) => { moored.visible = v > 0.5; }; H.openRest.moored = 1;
     H.gangplank = [a.toArray(), b.toArray()];
+    // the block being loaded (beat 1C): an ice block on a sling, moved by `movers: { block: [[at, [x, z, y], 0, 'sail']] }`
+    const blk = new THREE.Group(); blk.userData.bob = 0; g.add(blk); blk.position.set(3.2, 0.3, -5.5);
+    blk.add(ink(box(0.62, 0.42, 0.44, std({ map: T.ice(3), roughness: 0.15, color: 0xe2f3ff, emissive: 0x2a5a80 }), 0, 0.21, 0), 1.03));
+    for (const xx of [-0.2, 0.2]) K.rope(blk, [xx, 0.43, -0.23], [xx, 0.43, 0.23], 0.018); K.rope(blk, [0, 0.43, 0], [0, 1.6, 0], 0.02);
+    H.movers.block = blk; H.blockRest = [3.2, -5.5, 0.3];
   }
   // bollards along both edges (snow caps in 1806)
   const bollardZ = [-9, -3, 3, 9, 15];

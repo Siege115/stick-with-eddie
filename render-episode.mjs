@@ -20,7 +20,7 @@ const mod = await import(pathToFileURL(path.resolve(beatsPath)).href);
 const { meta, beats } = mod;
 
 // 1. narration
-const lines = beats.map((b) => ({ parts: [{ text: b.line }, ...(b.line2 ? [{ text: b.line2.text, voice: b.line2.voice }] : [])] }));
+const lines = beats.map((b) => ({ parts: [{ text: b.line, ...(meta.voice ? { voice: meta.voice } : {}) }, ...(b.line2 ? [{ text: b.line2.text, voice: b.line2.voice }] : [])] })); // meta.voice: per-Short narrator pacing
 const audioDir = `audio/${meta.id}`; fs.mkdirSync(audioDir, { recursive: true });
 fs.writeFileSync(`${audioDir}/lines.json`, JSON.stringify(lines, null, 1));
 execFileSync('python3', ['src/tts.py', `${audioDir}/lines.json`, audioDir], { stdio: 'inherit' });

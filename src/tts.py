@@ -7,7 +7,7 @@ import json, sys, os, hashlib
 import numpy as np
 import soundfile as sf
 
-VOICES = {"narrator": ("am_michael", 1.0, "en-us"), "expert": ("bm_lewis", 0.85, "en-gb")}
+VOICES = {"narrator": ("am_michael", 1.0, "en-us"), "expert": ("bm_lewis", 0.85, "en-gb"), "merchant": ("am_adam", 0.95, "en-us"), "narratorBrisk": ("am_michael", 1.16, "en-us")}  # merchant: neutral, polite, no accent
 
 def speech_bounds(x, sr):
     win = int(sr * 0.01)

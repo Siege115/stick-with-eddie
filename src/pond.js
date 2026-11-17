@@ -37,6 +37,21 @@ export function buildPond(scene, opts = {}) {
   const iceBlockM = std({ map: T.ice(3), roughness: 0.15, color: 0xe2f3ff, emissive: 0x2a5a80 }); // same face as the cutaway end frame (loop)
   g.add(ink(box(0.62, 0.36, 0.42, iceBlockM, 2.45, -0.12, -3.0, 0.04), 1.03));
   g.add(box(0.03, 0.02, 1.3, std({ color: 0x0b1a26 }), 2.85, 0.005, -3.0, 0, false)); // saw kerf
+  // the hero block (beat 1's first frame = its face): freshly cut, on solid ice well away from the channel
+  const HERO = [5.2, -6.2]; H.heroBlock = [HERO[0], 0.21, HERO[1] + 0.22];
+  g.add(ink(box(0.62, 0.42, 0.44, iceBlockM, HERO[0], 0.21, HERO[1]), 1.03));
+  { const saw = new THREE.Group(); saw.position.set(HERO[0], 0, HERO[1]); g.add(saw);
+    const steel = std({ color: 0xb8c0c8, metalness: 0.8, roughness: 0.3 });
+    const blade = new THREE.Mesh(new THREE.BoxGeometry(0.06, 1.4, 0.012), std({ color: 0xc8d2dc, metalness: 0.4, roughness: 0.3, emissive: 0x3a4a5a })); blade.position.set(0, 0.7, 0.23); saw.add(K.inkOffset(blade, 0.006)); // flat side to the camera, cutting the block's front edge
+    for (let y = 0.05; y < 1.4; y += 0.05) { const th = new THREE.Mesh(new THREE.ConeGeometry(0.012, 0.03, 3), steel); th.position.set(-0.035, y, 0.23); th.rotation.z = Math.PI / 2; saw.add(th); }
+    saw.add(ink(box(0.42, 0.05, 0.05, std({ map: T.wood([120, 88, 56], 3) }), 0, 1.42, 0), 1.06));
+    const chipsT = T.radial('rgba(235,248,255,1)', 'rgba(235,248,255,0)'); const chips = [];
+    for (let i = 0; i < 10; i++) { const c = new THREE.Sprite(new THREE.SpriteMaterial({ map: chipsT, transparent: true, depthWrite: false })); c.visible = false; g.add(c); chips.push(c); }
+    let sawV = 0; H.open.saw = (v) => { sawV = v; saw.visible = v > 0.01; };
+    H.openRest.saw = 0; saw.visible = false;
+    H.sawTick = (t) => { if (!saw.visible) { chips.forEach((c) => (c.visible = false)); return; } saw.position.y = 0.44 - sawV * 0.22 + Math.sin(t * 14) * 0.06; saw.position.x = HERO[0] + Math.sin(t * 14) * 0.004;
+      chips.forEach((c, i) => { const a = ((t * 2.2 + i / 10) % 1); c.visible = sawV > 0.05; c.position.set(HERO[0] + (i % 2 ? 0.05 : -0.05) * (1 + a * 3), 0.43 + a * 0.25 - a * a * 0.4, HERO[1] + 0.1 + (i % 3) * 0.04); const s = 0.03 * (1 - a); c.scale.set(s, s, 1); }); };
+  }
 
   // ---------------- shore: raised snow ground with a hole for the pond, smooth banks, snow drifts ----------------
   const shore = new THREE.Shape(); shore.moveTo(-90, -90); shore.lineTo(90, -90); shore.lineTo(90, 90); shore.lineTo(-90, 90); shore.closePath();
@@ -153,6 +168,7 @@ export function buildPond(scene, opts = {}) {
   const moonS = new THREE.Sprite(new THREE.SpriteMaterial({ map: T.moon(), fog: false, depthWrite: false, transparent: true })); moonS.scale.set(16, 16, 1); moonS.position.set(-55, 22, -60); g.add(moonS);
 
   H.tick = (t, L) => {
+    H.sawTick(t);
     const c = new THREE.Color(L.bg); const night = (0.3 * c.r + 0.59 * c.g + 0.11 * c.b) < 0.15;
     dome.visible = night; moonS.visible = night;
   };

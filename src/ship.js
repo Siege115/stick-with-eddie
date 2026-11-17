@@ -357,6 +357,10 @@ export function buildWaterSet(scene, opts = {}) {
     H.open.sails = ship.sails; H.open.hatch = ship.hatch; H.openRest.sails = opts.sails ?? 1;
   }
   H.ship = ship;
-  H.tick = (t) => { w.tick(t); if (ship) ship.tick(t); };
+  // the sun: a big soft disc low over the sea (shown in bright looks; it grows hotter with `blaze`)
+  const sunTex = T.radial('rgba(255,250,220,1)', 'rgba(255,200,120,0)');
+  const sun = new THREE.Sprite(new THREE.SpriteMaterial({ map: sunTex, transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending })); sun.position.set(0, 16, -110); sun.scale.set(60, 60, 1); g.add(sun);
+  const core = new THREE.Mesh(new THREE.CircleGeometry(7, 40), new THREE.MeshBasicMaterial({ color: 0xfff6d8, fog: false })); core.position.set(0, 16, -112); g.add(core);
+  H.tick = (t, L) => { w.tick(t); if (ship) ship.tick(t); const hot = L && L.sunI > 3.3 ? 1 : 0.55; sun.scale.setScalar(60 * hot + 20); core.scale.setScalar(0.6 + hot * 0.6); };
   return H;
 }

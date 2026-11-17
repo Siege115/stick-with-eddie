@@ -34,12 +34,12 @@ export function buildTimeline(meta, beats, audio) {
     });
     const speechEnd = parts[parts.length - 1].end;
     const dur = Math.max(b.min || 0, speechEnd - t + TAIL);
-    B.push({ i, start: t, end: t + dur, parts });
+    B.push({ i, start: t, end: t + dur, parts, amb: b.amb });
     t += dur + (i < beats.length - 1 ? meta.gap : 0);
   });
   // close the gaps: each beat ends where the next starts
   for (let i = 0; i < B.length - 1; i++) B[i].end = B[i + 1].start;
-  return { duration: t, beats: B };
+  return { duration: t, beats: B, mix: meta.mix };
 }
 
 export function resolver(tl) {
@@ -80,7 +80,7 @@ export function compile(meta, beats, tl) {
         const a = ws[i], b2 = ws[i + 1];
         const take2 = b2 && !/[.,?!:;]$/.test(a.w) && (clean(a.w).length + clean(b2.w).length <= 11);
         const chunk = take2 ? [a, b2] : [a];
-        captions.push({ t0: chunk[0].t0 - 0.03, t1: chunk[chunk.length - 1].t1, words: chunk.map((w) => ({ w: w.w.replace(/[",]/g, '').replace(/[.:;]$/, ''), num: NUMBER_WORDS.has(clean(w.w)) || /\d/.test(w.w) })) });
+        captions.push({ t0: chunk[0].t0 - 0.03, t1: chunk[chunk.length - 1].t1, words: chunk.map((w) => ({ w: w.w.replace(/"/g, '').replace(/,(?!\d)/g, '').replace(/[.:;]$/, ''), /* keep commas inside numbers (15,000) */ num: NUMBER_WORDS.has(clean(w.w)) || /\d/.test(w.w) })) });
         i += chunk.length;
       }
     }

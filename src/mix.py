@@ -211,13 +211,56 @@ for t, kind, bi in EV["trans"]:
     elif kind == "wipe": place(sfx, whoosh(0.5, 250, 1800), t - 0.25, 0.35)
     elif kind == "pull": place(sfx, whoosh(0.9, 200, 2500), t, 0.3)
 
+# ---- S02 sounds (synthesised; soft and natural, nothing 8-bit) ----
+def _fade(x, a=0.004, r=0.06):
+    n = len(x); e = np.ones(n); na, nr = max(1, int(a * SR)), max(1, int(r * SR))
+    e[:na] = np.linspace(0, 1, na); e[-nr:] *= np.linspace(1, 0, nr) ** 2
+    return x * e
+def ice_saw(dur=1.2):  # long hand saw in ice: rhythmic rasp strokes
+    n = int(dur * SR); t = np.arange(n) / SR; x = bp(noise(n), 1800, 7000)
+    stroke = np.abs(np.sin(np.pi * t * 3.2)) ** 1.5
+    y = x * stroke * (0.6 + 0.4 * np.sin(2 * np.pi * 37 * t))
+    return _fade(y / (np.abs(y).max() + 1e-9), 0.02, 0.15)
+def drip():
+    n = int(0.25 * SR); t = np.arange(n) / SR
+    return np.sin(2 * np.pi * (1300 + 2200 * t) * t) * np.exp(-t / 0.03)
+def splash():
+    n = int(0.6 * SR); t = np.arange(n) / SR
+    return bp(noise(n), 500, 5000) * np.exp(-t / 0.12) * np.minimum(1, t / 0.005)
+def gull_cry():
+    n = int(0.42 * SR); t = np.arange(n) / SR
+    f = 1500 + 900 * np.sin(np.pi * t / 0.42) - 500 * t
+    x = np.sin(2 * np.pi * np.cumsum(f) / SR) + 0.35 * np.sin(4 * np.pi * np.cumsum(f) / SR)
+    return x * np.sin(np.pi * t / 0.42) ** 0.6 * (0.7 + 0.3 * np.sin(2 * np.pi * 28 * t))
+def gulls(dur=2.0):
+    n = int(dur * SR); x = np.zeros(n)
+    for k in range(int(dur * 1.5) + 1):
+        c = gull_cry(); o = int(rng.uniform(0, max(1, n - len(c))))
+        x[o:o + len(c)] += c * rng.uniform(0.5, 1.0)
+    return x / (np.abs(x).max() + 1e-9)
+def waves(dur=4.0):
+    n = int(dur * SR); t = np.arange(n) / SR
+    return lp(noise(n), 700) * (0.55 + 0.45 * np.sin(2 * np.pi * t / 2.6) ** 2) * np.minimum(1, t / 0.4) * np.minimum(1, (dur - t) / 0.4)
+def wind(dur=4.0):
+    n = int(dur * SR); t = np.arange(n) / SR
+    return bp(noise(n), 200, 900) * (0.6 + 0.4 * np.sin(2 * np.pi * t / 3.1 + 1)) * np.minimum(1, t / 0.5) * np.minimum(1, (dur - t) / 0.5)
+def sawmill(dur=3.0):  # up-and-down sash saw strokes over running water
+    n = int(dur * SR); t = np.arange(n) / SR
+    strokes = bp(noise(n), 900, 5000) * np.abs(np.sin(np.pi * t * 1.45)) ** 2
+    water = lp(noise(n), 1200) * 0.5
+    y = strokes + water
+    return _fade(y / (np.abs(y).max() + 1e-9), 0.1, 0.3)
+
 NAMED = {
     "ding": lambda a: (ding(), 0.25), "ping": lambda a: (ping(), 0.3), "pop": lambda a: (pop(), 0.35), "tick": lambda a: (tick(), 0.35),
     "stamp": lambda a: (stamp(), 0.8), "chalk": lambda a: (chalk(a or 1.0), 0.25), "paper": lambda a: (paper(), 0.45),
     "creak": lambda a: (creak(), 0.35), "drumroll": lambda a: (snare_march(a or 3), 0.5), "spotClunk": lambda a: (clunk(), 0.6),
     "drone": lambda a: (drone(a or 6), 0.22), "whoosh": lambda a: (whoosh(0.5, 250, 1800), 0.3), "whooshLong": lambda a: (whoosh(1.0, 200, 2500), 0.3),
     "crowdGasp": lambda a: (crowd_gasp(), 0.42), "cheer": lambda a: (crowd_cheer() + 0.0, 0.4), "laugh": lambda a: (laugh(), 0.4),
-    "crowdMurmur": lambda a: (murmur(a or 4), 0.12), "steps2": lambda a: (np.concatenate([step(0), np.zeros(int(.3 * SR)), step(1)]), 0.6),
+    "crowdMurmur": lambda a: (murmur(a or 4), 0.12),
+    "iceSaw": lambda a: (ice_saw(a or 1.2), 0.35), "drip": lambda a: (drip(), 0.3), "splash": lambda a: (splash(), 0.35),
+    "gulls": lambda a: (gulls(a or 2.0), 0.18), "waves": lambda a: (waves(a or 4.0), 0.3), "wind": lambda a: (wind(a or 4.0), 0.3),
+    "sawmill": lambda a: (sawmill(a or 3.0), 0.3), "steps2": lambda a: (np.concatenate([step(0), np.zeros(int(.3 * SR)), step(1)]), 0.6),
 }
 for t, name, arg in EV["sfx"]:
     x, g = NAMED[name](arg)
@@ -257,7 +300,10 @@ def C(fn, m):
     k = (fn.__name__, m)
     if k not in cache: cache[k] = fn(m)
     return cache[k]
-spot_from = TL["beats"][12]["start"]; spot_to = TL["beats"][15]["start"]
+MIX = TL.get("mix") or {}
+if "tense" in MIX: spot_from = TL["beats"][MIX["tense"][0]]["start"]; spot_to = TL["beats"][MIX["tense"][1]]["start"]
+elif MIX: spot_from = spot_to = DUR + 1  # no tense section
+else: spot_from = TL["beats"][12]["start"]; spot_to = TL["beats"][15]["start"]
 t = 0.0; i = 0
 while t < DUR:
     tense = spot_from <= t < spot_to
@@ -273,7 +319,7 @@ while t < DUR:
         place(music, partials(48, 0.35, [(1, 1, .09), (2, .3, .05)], 0.004, 0.08), t, 0.8)
     t += beat / 2; i += 1
 # sustained low pad through the tense test
-place(music, pad(38, spot_to - spot_from) * 0.5 + pad(45, spot_to - spot_from) * 0.3, spot_from, 0.5)
+if spot_to > spot_from and spot_from < DUR: place(music, pad(38, spot_to - spot_from) * 0.5 + pad(45, spot_to - spot_from) * 0.3, spot_from, 0.5)
 music = lp(music.T, 5500).T
 music = reverb(music, 1.2, 0.22)
 
@@ -295,8 +341,22 @@ def birds(dur):
             o = s + r * int(L * 1.3)
             if o + L < n: x[o:o + L] += ch * 0.3
     return x
+AMB = {  # S02 room tones by name (beat `amb`)
+    "night": lambda d: wind(d) * 0.5 + lp(noise(int(d * SR)), 250) * 0.15,
+    "harbour": lambda d: waves(d) * 0.5 + gulls(d) * 0.12 + murmur(d) * 0.15,
+    "tropic": lambda d: waves(d) * 0.45 + birds(d) * 0.8 + murmur(d) * 0.15,
+    "river": lambda d: lp(noise(int(d * SR)), 900) * 0.25 + birds(d) * 0.6 + murmur(d) * 0.2,
+    "sea": lambda d: waves(d) * 0.8 + wind(d) * 0.4,
+    "room": lambda d: lp(noise(int(d * SR)), 600) * 0.12 + birds(d) * 0.3,
+    "hold": lambda d: lp(noise(int(d * SR)), 200) * 0.3,
+    "mill": lambda d: lp(noise(int(d * SR)), 1200) * 0.3 + birds(d) * 0.4,
+    "none": lambda d: np.zeros(int(d * SR)),
+}
 for bi, b in enumerate(TL["beats"]):
     d = b["end"] - b["start"]
+    if MIX:
+        place(amb, AMB.get(b.get("amb") or "room", AMB["room"])(d), b["start"], 0.22)
+        continue
     if 12 <= bi <= 14:
         place(amb, lp(noise(int(d * SR)), 300) * 0.25, b["start"], 0.3)
     else:

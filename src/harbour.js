@@ -89,7 +89,9 @@ export function boat(parent, x, z, ry, kind = 'row', col = 0x3c6b88, y = WATER_Y
 function streetHouse(parent, o) {
   const g = new THREE.Group(); g.position.set(o.x, 0, o.z); parent.add(g);
   const { w, d, h } = o; const wallM = std({ map: o.wallTex, color: o.wallCol ?? 0xffffff });
-  g.add(box(w, h, d - 0.25, wallM, 0, h / 2, -0.125));
+  if (o.holes && o.holes.length) { // a house with a real opening: hollow front 2.3 m deep (side walls only) so the room behind shows
+    g.add(box(w, h, d - 2.3, wallM, 0, h / 2, -1.15)); for (const sx of [-1, 1]) g.add(box(0.25, h, 2.3, wallM, sx * (w / 2 - 0.125), h / 2, d / 2 - 1.15));
+  } else g.add(box(w, h, d - 0.25, wallM, 0, h / 2, -0.125));
   const fs = new THREE.Shape(); fs.moveTo(-w / 2, 0); fs.lineTo(w / 2, 0); fs.lineTo(w / 2, h); fs.lineTo(-w / 2, h); fs.closePath();
   for (const [hx, hy, hw, hh] of o.holes || []) { const p = new THREE.Path(); p.moveTo(hx - hw / 2, hy - hh / 2); p.lineTo(hx - hw / 2, hy + hh / 2); p.lineTo(hx + hw / 2, hy + hh / 2); p.lineTo(hx + hw / 2, hy - hh / 2); p.closePath(); fs.holes.push(p); }
   const fg = new THREE.ExtrudeGeometry(fs, { depth: 0.25, bevelEnabled: false }); { const p = fg.attributes.position, u = fg.attributes.uv; for (let i = 0; i < p.count; i++) u.setXY(i, p.getX(i) / 4, p.getY(i) / 4); }
@@ -183,7 +185,7 @@ export function buildHarbour(scene, opts = {}) {
   const shutterCols = MQ ? [0x2e86ab, 0x3aa58b, 0x2a6f97] : [0x2f6a3a, 0x3a7a46, 0x2a5a32];
   const tileM = std({ map: T.terracotta([3, 2]) });
   const rows = MQ
-    ? [{ x: -28, w: 8, h: 6.8 }, { x: -19.5, w: 8.5, h: 9.4 }, { x: -11, w: 8, h: 6.8, cameo: true }, { x: -2.5, w: 8.5, h: 9.4 }, { x: 6, w: 8, h: 6.8 }, { x: 14.5, w: 8.5, h: 9.4 }, { x: 23, w: 8, h: 6.8 }]
+    ? [{ x: -28, w: 8, h: 6.8 }, { x: -19.5, w: 8.5, h: 9.4 }, { x: -11, w: 8, h: 6.8 }, { x: -2.5, w: 8.5, h: 9.4, cameo: true }, { x: 6, w: 8, h: 6.8 }, { x: 14.5, w: 8.5, h: 9.4 }, { x: 23, w: 8, h: 6.8 }]
     : [{ x: -27, w: 10, h: 10.6 }, { x: -16, w: 11.5, h: 10.6, custom: true }, { x: -4.5, w: 10, h: 8.4 }, { x: 6, w: 10.5, h: 10.6 }, { x: 17, w: 10, h: 8.4 }, { x: 27.5, w: 10.5, h: 10.6 }];
   rows.forEach((o, i) => {
     const d = 9, h = o.h; const wallTex = plasterT[i % 3].clone(); wallTex.needsUpdate = true; wallTex.repeat.set(1, 1);

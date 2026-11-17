@@ -456,6 +456,7 @@ export async function setup(beatsUrl, tlUrl) {
     if (Array.isArray(l)) return new THREE.Vector3(...l);
     if (l === 'hoof') return hans ? hans.hoofLook.clone() : null;
     if (l && chars[l]) { const q = chars[l].g.position; return new THREE.Vector3(q.x, chars[l].baseY + 1.4, q.z); }
+    if (!l && b.lookAll) return new THREE.Vector3(...b.lookAll); // S02: everyone without a target watches this point
     return hans ? hans.head.clone() : null; // S01: everyone watches Hans's head by default
   }
 
@@ -503,6 +504,8 @@ export async function setup(beatsUrl, tlUrl) {
     if (opts.talk && t >= opts.talk[0] && t <= opts.talk[1]) { const s = Math.abs(Math.sin(t * 13 + seed)) * (0.55 + 0.45 * Math.sin(t * 5.3)); p.talk = 0.2 + 0.8 * s; }
     if (opts.icon) { p.icon = opts.icon; p.iconT = since; } else if (p.icon) p.iconT = since;
     if (opts.monoPop && t >= opts.monoPop) { p.monocleOut = true; }
+    if (opts.item !== undefined) p.item = opts.item; // S02: a prop for this act only (letter, ice, notebook…)
+    if (opts.itemL !== undefined) p.itemL = opts.itemL;
     p.hopY = (p.hop || 0) * 0.13 * Math.abs(Math.sin(t * 7.5 + seed));
     // walking
     if (worldPos.moving > 0) {
@@ -554,6 +557,7 @@ export async function setup(beatsUrl, tlUrl) {
   function paintPerson(c, pose, rim) {
     const { ctx, canvas } = c.card; const s = c.res;
     let cost = c.def.c, pp = pose;
+    if ('item' in pose || 'itemL' in pose) cost = { ...cost, ...('item' in pose ? { item: pose.item } : {}), ...('itemL' in pose ? { itemL: pose.itemL } : {}) };
     if (pose.dir < 0) { // mirror authored pose so the acting arm leads
       pp = { ...pose, armL: pose.armR, armR: pose.armL, legL: pose.legR, legR: pose.legL };
       cost = { ...cost, item: cost.itemL, itemL: cost.item };
@@ -769,6 +773,7 @@ export async function setup(beatsUrl, tlUrl) {
     if (hud && hud.kind !== 'stamp') drawHud(hud, shot, t, hp);
     // sparkle on Hans (proud)
     for (const sT of sparkles) { const a = t - sT; if (a >= 0 && a < 0.7) sparkleAt(W * 0.74, H * 0.24, a); }
+    if (b.sparkle) { const sT = R(b.sparkle[0], bi), a = t - sT; if (a >= 0 && a < 0.9) { const q = project(new THREE.Vector3(...b.sparkle[1])); sparkleAt(q[0], q[1], a); } } // S02: sparkle at a world point (ice crown)
     const calT = b.calendarSparkle ? R(b.calendarSparkle, bi) : null;
     if (calT != null && S.calendarPos && t >= calT && t < calT + 0.8 && (!hud)) { const q = project(S.calendarPos); sparkleAt(q[0] + 230, q[1] + 40, t - calT); }
     // tap counters
@@ -978,6 +983,7 @@ export async function setup(beatsUrl, tlUrl) {
   function bubble(text, x, y, age) {
     const s = backOut(clamp(age / 0.18));
     O.save(); O.font = 'bold 72px "DejaVu Sans", sans-serif';
+    if (O.measureText(text).width + 70 > W - 60) { O.restore(); return bubbleWrap(text, x, y, s); } // too wide for one line (S02)
     const tw = O.measureText(text).width + 70, th = 120;
     let bx = clamp(x - tw / 2 - 60, 30, W - tw - 30), by = clamp(y - th - 150, 140, H - 600);
     O.translate(bx + tw / 2, by + th / 2); O.scale(s, s); O.translate(-(bx + tw / 2), -(by + th / 2));
@@ -987,6 +993,20 @@ export async function setup(beatsUrl, tlUrl) {
     // numbers green
     const parts = text.split(' '); let cx = bx + 35; O.textAlign = 'left';
     for (const p of parts) { O.fillStyle = /\d/.test(p) ? '#1f9d36' : '#111'; O.fillText(p, cx, by + th / 2 + 4); cx += O.measureText(p + ' ').width; }
+    O.restore();
+  }
+  function bubbleWrap(text, x, y, s) { // multi-line speech bubble, tail to the speaker, kept inside the frame
+    O.save(); O.font = 'bold 66px "DejaVu Sans", sans-serif';
+    const words = text.split(' '), lines = []; let cur = '';
+    for (const w of words) { const t2 = cur ? cur + ' ' + w : w; if (O.measureText(t2).width > W * 0.78 && cur) { lines.push(cur); cur = w; } else cur = t2; }
+    if (cur) lines.push(cur);
+    const tw = Math.max(...lines.map((l) => O.measureText(l).width)) + 80, th = lines.length * 84 + 44;
+    const bx = clamp(x - tw / 2 - 60, 30, W - tw - 30), by = clamp(y - th - 150, 140, H - 600);
+    O.translate(bx + tw / 2, by + th / 2); O.scale(s, s); O.translate(-(bx + tw / 2), -(by + th / 2));
+    outlined(O, (k) => { k.roundRect(bx, by, tw, th, 50); k.moveTo(bx + tw * 0.45, by + th - 4); k.lineTo(x, y - 40); k.lineTo(bx + tw * 0.65, by + th - 4); }, '#fff', 7);
+    O.fillStyle = '#fff'; O.fillRect(bx + tw * 0.45, by + th - 14, tw * 0.2, 12);
+    O.fillStyle = '#111'; O.textAlign = 'center'; O.textBaseline = 'middle';
+    lines.forEach((l, i) => O.fillText(l, bx + tw / 2, by + 22 + 42 + i * 84));
     O.restore();
   }
   function stampHud(h, shot, t, S) {

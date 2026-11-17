@@ -98,6 +98,7 @@ function map(k, s = {}) {
   k.stroke(); k.setLineDash([]);
   // the two ports
   for (const [t, lo, la, dx, dy] of [['BOSTON', -70.9, 42.3, 0, -40], ['CALCUTTA', 88.4, 22.6, -10, -42]]) { k.fillStyle = '#a3171b'; k.beginPath(); k.arc(X(lo), Y(la), 12, 0, 7); k.fill(); k.strokeStyle = INK; k.lineWidth = 4; k.stroke(); k.fillStyle = '#1b1b1b'; k.font = 'bold 40px "DejaVu Serif", serif'; k.lineWidth = 8; k.strokeStyle = 'rgba(234,217,176,.9)'; k.strokeText(t, X(lo) + dx, Y(la) + dy); k.fillText(t, X(lo) + dx, Y(la) + dy); }
+  { k.fillStyle = '#3a2410'; k.font = 'italic 28px "DejaVu Serif", serif'; k.textAlign = 'center'; k.lineWidth = 6; k.strokeStyle = 'rgba(234,217,176,.9)'; k.strokeText('(now Kolkata)', X(88.4) - 10, Y(22.6) + 44); k.fillText('(now Kolkata)', X(88.4) - 10, Y(22.6) + 44); }
   // tiny ship riding the route tip
   if (p > 0.01 && p < 0.999) { k.save(); k.translate(...tip); k.scale(Math.cos(ang) < 0 ? -1 : 1, 1); k.fillStyle = INK; k.beginPath(); k.moveTo(-26, 0); k.lineTo(26, 0); k.lineTo(18, 12); k.lineTo(-20, 12); k.closePath(); k.fill(); k.fillRect(-2, -34, 4, 34); k.fillStyle = '#f6eedb'; k.strokeStyle = INK; k.lineWidth = 3; k.beginPath(); k.moveTo(2, -32); k.quadraticCurveTo(22, -18, 2, -4); k.closePath(); k.fill(); k.stroke(); k.restore(); }
   k.restore();
