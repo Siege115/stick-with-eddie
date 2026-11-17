@@ -8,7 +8,11 @@ export const meta = {
   aspect: '9:16', fps: 30, width: 1080, height: 1920,
   gap: 0.12, // silence between beats
   // easter egg: a wooden log character peeks through the lit window above the crowd for ONE frame
-  cameo: { t: 19.0, pos: [-1.37, 3.98, 11.45] },
+  cameo: { t: 19.0, pos: [-1.37, 3.98, 11.45], set: 'courtyard' },
+  // the one set this Short uses, and the S01-only pieces it asks for
+  set: 'courtyard',
+  sets: { courtyard: { chalkboard: true, screen: true, calendar: true, table: true, rope: true } },
+  hans: { set: 'courtyard', at: [0, -2] }, // Hans the horse (taps, expressions, portrait/eye HUDs)
 };
 
 // ---------- cast (costumes + home marks) ----------
@@ -58,7 +62,7 @@ const marchFrom = (i) => { const [x, z] = marchTo(i); return [x, z - 4.6]; };
 
 // ---------- the 16 beats ----------
 // shot: { at, cam:[[x,y,z],[x,y,z]], look:[[..],[..]], fov:[a,b], ease, trans, hud, shake, captionY }
-// trans: cut | whip | zoom | zoomout | pull | push | wipe | match | iris
+// trans: cut | whip | zoom | zoomout | pull | push | wipe | wipe:flare | wipe:paper | match | iris
 export const beats = [
   { // 1
     line: 'He asked his horse what three plus two was.', min: 2.9, light: 'warm',
@@ -167,6 +171,7 @@ export const beats = [
     line: 'Then a young student named Oskar tried one more thing.', min: 3.5, light: 'warm',
     shots: [{ at: 0, cam: [[-0.35, 1.6, 2.5], [-0.55, 1.55, 1.85]], look: [[-0.8, 1.5, 0.2], [-0.8, 1.55, 0.2]], fov: [52, 44], trans: 'cut', ease: 'inout' }],
     show: ['oskar'],
+    screen: [[0, 2.1]], // the folding screen already stands in the yard; the questioner walks behind it (beats 12–15)
     pos: { oskar: [[0, [-1.2, 0.6]], [0.9, [-0.85, 0.25], "walk"]], e1: [[0, [-3.0, -4.6]]], eddie: [[0, [1.35, -1.55]]] },
     acts: { oskar: [[0, 'notes'], ['w:Oskar-0.1', 'pushGlasses'], ['w:one', 'pointUpOne']] },
     sfx: [[0.1, 'steps2']],
@@ -212,6 +217,7 @@ export const beats = [
     ],
     hans: { poise: [['w:He-0.1', 99]], expr: [[0, { brow: 0.6, mouth: 'smug', pupil: 0, camLook: 1 }], ['w:He-0.1', { brow: 0.3, mouth: 'smile', pupil: 0.6 }]] },
     pos: { eddie: [[0, [1.35, -1.55]]], e1: [[0, [-3.0, -4.6]]] },
+    screen: [[0, 40]], // screen cleared away again
     acts: { eddie: [[0, 'chalkUp']] },
     look: { eddie: 'hoof' },
   },
