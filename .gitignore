@@ -1,0 +1,7 @@
+node_modules/
+models/
+projects/
+audio/
+deliver/
+__pycache__/
+*.part.mp4

@@ -1,0 +1,8 @@
+<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;background:#000}</style></head>
+<body><script type="module">
+import { setup } from '/src/stage.js';
+const q = new URLSearchParams(location.search);
+window.stage = await setup('/' + q.get('beats'), '/' + q.get('tl'));
+window.frameJpeg = (t, quality = 0.93) => window.stage.renderAt(t).toDataURL('image/jpeg', quality);
+window.ready = true;
+</script></body></html>
