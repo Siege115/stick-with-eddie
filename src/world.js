@@ -5,6 +5,7 @@ import * as THREE from '/node_modules/three/build/three.module.js';
 import * as T from './textures.js';
 import * as K from './kit.js';
 import { buildWaterSet } from './ship.js';
+import { buildWharf } from './wharf.js';
 const { std, box, cyl, ink } = K;
 
 // ===================== Berlin courtyard ~1904 (S01) =====================
@@ -300,4 +301,4 @@ export function buildEmpty(scene, opts = {}) {
   return K.setHandle(g);
 }
 
-export const SETS = { courtyard: buildCourtyard, testyard: buildTestYard, empty: buildEmpty, water: buildWaterSet };
+export const SETS = { courtyard: buildCourtyard, testyard: buildTestYard, empty: buildEmpty, water: buildWaterSet, wharf: buildWharf };
