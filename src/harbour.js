@@ -44,7 +44,17 @@ function shadeTree(parent, x, z, kind, s = 1) {
   const r = K.rng(Math.round(x * 7 + z));
   const leafCols = kind === 'banyan' ? [0x2f6a34, 0x3a7a3c, 0x285c2c] : [0x3d8a3a, 0x4f9a45, 0x2f7a30];
   const crown = new THREE.Group(); crown.position.y = 4.4; g.add(crown);
-  const n = kind === 'banyan' ? 9 : 6, spread = kind === 'banyan' ? 4.2 : 2.4;
+  const n = kind === 'banyan' ? 0 : 6, spread = 2.4;
+  if (kind === 'banyan') { // wide layered canopy: three tiers, each one smooth flattened dome with a scalloped edge
+    for (const [ty, R, hh, col] of [[0.0, 6.2, 1.3, 0x2a5e30], [0.9, 4.8, 1.2, 0x347034], [1.7, 3.0, 1.0, 0x3f7f3a]]) {
+      const pts = []; for (let i = 0; i <= 10; i++) { const a = i / 10 * Math.PI / 2; pts.push(new THREE.Vector2(Math.cos(a) * R + 0.001, Math.sin(a) * hh)); }
+      pts.unshift(new THREE.Vector2(R * 0.82, -0.35));
+      const geo = new THREE.LatheGeometry(pts, 36); const p2 = geo.attributes.position;
+      for (let i = 0; i < p2.count; i++) { const x = p2.getX(i), z = p2.getZ(i), y = p2.getY(i), a = Math.atan2(z, x); const k = 1 + 0.07 * Math.sin(a * 9 + ty * 3) * (1 - Math.max(0, y) / hh); p2.setX(i, x * k); p2.setZ(i, z * k); }
+      geo.computeVertexNormals(); const m = new THREE.Mesh(geo, std({ color: col, roughness: 0.95 })); m.position.y = ty; m.castShadow = true; m.receiveShadow = true; crown.add(K.inkOffset(m, 0.05));
+      for (let j = 0; j < 40; j++) { const a = r() * 6.28, rr = R * (0.3 + r() * 0.65); const lf = new THREE.Mesh(new THREE.SphereGeometry(0.12, 6, 4), std({ color: j % 2 ? 0x4f9a45 : 0x2f6a34 })); lf.scale.set(1.4, 0.4, 0.9); lf.position.set(Math.cos(a) * rr, ty + Math.sqrt(Math.max(0, 1 - (rr / R) ** 2)) * hh + 0.03, Math.sin(a) * rr); lf.rotation.y = a; crown.add(lf); } // leaf glints on top
+    }
+  }
   for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2, rr = i ? spread * (0.5 + r() * 0.5) : 0; const m = new THREE.Mesh(new THREE.SphereGeometry(1, 14, 10), std({ color: leafCols[i % 3], roughness: 0.9 })); m.scale.set(1.8 + r(), 1.1 + r() * 0.4, 1.8 + r()); m.position.set(Math.cos(a) * rr, (r() - 0.3) * 0.8, Math.sin(a) * rr); m.castShadow = true; crown.add(m); }
   if (kind === 'breadfruit') for (let i = 0; i < 7; i++) { const f = new THREE.Mesh(new THREE.SphereGeometry(0.17, 10, 8), std({ color: 0x8fb33a })); const a = r() * 6.3; f.position.set(Math.cos(a) * 1.9, -0.9, Math.sin(a) * 1.9); crown.add(ink(f, 1.08)); }
   if (kind === 'banyan') { // limbs and hanging aerial roots, a few reaching the ground as props
@@ -217,7 +227,7 @@ export function buildHarbour(scene, opts = {}) {
   else { sgn('CUSTOM HOUSE', -16, 9.6, FRONT + 3.06, 6.0, '#f4ecd6', '#3a2a18'); sgn('CLOTH MERCHANT', 6, 2.9, FRONT + 0.05, 3.6, '#2a4a7a', '#f4ecd6');
     const sp = new THREE.Group(); sp.position.set(-10.2, 0, -5.4); g.add(sp); sp.add(ink(cyl(0.06, 0.07, 3.0, iron, 0, 1.5, 0, 8), 1.1)); const ss = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 0.38), std({ map: T.signText('STRAND ROAD', { bg: '#1b1b1b', fg: '#f4ecd6', w: 1024, h: 216 }), side: THREE.DoubleSide })); ss.position.set(0.85, 2.8, 0); sp.add(ss); }
   // backdrop: the hills and Mont Pelée, or the Calcutta skyline, painted on a far card
-  { const bd = new THREE.Mesh(new THREE.PlaneGeometry(240, 75), new THREE.MeshBasicMaterial({ map: T.backdrop(MQ ? 'pelee' : 'calcutta'), transparent: true, fog: false, color: MQ ? 0xd8e8ee : 0xf2e2c0 })); bd.position.set(0, MQ ? 30 : 22, -95); g.add(bd); }
+  { const bd = new THREE.Mesh(new THREE.PlaneGeometry(MQ ? 200 : 240, MQ ? 52 : 75), new THREE.MeshBasicMaterial({ map: T.backdrop(MQ ? 'pelee' : 'calcutta'), transparent: true, fog: false, color: MQ ? 0xffffff : 0xf2e2c0 })); bd.position.set(0, MQ ? 27 : 22, -95); g.add(bd); }
   // far shore across the water (low headland / the far river bank)
   { const sh = new THREE.Shape(); sh.moveTo(-200, 0); for (let i = 0; i <= 40; i++) sh.lineTo(-200 + i * 10, (MQ ? 3 : 1.5) + Math.sin(i * 0.7) * (MQ ? 2.5 : 0.6)); sh.lineTo(200, 0); sh.closePath(); const hill = new THREE.Mesh(new THREE.ShapeGeometry(sh), new THREE.MeshBasicMaterial({ color: MQ ? 0x5f9a6a : 0x7a8a5a, fog: true })); hill.position.set(0, WATER_Y, 150); hill.rotation.y = Math.PI; g.add(hill); }
 

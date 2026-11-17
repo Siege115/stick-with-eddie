@@ -537,17 +537,33 @@ export function stoneBlocks(col = [128, 124, 116]) {
   return tex(c);
 }
 // cut-out gull (side view): wings 'up' | 'down' | 'sit'. White body, grey wings, ink outline, yellow beak.
-export function gull(pose = 'up') {
-  const c = canvas(256, 128), k = c.getContext('2d'); k.lineJoin = 'round'; k.lineCap = 'round';
-  const ink_ = '#151515';
-  const wing = (up) => { k.beginPath(); k.moveTo(118, 70); k.quadraticCurveTo(88, up ? 20 : 96, 40, up ? 14 : 108); k.quadraticCurveTo(84, up ? 46 : 84, 134, 74); k.closePath(); k.fillStyle = '#c9ced6'; k.fill(); k.lineWidth = 5; k.strokeStyle = ink_; k.stroke(); k.fillStyle = '#2a2a2a'; k.beginPath(); k.moveTo(40, up ? 14 : 108); k.lineTo(58, up ? 20 : 100); k.lineTo(52, up ? 28 : 94); k.closePath(); k.fill(); };
-  if (pose !== 'sit') wing(pose === 'up');
-  k.beginPath(); k.ellipse(140, 74, 44, 18, -0.08, 0, 7); k.fillStyle = '#ffffff'; k.fill(); k.lineWidth = 5; k.strokeStyle = ink_; k.stroke(); // body
-  k.beginPath(); k.arc(184, 62, 14, 0, 7); k.fill(); k.stroke(); // head
-  k.fillStyle = '#f2b632'; k.beginPath(); k.moveTo(196, 60); k.lineTo(214, 64); k.lineTo(196, 68); k.closePath(); k.fill(); k.lineWidth = 3; k.stroke();
-  k.fillStyle = ink_; k.beginPath(); k.arc(186, 58, 2.6, 0, 7); k.fill();
-  k.beginPath(); k.moveTo(98, 76); k.lineTo(78, 70); k.lineTo(84, 84); k.closePath(); k.fillStyle = '#e8e8e8'; k.fill(); k.lineWidth = 4; k.stroke(); // tail
-  if (pose === 'sit') { k.fillStyle = '#c9ced6'; k.beginPath(); k.ellipse(130, 70, 34, 11, -0.1, 0, 7); k.fill(); k.lineWidth = 4; k.stroke(); k.strokeStyle = '#d98b2b'; k.lineWidth = 4; for (const x of [134, 148]) { k.beginPath(); k.moveTo(x, 90); k.lineTo(x, 108); k.stroke(); } }
+export function gull(pose = 'up') { // herring gull side view: white head and body, grey back and wings, black tips with white spots, yellow bill with a red spot, pink legs
+  const c = canvas(512, 256), k = c.getContext('2d'); k.lineJoin = 'round'; k.lineCap = 'round';
+  const INK2 = '#151515', GREY = '#aeb6c2', GREY2 = '#c8ced8';
+  const wing = (up, far) => {
+    k.save(); if (far) { k.translate(18, -6); k.globalAlpha = 0.9; }
+    const tipY = up ? 22 : 222, midY = up ? 70 : 182;
+    k.beginPath(); k.moveTo(250, 132); k.quadraticCurveTo(220, midY, 150, midY + (up ? 4 : -4)); k.quadraticCurveTo(110, tipY + (up ? 10 : -10), 70, tipY); k.quadraticCurveTo(150, up ? 92 : 168, 296, 140); k.closePath();
+    k.fillStyle = far ? GREY : GREY2; k.fill(); k.lineWidth = 7; k.strokeStyle = INK2; k.stroke();
+    k.save(); k.clip(); k.fillStyle = '#1e1e1e'; k.beginPath(); k.moveTo(60, tipY); k.lineTo(150, midY - 6); k.lineTo(150, up ? 140 : 120); k.lineTo(40, up ? 120 : 140); k.closePath(); k.fill();
+    k.fillStyle = '#fff'; for (const [x, y] of [[96, up ? 50 : 196], [124, up ? 62 : 186]]) { k.beginPath(); k.arc(x, y, 5, 0, 7); k.fill(); }
+    k.strokeStyle = 'rgba(80,90,100,.5)'; k.lineWidth = 2.5; for (let i = 0; i < 5; i++) { k.beginPath(); k.moveTo(170 + i * 22, up ? 104 + i * 5 : 152 - i * 5); k.lineTo(150 + i * 18, up ? 78 + i * 6 : 178 - i * 6); k.stroke(); }
+    k.restore(); k.restore();
+  };
+  if (pose !== 'sit') wing(pose === 'up', true);
+  // tail
+  k.beginPath(); k.moveTo(200, 140); k.lineTo(150, 128); k.lineTo(156, 156); k.closePath(); k.fillStyle = '#f2f2f2'; k.fill(); k.lineWidth = 6; k.strokeStyle = INK2; k.stroke();
+  // body (one smooth shape: body + neck + head)
+  k.beginPath(); k.moveTo(190, 146); k.quadraticCurveTo(220, 104, 300, 112); k.quadraticCurveTo(350, 108, 372, 96); k.quadraticCurveTo(390, 70, 418, 76); k.quadraticCurveTo(446, 84, 440, 112); k.quadraticCurveTo(430, 132, 396, 136); k.quadraticCurveTo(352, 168, 280, 168); k.quadraticCurveTo(214, 170, 190, 146); k.closePath();
+  k.fillStyle = '#ffffff'; k.fill(); k.lineWidth = 7; k.strokeStyle = INK2; k.stroke();
+  k.fillStyle = GREY; k.beginPath(); k.moveTo(206, 136); k.quadraticCurveTo(240, 112, 306, 118); k.quadraticCurveTo(290, 136, 220, 146); k.closePath(); k.fill(); // grey back
+  // bill with the red spot, eye with a yellow ring
+  k.beginPath(); k.moveTo(436, 96); k.lineTo(478, 102); k.quadraticCurveTo(470, 112, 440, 110); k.closePath(); k.fillStyle = '#f2c230'; k.fill(); k.lineWidth = 4; k.stroke();
+  k.fillStyle = '#d63a2a'; k.beginPath(); k.arc(468, 108, 3.5, 0, 7); k.fill();
+  k.fillStyle = '#f2c230'; k.beginPath(); k.arc(418, 92, 7, 0, 7); k.fill(); k.fillStyle = INK2; k.beginPath(); k.arc(419, 92, 4, 0, 7); k.fill(); k.fillStyle = '#fff'; k.beginPath(); k.arc(420.5, 90.5, 1.4, 0, 7); k.fill();
+  if (pose === 'sit') { k.beginPath(); k.moveTo(214, 140); k.quadraticCurveTo(260, 112, 330, 126); k.quadraticCurveTo(300, 150, 230, 154); k.closePath(); k.fillStyle = GREY; k.fill(); k.lineWidth = 5; k.stroke(); k.fillStyle = '#1e1e1e'; k.beginPath(); k.moveTo(214, 140); k.lineTo(180, 150); k.lineTo(222, 152); k.closePath(); k.fill();
+    k.strokeStyle = '#e39a8a'; k.lineWidth = 6; for (const x of [276, 300]) { k.beginPath(); k.moveTo(x, 166); k.lineTo(x - 4, 206); k.lineTo(x + 10, 208); k.stroke(); } }
+  else wing(pose === 'up', false);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
 // flat ship silhouette for the far harbour (masts, yards, furled sails), on transparent
@@ -569,9 +585,10 @@ export function shipSilhouette(masts = 2, seed = 1, col = '#3b4048') {
 // =====================================================================
 // S02 textures, part 2: tropical ports, packing materials, interiors, backdrops
 // =====================================================================
-export function sawdust(rep = [2, 2]) {
+export function sawdust(rep = [2, 2], coarse = false) {
   const c = canvas(512, 512), k = c.getContext('2d'); const r = rnd(71);
-  k.fillStyle = '#c8a26a'; k.fillRect(0, 0, 512, 512);
+  k.fillStyle = coarse ? '#e2b25a' : '#c8a26a'; k.fillRect(0, 0, 512, 512);
+  if (coarse) { for (let i = 0; i < 1400; i++) { const v = r(); k.fillStyle = v < 0.4 ? '#b07a30' : v < 0.8 ? '#ffe0a0' : '#8a5a22'; k.beginPath(); k.ellipse(r() * 512, r() * 512, 3 + r() * 5, 1.5 + r() * 2, r() * 3.1, 0, 7); k.fill(); } }
   for (let i = 0; i < 9000; i++) { const v = r(); k.fillStyle = v < 0.4 ? 'rgba(150,110,60,.7)' : v < 0.8 ? 'rgba(230,200,150,.7)' : 'rgba(110,80,45,.6)'; k.fillRect(r() * 512, r() * 512, 1 + r() * 3, 1 + r() * 2); }
   return tex(c, rep);
 }
@@ -637,6 +654,12 @@ export function backdrop(kind) {
     for (let i = 0; i < 16; i++) { const tx = r() * Wd; k.fillStyle = r() < 0.5 ? '#6f8a4a' : '#5a7a3e'; k.beginPath(); k.ellipse(tx, Ht - 60, 50 + r() * 40, 40 + r() * 20, 0, 0, 7); k.fill(); }
     const g = k.createLinearGradient(0, 0, 0, Ht); g.addColorStop(0, 'rgba(233,201,138,0)'); g.addColorStop(1, 'rgba(233,201,138,.45)'); k.fillStyle = g; k.fillRect(0, 0, Wd, Ht);
   }
+  if (kind === 'pelee') { // soften: blur the painting a little and lay a pale aerial haze over the far shapes
+    const c2 = canvas(Wd, Ht), k2 = c2.getContext('2d'); k2.filter = 'blur(6px)'; k2.drawImage(c, 0, 0); k2.filter = 'none';
+    const hz = k2.createLinearGradient(0, 0, 0, Ht); hz.addColorStop(0, 'rgba(206,232,246,.28)'); hz.addColorStop(0.6, 'rgba(206,232,246,.38)'); hz.addColorStop(1, 'rgba(206,232,246,.5)');
+    k2.globalCompositeOperation = 'source-atop'; k2.fillStyle = hz; k2.fillRect(0, 0, Wd, Ht); k2.globalCompositeOperation = 'source-over';
+    const t2 = new THREE.CanvasTexture(c2); t2.colorSpace = THREE.SRGBColorSpace; return t2;
+  }
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
 // sunny garden seen through the kitchen window (opaque): sky, hedge, fruit trees, flowers, a fence
@@ -672,14 +695,16 @@ export function bark(col = [92, 70, 50]) {
   return tex(c);
 }
 // slate board with chalk lettering (bins: "1 · HAY" …); the number is drawn green (numbers are green)
-export function slate(num, word) {
-  const c = canvas(512, 300), k = c.getContext('2d');
-  k.fillStyle = '#6b4a2a'; k.fillRect(0, 0, 512, 300); k.fillStyle = '#2b3236'; k.fillRect(18, 18, 476, 264);
-  k.fillStyle = 'rgba(255,255,255,.05)'; for (let i = 0; i < 40; i++) k.fillRect(30 + i * 11, 30, 4, 240);
-  k.textAlign = 'center'; k.textBaseline = 'middle';
-  k.font = 'bold 120px serif'; k.fillStyle = '#7ef08a'; k.fillText(String(num), 256, 100);
-  let px = 96; k.font = `bold ${px}px serif`; while (k.measureText(word).width > 440) { px *= 0.94; k.font = `bold ${px}px serif`; }
-  k.fillStyle = '#f2f2ea'; k.fillText(word, 256, 215);
+export function slate(num, word) { // one clean line: green number, a dot, the word in white chalk (e.g. "1 · HAY")
+  const Wd = 900, Ht = 300; const c = canvas(Wd, Ht), k = c.getContext('2d');
+  k.fillStyle = '#6b4a2a'; k.fillRect(0, 0, Wd, Ht); k.fillStyle = '#263034'; k.fillRect(22, 22, Wd - 44, Ht - 44);
+  k.strokeStyle = 'rgba(255,255,255,.08)'; k.lineWidth = 30; k.beginPath(); k.moveTo(60, 230); k.quadraticCurveTo(300, 200, 520, 250); k.stroke(); // old chalk smudge
+  const A = String(num), B = ' · ' + word; let px = 150; const font = (q) => `bold ${q}px "DejaVu Sans", sans-serif`;
+  k.font = font(px); while (k.measureText(A + B).width > Wd - 120) { px *= 0.95; k.font = font(px); }
+  const wA = k.measureText(A).width, wAll = k.measureText(A + B).width; const x0 = (Wd - wAll) / 2, y = Ht / 2 + px * 0.36;
+  k.lineJoin = 'round'; k.lineWidth = px * 0.08; k.strokeStyle = '#111';
+  k.strokeText(A, x0, y); k.fillStyle = '#7ef08a'; k.fillText(A, x0, y);
+  k.strokeText(B, x0 + wA, y); k.fillStyle = '#f4f4ec'; k.fillText(B, x0 + wA, y);
   const t = tex(c); t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; return t;
 }
 // dashed white outline of a modern fridge (graphic joke, transparent)
@@ -688,6 +713,10 @@ export function fridgeOutline() {
   k.setLineDash([38, 22]); k.lineCap = 'round'; k.strokeStyle = '#ffffff'; k.lineWidth = 16; k.shadowColor = 'rgba(0,0,0,.45)'; k.shadowBlur = 8;
   k.beginPath(); k.roundRect(40, 30, 432, 964, 40); k.stroke(); k.beginPath(); k.moveTo(40, 380); k.lineTo(472, 380); k.stroke();
   k.setLineDash([]); k.lineWidth = 18; k.beginPath(); k.moveTo(410, 180); k.lineTo(410, 300); k.moveTo(410, 460); k.lineTo(410, 640); k.stroke();
+  // the words, so the joke reads even for small kids: NO FRIDGE YET! (big, outlined, a little tilted)
+  k.save(); k.translate(256, 650); k.rotate(-0.08); k.textAlign = 'center'; k.textBaseline = 'middle'; k.lineJoin = 'round'; k.shadowBlur = 0;
+  for (const [txt, y, px] of [['NO', -120, 120], ['FRIDGE', 0, 112], ['YET!', 120, 120]]) { k.font = `bold ${px}px "DejaVu Sans", sans-serif`; k.lineWidth = 22; k.strokeStyle = '#1b1b1b'; k.strokeText(txt, 0, y); k.fillStyle = '#ffe066'; k.fillText(txt, 0, y); }
+  k.restore();
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
 export { woodcutShip, agedPaper };

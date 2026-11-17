@@ -349,6 +349,7 @@ The times are **beat start + offset**. Absolute times are the script estimates; 
 | 32 | B17 + 1.4 | 61.9 | Sawmill: sash saw, sawdust pouring |
 | 33 | B17 + 3.4 | 63.9 | Cutaway: arrows slow and fade, one faint arrow reaches the ice |
 | 34 | B17 + 5.4 | 65.9 | Last frame = still 1 (place them side by side on the board) |
+| 35 | cameo frame | set by the beats | **Log cameo (owner decision 2026-11-17):** one frame through the open upper Martinique window (`cameoSpot` in `src/harbour.js`, `meta.cameo = { t, pos: cameoSpot, set }`), in beat 7 or 8; add its exact time here once the voice timeline exists. *(Added by the animator.)* |
 
 Command (once the beats file exists and the voice is made):
 `node render-episode.mjs content/s02-ice-king.beats.mjs projects/s02-ice-king --3d --preview 0.2,1.6,2.9,5.2,8.2,9.2,11.6,13.5,15.5,17.8,21.1,23.5,26.2,28.6,31.0,32.6,34.0,35.0,36.0,37.3,38.6,41.4,42.8,44.2,46.9,48.5,50.5,52.7,54.9,56.9,59.4,61.9,63.9,65.9`

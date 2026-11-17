@@ -327,15 +327,15 @@ export function gulls(parent, cx, cy, cz, n = 3, sitters = [], rad = 6) {
   const texU = T.gull('up'), texD = T.gull('down'), texS = T.gull('sit');
   const mk = (tx) => new THREE.MeshBasicMaterial({ map: tx, transparent: true, alphaTest: 0.4, side: THREE.DoubleSide, fog: true });
   const mU = mk(texU), mD = mk(texD), mS = mk(texS);
-  const fly = []; for (let i = 0; i < n; i++) { const m = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.45), mU); parent.add(m); fly.push(m); }
-  const sit = sitters.map(([x, y, z]) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.3), mS); m.geometry.translate(0, 0.12, 0); m.position.set(x, y, z); parent.add(m); return m; });
+  const fly = []; for (let i = 0; i < n; i++) { const m = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.6), mU); parent.add(m); fly.push(m); }
+  const sit = sitters.map(([x, y, z]) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.4), mS); m.geometry.translate(0, 0.125, 0); /* feet on the perch point */ m.position.set(x, y, z); parent.add(m); return m; });
   return (t, camera) => {
     fly.forEach((m, i) => {
       const a = t * (0.35 + i * 0.07) + i * 2.1, r = rad * (0.7 + 0.3 * Math.sin(i * 1.7));
       m.position.set(cx + Math.cos(a) * r, cy + Math.sin(t * 0.6 + i) * 0.6 + i * 0.8, cz + Math.sin(a) * r * 0.6);
       const vx = -Math.sin(a), vz = Math.cos(a) * 0.6; // travel direction
       m.lookAt(camera.position); m.scale.x = Math.sign(screenDir(m, vx, vz, camera)) || 1; // face the way it travels on screen
-      m.material = Math.floor(t * 5 + i * 1.3) % 2 ? mU : mD;
+      m.material = Math.sin(t * 7 + i * 1.3) > -0.2 ? mU : mD; // longer up-stroke, quick down-beat
     });
     sit.forEach((m) => { m.lookAt(camera.position.x, m.position.y, camera.position.z); });
   };

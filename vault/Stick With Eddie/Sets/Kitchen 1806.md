@@ -19,3 +19,5 @@ tags:
 **Used in:** [[S02 The Man Who Shipped Ice to the Tropics]]
 
 **Reuse ideas:** Any 1700s–1800s home scene.
+
+**Round 0 fixes (2026-11-17):** The dashed fridge outline now carries the words NO FRIDGE YET! so the joke reads for small kids.

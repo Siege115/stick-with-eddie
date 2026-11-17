@@ -19,3 +19,5 @@ tags:
 **Used in:** [[S02 The Man Who Shipped Ice to the Tropics]]
 
 **Reuse ideas:** Every future sea story (Cook, storm oil, pirates).
+
+**Round 0 fixes (2026-11-17):** Gulls redrawn (herring gull: grey back, black wing tips with white spots, yellow bill with a red spot, pink legs) and sit on the pile tops.

@@ -19,3 +19,5 @@ tags:
 **Used in:** [[S02 The Man Who Shipped Ice to the Tropics]]
 
 **Reuse ideas:** Any "how it works inside" explainer; cargo and shipwreck stories.
+
+**Round 0 fixes (2026-11-17):** Hold brighter (fill light, lanterns lit) so people will read. Cutaway rebuilt to read as a ship wall: sun + sea outside, plank hull, thick golden sawdust with visible grains, inner planks, then the cool blue hold with ice blocks on the floor; ice no longer lilac; the end frame (block face close-up) matches the pond block of beat 1 for the loop.

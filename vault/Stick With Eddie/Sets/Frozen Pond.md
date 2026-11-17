@@ -19,3 +19,5 @@ tags:
 **Used in:** [[S02 The Man Who Shipped Ice to the Tropics]]
 
 **Reuse ideas:** Winter stories.
+
+**Round 0 fixes (2026-11-17):** Farmhouse bigger and nearer, three lit windows, door and lamp, chimney smoke; ICE HOUSE sign on the shed; the beat-1 loop block uses the same ice face as the cutaway end frame.

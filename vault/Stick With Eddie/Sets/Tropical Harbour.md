@@ -21,3 +21,5 @@ tags:
 **Used in:** [[S02 The Man Who Shipped Ice to the Tropics]]
 
 **Reuse ideas:** Trade and exploration stories; any colonial-era port.
+
+**Round 0 fixes (2026-11-17):** Banyan rebuilt as a layered canopy (three smooth tiers) with hanging roots; Mont Pelée backdrop softened (blur + haze) and raised above the rooftops.

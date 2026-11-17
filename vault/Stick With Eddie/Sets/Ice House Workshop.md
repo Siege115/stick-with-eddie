@@ -19,3 +19,5 @@ tags:
 **Used in:** [[S02 The Man Who Shipped Ice to the Tropics]]
 
 **Reuse ideas:** Experiment and invention stories.
+
+**Round 0 fixes (2026-11-17):** Slate signs redrawn as one clean line each: 1 · HAY, 2 · STRAW, 3 · RICE HUSKS (number in green), on posts behind the slate.

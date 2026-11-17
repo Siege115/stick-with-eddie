@@ -62,7 +62,7 @@ export function buildHold(scene, opts = {}) {
   for (let i = 0; i < 6; i++) { const m = new THREE.Mesh(new THREE.CircleGeometry(0.12 + r() * 0.12, 10), new THREE.MeshStandardMaterial({ map: sawT, transparent: true, opacity: 0.7 })); m.rotation.x = -Math.PI / 2; m.position.set(-5 + r() * 10, 0.01, (r() - 0.5) * 1.6); g.add(m); }
   { const sh = new THREE.Group(); sh.position.set(3.2, 0, -1.0); sh.rotation.z = 0.25; g.add(sh); sh.add(cyl(0.025, 0.025, 1.2, ribM, 0, 0.75, 0, 6)); sh.add(ink(box(0.26, 0.32, 0.03, std({ color: 0x5a5e66, metalness: 0.6 }), 0, 0.14, 0), 1.08)); }
   for (const x of [-4.6, 4.2]) H.lamps.push(K.hangingLantern(g, x, DECK - 0.25, 0.3, { range: 6 }));
-  const fill = new THREE.PointLight(0x9ab8e0, 3.5, 10, 1.1); fill.position.set(0, 1.6, 0); g.add(fill); // cool bounce from the shaft
+  const fill = new THREE.PointLight(0x9ab8e0, 6, 11, 1.0); fill.position.set(0, 1.6, 0); g.add(fill); // cool bounce from the shaft
   // the canvas-covered crate (what is inside is not shown); slides on movers.crate
   { const cr = new THREE.Group(); cr.position.set(0, 0, 0); g.add(cr); cr.rotation.order = 'YXZ';
     cr.add(ink(box(0.9, 0.7, 0.7, std({ map: T.wood([150, 110, 70], 4, false) }), 0, 0.35, 0), 1.03));
@@ -73,28 +73,45 @@ export function buildHold(scene, opts = {}) {
   return H;
 }
 
-export const ICE_X = 0.3;
+export const ICE_X = 0.55;
+// Cutaway, read left → right: OUTSIDE (hot sun, sea) | outer hull planks | thick golden sawdust | inner planks | INSIDE the hold
+// (cool blue): ice blocks on the plank floor, the hero block in front at ICE_X. Ribs and a deck beam make it read as a ship.
+// The end frame is a close-up of the hero block face (same ice texture as the pond blocks in beat 1): camera at
+// [ICE_X, ICE_Y, 1.45] looking at [ICE_X, ICE_Y, 0], fov 26.
+export const ICE_Y = 0.42;
 export function buildCutaway(scene, opts = {}) {
   const g = new THREE.Group(); scene.add(g);
-  const H = K.setHandle(g, { center: [0, 1.2, 0], shadowSize: 6 });
-  const HT = 1.9, D = 1.6; // height and depth of the slice
-  // hot outside: an orange sky card with a sun, behind and left
-  { const c = document.createElement('canvas'); c.width = 512; c.height = 1024; const k = c.getContext('2d'); const gr = k.createLinearGradient(0, 0, 0, 1024); gr.addColorStop(0, '#ff8a2a'); gr.addColorStop(1, '#ffd27a'); k.fillStyle = gr; k.fillRect(0, 0, 512, 1024); k.fillStyle = '#fff2b0'; k.beginPath(); k.arc(240, 260, 120, 0, 7); k.fill(); k.strokeStyle = '#1b1b1b'; k.lineWidth = 10; k.stroke();
-    const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; const sk = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 6.8), new THREE.MeshBasicMaterial({ map: tx, fog: false })); sk.position.set(-3.2, 1.4, -0.9); g.add(sk); }
-  const sawM = std({ map: T.sawdust([1, 2]), roughness: 1, color: 0xffffff }), bedM = std({ map: T.sawdust([2, 2]), roughness: 1, color: 0xa88450 });
-  const plankOut = std({ map: T.hull({ bandTop: 0.0, bandBot: 0.0 }) }), lining = std({ map: T.wood([196, 160, 110], 6, false) });
-  const layer = (x0, x1, m, y0 = 0, y1 = HT, d = D) => g.add(ink(box(x1 - x0, y1 - y0, d, m, (x0 + x1) / 2, (y0 + y1) / 2, 0), 1.006));
-  // read left → right; each layer a different value so the order is clear at phone size
-  layer(-1.75, -1.42, plankOut); // outer hull planks (black)
-  layer(-1.42, -0.78, sawM); // thick sawdust layer (light tan, wider than a block)
-  layer(-0.78, -0.66, lining); // inner lining (pale planks)
-  const iw = 0.74, ih = 0.56, y0 = 0.5; // the ice block, nested in a darker sawdust bed
-  layer(-0.66, 1.3, bedM, 0, y0); layer(-0.66, 1.3, bedM, y0 + ih, HT);
-  layer(-0.66, ICE_X - iw / 2, bedM, y0, y0 + ih); layer(ICE_X + iw / 2, 1.3, bedM, y0, y0 + ih);
-  g.add(ink(box(iw, ih, D * 0.92, iceMat(), ICE_X, y0 + ih / 2, 0.03), 1.01));
-  // frame rib through the slice + a base plinth so it reads as a model
-  const rib = std({ map: T.wood([88, 60, 38], 3) }); g.add(ink(box(0.16, HT + 0.12, D + 0.06, rib, -0.72, HT / 2, 0), 1.01));
-  g.add(ink(box(3.6, 0.18, D + 0.5, std({ color: 0x2a3550 }), -0.2, -0.09, 0), 1.01));
-  H.iceAt = [ICE_X, y0 + ih / 2, D / 2];
+  const H = K.setHandle(g, { center: [0, 1.0, 0], shadowSize: 6 });
+  const HT = 2.1, D = 1.4;
+  const paint = (w, h, fn) => { const c = document.createElement('canvas'); c.width = w; c.height = h; fn(c.getContext('2d'), w, h); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; };
+  // OUTSIDE: hot sky with the sun and sea waves, on the left
+  const outT = paint(512, 1024, (k, w, h) => { const gr = k.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#ff7a1a'); gr.addColorStop(0.6, '#ffc25a'); gr.addColorStop(0.61, '#1f6fa0'); gr.addColorStop(1, '#155a86'); k.fillStyle = gr; k.fillRect(0, 0, w, h);
+    k.fillStyle = '#fff2a8'; k.beginPath(); k.arc(230, 300, 110, 0, 7); k.fill(); k.strokeStyle = '#1b1b1b'; k.lineWidth = 10; k.stroke();
+    k.strokeStyle = '#ffe680'; k.lineWidth = 12; k.lineCap = 'round'; for (let i = 0; i < 10; i++) { const a = i / 10 * 6.283; k.beginPath(); k.moveTo(230 + Math.cos(a) * 140, 300 + Math.sin(a) * 140); k.lineTo(230 + Math.cos(a) * 185, 300 + Math.sin(a) * 185); k.stroke(); }
+    k.strokeStyle = 'rgba(255,255,255,.7)'; k.lineWidth = 8; for (let y = 660; y < h; y += 60) { k.beginPath(); for (let x = 0; x <= w; x += 40) k.quadraticCurveTo(x + 10, y - 14, x + 20, y), k.quadraticCurveTo(x + 30, y + 14, x + 40, y); k.stroke(); } });
+  const out = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 5.2), new THREE.MeshBasicMaterial({ map: outT, fog: false })); out.position.set(-2.55, 1.2, -0.75); g.add(out);
+  // INSIDE: the dark cool hold wall behind the ice
+  const inT = paint(512, 512, (k, w, h) => { k.fillStyle = '#1d2d48'; k.fillRect(0, 0, w, h); k.strokeStyle = 'rgba(0,0,0,.45)'; k.lineWidth = 6; for (let y = 0; y < h; y += 64) { k.beginPath(); k.moveTo(0, y); k.lineTo(w, y); k.stroke(); } });
+  const inside = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 3.2), new THREE.MeshBasicMaterial({ map: inT, fog: false })); inside.position.set(0.95, 1.1, -0.72); g.add(inside);
+  // the slice through the hull wall
+  const plankM = std({ map: (() => { const t2 = T.wood([150, 100, 58], 9, false); t2.repeat.set(1, 2); return t2; })() });
+  const sawM = new THREE.MeshStandardMaterial({ map: T.sawdust([0.6, 1.4], true), roughness: 1, emissive: 0x3a2400 });
+  const lay = (x0, x1, m, y0 = 0, y1 = HT) => g.add(ink(box(x1 - x0, y1 - y0, D, m, (x0 + x1) / 2, (y0 + y1) / 2, 0), 1.006));
+  lay(-1.66, -1.44, plankM); // outer hull planks
+  lay(-1.44, -0.84, sawM); // thick golden sawdust (more than a block wide)
+  lay(-0.84, -0.64, plankM); // inner planks
+  const ribM = std({ map: T.wood([96, 64, 40], 3) });
+  for (const x of [-1.72, -0.58]) g.add(ink(box(0.12, HT + 0.2, D + 0.06, ribM, x, HT / 2 + 0.05, 0), 1.01)); // frames either side of the wall
+  g.add(ink(box(3.0, 0.18, D + 0.1, ribM, 0.2, HT + 0.18, 0), 1.01)); // the deck beam over the hold
+  g.add(ink(box(1.9, 0.12, D, plankM, 0.36, 0.06, 0), 1.01)); // hold floor planks
+  // the ice, cool blue-white (own lighting so the warm key never turns it lilac)
+  const iceM = new THREE.MeshStandardMaterial({ map: T.ice(3), color: 0xeaf6ff, emissive: 0x3a6c98, emissiveIntensity: 0.4, roughness: 0.2 });
+  const iw = 0.74, ih = 0.56;
+  g.add(ink(box(iw, ih, 0.6, iceM, ICE_X, 0.12 + ih / 2, 0.35), 1.01)); // the hero block, in front
+  for (const [x, y, z] of [[ICE_X - 0.45, 0.12 + ih / 2, -0.3], [ICE_X + 0.45, 0.12 + ih / 2, -0.3], [ICE_X, 0.12 + ih * 1.5 + 0.02, -0.3]]) g.add(ink(box(iw, ih, 0.6, iceM, x, y, z), 1.01));
+  for (const [x, z, r] of [[ICE_X - 0.5, 0.45, 0.22], [ICE_X + 0.48, 0.5, 0.2], [-0.4, 0.3, 0.25]]) { const pl = new THREE.Mesh(new THREE.SphereGeometry(r, 14, 8, 0, 6.3, 0, 1.5), sawM); pl.scale.y = 0.5; pl.position.set(x, 0.12, z); g.add(pl); } // sawdust packed round the blocks
+  const cool = new THREE.PointLight(0x9cc8ff, 3.0, 4, 1.2); cool.position.set(ICE_X + 0.2, 1.4, 1.2); g.add(cool);
+  g.add(ink(box(3.8, 0.16, D + 0.4, std({ color: 0x1b2438 }), -0.4, -0.08, 0), 1.01)); // plinth
+  H.iceAt = [ICE_X, 0.12 + ih / 2, 0.65];
   return H;
 }

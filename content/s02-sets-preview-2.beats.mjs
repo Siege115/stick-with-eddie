@@ -2,13 +2,13 @@
 // sawdust cutaway, the kitchen, the ice-house workshop, the sawmill, and the five HUD cards. Not for broadcast; no people;
 // captions off; the short local (Kokoro) lines only set the timing.
 // Stills: node render-episode.mjs content/s02-sets-preview-2.beats.mjs projects/s02-sets-preview-2 --3d --preview <beat middles>
-const ICE_X = 0.3; // = ICE_X in src/hold.js (beats files load in node, so no browser imports here)
+const ICE_X = 0.55, ICE_Y = 0.4; // = ICE_X / hold block centre in src/hold.js (beats files load in node, so no browser imports here)
 
 export const meta = {
   id: 's02-sets-preview-2', title: 'S02 sets preview (round 0, part 2)',
   aspect: '9:16', fps: 30, width: 1080, height: 1920, gap: 0.12,
   set: 'mq', captions: false,
-  sets: { mq: { base: 'harbour', place: 'martinique' }, ca: { base: 'harbour', place: 'calcutta' }, hold: { crate: true }, cutaway: {}, kitchen: {}, workshop: {}, sawmill: {} },
+  sets: { mq: { base: 'harbour', place: 'martinique' }, ca: { base: 'harbour', place: 'calcutta' }, hold: { crate: true }, cutaway: {}, kitchen: {}, workshop: {}, sawmill: {}, pond: {}, wharf: { year: 1806 } },
 };
 export const cast = {};
 const still = (cam, look, fov = 50, extra = {}) => ({ at: 0, cam: [cam, cam], look: [look, look], fov: [fov, fov], trans: 'cut', ...extra });
@@ -32,8 +32,8 @@ export const beats = [
   // ---- the hold, and the cutaway ----
   b('The hold.', 'hold', 'hold', still([-5.6, 1.45, 0.1], [1, 0.9, 0], 60), { open: { hatch: [[0, 1]] } }),
   b('Up through the hatch.', 'hold', 'hold', still([2.4, 0.5, 0.25], [0, 2.8, 0], 70)),
-  b('The cutaway.', 'cutaway', 'cutaway', still([-0.25, 0.95, 10.5], [-0.25, 0.9, 0], 34), { fx: [{ kind: 'arrows', at: 0, from: [-2.6, 0.8, 0.85], to: [ICE_X - 0.32, 0.78, 0.85], n: 4, every: 0.4, life: 1.6 }] }),
-  b('The ice block.', 'cutaway', 'cutaway', still([ICE_X, 0.78, 1.75], [ICE_X, 0.78, 0], 26)),
+  b('The cutaway.', 'cutaway', 'cutaway', still([-0.45, 1.05, 10.5], [-0.45, 1.0, 0], 34), { fx: [{ kind: 'arrows', at: 0, from: [-2.7, 0.45, 0.75], to: [ICE_X - 0.36, 0.45, 0.75], n: 4, every: 0.4, life: 1.6 }] }),
+  b('The ice block (ends cool, loops to beat 1).', 'cutaway', 'night', still([ICE_X, ICE_Y, 1.45], [ICE_X, ICE_Y, 0], 26)),
   // ---- kitchen, workshop, sawmill ----
   b('The kitchen.', 'kitchen', 'warm', still([1.0, 1.5, 3.3], [-0.3, 1.1, -1.5], 62), { open: { fridge: [[0, 0]] } }),
   b('No fridge.', 'kitchen', 'warm', still([-1.6, 1.45, 2.6], [3.4, 1.1, -0.8], 60), { open: { fridge: [[0, 1]] } }),
@@ -41,11 +41,17 @@ export const beats = [
   b('After the melt.', 'workshop', 'warm', still([3.4, 1.7, 1.4], [1.4, 0.6, -1.6], 60), { open: { melt: [[0, 1]], season: [[0, 0]] } }),
   b('The window, summer.', 'workshop', 'warm', still([-1.6, 1.7, -0.2], [-4.5, 1.65, -0.2], 56), { open: { melt: [[0, 0.5]], season: [[0, 1]] } }),
   b('The sawmill.', 'sawmill', 'warm', still([-7, 3.0, 9], [1.5, 1.5, -1], 60)),
-  b('The sash saw.', 'sawmill', 'warm', still([0.9, 2.5, 3.6], [0, 1.35, -0.6], 50)),
+  b('The sash saw.', 'sawmill', 'warm', still([1.5, 2.7, -4.8], [0, 1.8, -0.6], 50)),
+  // ---- loop reference: beat 1's first frame (a pond block face at night) next to the cutaway end frame above ----
+  b('Loop check, the pond block.', 'pond', 'night', still([-1.2, 0.8, -15.62], [-1.2, 0.8, -16.6], 26)),
+  // ---- wharf gulls (redrawn) ----
+  b('The gulls.', 'wharf', 'snowWide', still([-6.2, 2.0, 17.1], [-7.45, 1.8, 19.0], 38), { ship: [[0, [8.45, 3.5, -2], -Math.PI / 2]] }),
   // ---- HUD cards ----
   card('Year card.', { art: 'year', y: 0.16, w: 0.5 }),
   card('Newspaper.', { art: 'news', w: 0.86, rot: -0.03 }),
   card('Letter.', { art: 'letter', w: 0.8, rot: 0.04 }),
   card('The map.', { art: 'map', w: 0.96, route: [0.3, 1.0] }),
   card('Thermometer.', { art: 'thermo', w: 0.36, level: [0.35, 0.9] }),
+  // ---- added after round 0: the farmhouse across the pond ----
+  b('The farmhouse across the pond.', 'pond', 'night', still([-2.5, 1.7, 1.5], [-9, 3.2, 26], 52)),
 ];

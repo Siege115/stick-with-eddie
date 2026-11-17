@@ -127,7 +127,7 @@ const LIGHTS = {
   // overexposed white-orange sun, orange far fog, strong heat shimmer
   blaze: { bg: '#ffb35c', fog: '#ff9a45', near: 18, far: 55, sun: '#fff0c8', sunI: 3.8, sunPos: [0, 6, -14], hemiS: '#ffe1b0', hemiG: '#8a4a20', hemiI: 1.2, lamp: 0, spot: 0, beam: 0, rim: '#fff0b0', tint: '#fff2e0', exp: 1.18, mote: 0.5, motes: 'heat', long: 0.6, vig: '#5a1e00', vigA: 0.4, shimmer: 6 },
   // dark cool interior, white-gold shaft from the hatch (uses the set's spot + beam), motes in the shaft
-  hold: { bg: '#05080d', fog: '#070b12', near: 8, far: 24, sun: '#4a5a7a', sunI: 0.18, sunPos: [6, 10, 6], hemiS: '#2e4262', hemiG: '#0e0a08', hemiI: 0.55, lamp: 0.1, spot: 80, beam: 0.6, rim: '#fff1cc', tint: '#ffffff', exp: 1.05, mote: 0.9, motes: 'dust', long: 0, vig: '#000000', vigA: 0.6, shimmer: 0 },
+  hold: { bg: '#05080d', fog: '#070b12', near: 8, far: 24, sun: '#4a5a7a', sunI: 0.18, sunPos: [6, 10, 6], hemiS: '#2e4262', hemiG: '#0e0a08', hemiI: 0.9, lamp: 0.6, spot: 80, beam: 0.6, rim: '#fff1cc', tint: '#ffffff', exp: 1.15, mote: 0.9, motes: 'dust', long: 0, vig: '#000000', vigA: 0.6, shimmer: 0 },
   // warm key from the left/outside, cool blue fill on the ice
   cutaway: { bg: '#26314a', fog: '#26314a', near: 14, far: 40, sun: '#ffb070', sunI: 2.6, sunPos: [-7, 5, 9], hemiS: '#8fb8ff', hemiG: '#2a1a10', hemiI: 0.8, lamp: 0, spot: 0, beam: 0, rim: '#bfe0ff', tint: '#f4f8ff', exp: 1.0, mote: 0.4, motes: 'sawdust', long: 0, vig: '#0a1020', vigA: 0.45, shimmer: 0 },
   // wide, readable versions for empty or wide sets (fog pushed back): the snowy wharf, Boston in May 1833, a clear day at sea

@@ -34,7 +34,7 @@ export function buildPond(scene, opts = {}) {
   // rough channel edges: broken lips of ice along both sides
   for (const zE of [-4, -2]) for (let x = -14.6; x < 2.8; x += 0.7 + r() * 0.5) { const lip = box(0.5 + r() * 0.5, 0.1, 0.18, chunkM, x, -0.03, zE + (zE < -3 ? 0.06 : -0.06), (r() - 0.5) * 0.4, false); g.add(lip); }
   // the half-cut block at the channel's end: a kerf line scored into the ice, a block nearly free
-  const iceBlockM = std({ map: T.ice(3), roughness: 0.15, color: 0xe2f3ff, emissive: 0x15324c });
+  const iceBlockM = std({ map: T.ice(3), roughness: 0.15, color: 0xe2f3ff, emissive: 0x2a5a80 }); // same face as the cutaway end frame (loop)
   g.add(ink(box(0.62, 0.36, 0.42, iceBlockM, 2.45, -0.12, -3.0, 0.04), 1.03));
   g.add(box(0.03, 0.02, 1.3, std({ color: 0x0b1a26 }), 2.85, 0.005, -3.0, 0, false)); // saw kerf
 
@@ -75,6 +75,7 @@ export function buildPond(scene, opts = {}) {
     sh.add(ink(box(DW + 0.5, 0.18, 0.26, std({ color: 0x3e2c1c }), 0, DH + 0.12, D / 2 + 0.05), 1.04));
     const hinge = new THREE.Group(); hinge.position.set(-DW / 2, 0, D / 2 + 0.12); sh.add(hinge);
     hinge.add(box(DW, DH, 0.08, std({ map: T.wood([92, 64, 40], 4) }), DW / 2, DH / 2, 0)); for (const yy of [0.45, 1.75]) hinge.add(box(DW * 0.9, 0.1, 0.04, std({ color: 0x3a2a1c }), DW / 2, yy, 0.05));
+    { const sgn = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 0.48), std({ map: T.signText('ICE HOUSE', { bg: '#1d3557', fg: '#f1faee', w: 1024, h: 245 }) })); sgn.position.set(0, Hh - 0.32, D / 2 + 0.12); sh.add(sgn); sh.add(ink(box(2.06, 0.54, 0.05, std({ color: 0x3e2c1c }), 0, Hh - 0.32, D / 2 + 0.09), 1.02)); }
     H.doors = (v) => { hinge.rotation.y = -v * 1.75; }; H.doors(0.35); // left ajar: the dark doorway reads from the ice
     H.lamps.push(K.hangingLantern(sh, -DW / 2 - 0.45, 2.15, D / 2 + 0.32, { range: 7 })); sh.add(box(0.05, 0.05, 0.32, std({ color: 0x222222 }), -DW / 2 - 0.45, 2.16, D / 2 + 0.16));
     K.icicles(sh, [-W / 2 - 0.2, Hh - 0.02, D / 2 + 0.2], [W / 2 + 0.2, Hh - 0.02, D / 2 + 0.2], 16, r);
@@ -139,11 +140,12 @@ export function buildPond(scene, opts = {}) {
   bare(-17.5, -18, 1.1); bare(18.5, 6, 1.0); bare(-19, 12, 0.9);
 
   // ---------------- far shore: farmhouse with one warm window (the estate, unnamed) ----------------
-  { const fh = new THREE.Group(); fh.position.set(-10, SHORE_Y, 34); fh.rotation.y = Math.PI + 0.2; g.add(fh);
+  { const fh = new THREE.Group(); fh.position.set(-9, SHORE_Y, 26); fh.rotation.y = Math.PI + 0.2; fh.scale.setScalar(1.35); g.add(fh);
     const hs = K.gableHouse(fh, 0, 0, 0, { w: 7, d: 5, h: 4.2, roofH: 2.4, wall: (rx, ry) => { const t2 = T.clapboard([190, 180, 160]); t2.repeat.set(rx, ry); return std({ map: t2 }); }, roof: std({ map: T.shingles([70, 60, 55]) }), snow: true, trim: 0xe9e0c8 });
-    const addWin = K.windowKit(hs, { panes: true, snowSill: true }); addWin(-1.8, 1.6, 2.56, 0, true); addWin(1.8, 1.6, 2.56, 0, false); addWin(0, 4.6, 2.56, 0, false);
+    const addWin = K.windowKit(hs, { panes: true, snowSill: true }); addWin(-1.8, 1.6, 2.56, 0, true); addWin(1.8, 1.6, 2.56, 0, true); addWin(0, 4.6, 2.56, 0, true); K.doorway(hs, 0, 2.52, 1.0, 2.0, { frame: 0x3a2a1c }); H.lamps.push(K.hangingLantern(hs, 0.85, 2.3, 2.85, { range: 6 }));
     hs.add(ink(box(0.7, 2.0, 0.7, std({ map: T.bricks() }), 2.0, 5.6, 0), 1.03)); K.snowSlab(0.8, 0.8, 0.1, 2.0, 6.6, 0, 0, hs);
-    const pl = new THREE.PointLight(0xffb060, 3, 6, 1.6); pl.position.set(-1.8, 1.6, 3.4); hs.add(pl); }
+    const pl = new THREE.PointLight(0xffb060, 5, 9, 1.4); pl.position.set(0, 1.8, 3.6); hs.add(pl);
+    const smokeT = T.radial('rgba(200,210,230,.5)', 'rgba(200,210,230,0)'); for (let i = 0; i < 5; i++) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: smokeT, transparent: true, depthWrite: false })); sp.position.set(2.0 + i * 0.25, 7.0 + i * 0.7, 0); sp.scale.setScalar(0.9 + i * 0.4); hs.add(sp); } }
 
   // ---------------- night sky dome, moon (only shown under dark presets) ----------------
   const dome = new THREE.Mesh(new THREE.SphereGeometry(95, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2 + 0.05), new THREE.MeshBasicMaterial({ map: T.nightSky(), side: THREE.BackSide, fog: false, depthWrite: false }));

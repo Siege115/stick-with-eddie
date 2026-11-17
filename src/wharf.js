@@ -41,7 +41,7 @@ export function buildWharf(scene, opts = {}) {
   for (let z = -10.5; z <= 18; z += 2.5) for (const x of [-4.85, 4.85]) g.add(cyl(0.205, 0.205, 0.3, weed, x, WATER_Y + 0.1, z, 10));
   // mooring dolphins off the end (pile clusters, a perch for gulls)
   const perches = [];
-  for (const [x, z] of [[-7.5, 19], [8.5, 22]]) { for (const [dx, dz] of [[0, 0], [0.35, 0.1], [0.1, 0.35]]) g.add(ink(cyl(0.18, 0.2, 3.6, pileM, x + dx, WATER_Y + 1.6 - dx, z + dz, 10), 1.05)); g.add(K.rope(g, [x, 1.2, z], [x + 0.35, 1.0, z + 0.1], 0.05)); perches.push([x, 1.62, z]); }
+  for (const [x, z] of [[-7.5, 19], [8.5, 22]]) { for (const [dx, dz] of [[0, 0], [0.35, 0.1], [0.1, 0.35]]) g.add(ink(cyl(0.18, 0.2, 3.6, pileM, x + dx, WATER_Y + 1.6 - dx, z + dz, 10), 1.05)); g.add(K.rope(g, [x, 1.2, z], [x + 0.35, 1.0, z + 0.1], 0.05)); perches.push([x, WATER_Y + 3.4, z]); /* top of the tallest pile */ }
   // ladder down to the water
   const lad = new THREE.Group(); lad.position.set(-4.95, 0, 8); g.add(lad);
   for (const zz of [-0.3, 0.3]) lad.add(ink(box(0.08, 2.4, 0.08, capM, -0.06, -1.0, zz), 1.06)); for (let y = -1.9; y < 0.1; y += 0.35) lad.add(box(0.06, 0.06, 0.6, capM, -0.06, y, 0));
