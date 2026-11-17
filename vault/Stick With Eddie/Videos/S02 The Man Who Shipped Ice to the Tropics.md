@@ -2,7 +2,7 @@
 type: "video"
 category: "Videos"
 id: "s02-ice-king"
-status: "In production – fact-check"
+status: "In production – script"
 format: "Short"
 story_year: 1806
 setting: "New England pond → Boston wharf → Martinique → Calcutta"
@@ -30,7 +30,16 @@ tags:
 - **Rule of three:** ① Martinique: nobody knows what ice is for, and it melts. ② He tries straw, chaff and coal dust, and it still melts. ③ Calcutta, 16,000 miles away: the hatch opens and the ice is still there.
 - **Payoff:** *His secret was sawdust, the stuff sawmills threw away.*
 
-## Open fact questions (with the fact-checker)
+## Fact-check results (2026-11-17: wording changes only)
+- Brig *Favorite*, 10 Feb 1806, Boston → St. Pierre, Martinique; ice from the family pond in Saugus. ✔
+- Say "almost nobody had ice", not "nobody had a cold drink" (Calcutta cooled drinks with saltpetre and made "Hooghly ice").
+- No tonnage in the narration (80 vs 130 disputed). Quote only "slippery speculation".
+- Before sawdust: hay, straw, rice chaff, wood shavings, peat (drop coal dust, wheat chaff, bark, "pine").
+- 1833 *Tuscany*: 180 tons out, about 100 arrived → "most of the ice was still there"; about 4 months; "about 15,000 miles / halfway around the world"; September 1833.
+- Leave out debtors' prison. Port crowds drawn respectfully; only adults use saws on the pond.
+- Full table: `studio/briefs/s02-ice-king-factcheck.md`
+
+## Original open questions
 Exact Gazette wording and date · 1806 cargo (80 vs 130 tons) · how much ice was shipped and how much survived the Calcutta trip (1833, ship *Tuscany*) · when sawdust became standard · leave out the debtors'-prison years.
 
 ## Production plan
