@@ -342,7 +342,7 @@ export function snowSlab(w, d, h, x, y, z, ry = 0, parent = null) {
 export function snowPile(parent, x, z, r = 0.8, h = 0.45, sx = 1, ry = 0, y = 0) {
   const pts = []; for (let i = 0; i <= 12; i++) { const a = i / 12 * Math.PI / 2; pts.push(new THREE.Vector2(Math.cos(a) * r * (1 + 0.08 * Math.sin(a * 3)), Math.sin(a) ** 0.8 * h)); }
   pts.unshift(new THREE.Vector2(r * 1.04, -0.02));
-  const m = new THREE.Mesh(new THREE.LatheGeometry(pts.reverse(), 24), snowMat());
+  const m = new THREE.Mesh(new THREE.LatheGeometry(pts, 24), snowMat());
   m.scale.set(sx, 1, 1); m.position.set(x, y, z); m.rotation.y = ry; m.castShadow = true; m.receiveShadow = true;
   parent.add(inkOffset(m, 0.025)); return m;
 }
@@ -412,7 +412,7 @@ export function bollard(parent, x, z, y = 0, snowCap = false) {
   const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g);
   g.add(ink(cyl(0.2, 0.24, 0.62, std({ map: T.wood([90, 62, 40], 3) }), 0, 0.31, 0, 12), 1.06));
   g.add(ink(cyl(0.26, 0.24, 0.1, std({ color: 0x2b2d31, metalness: 0.5, roughness: 0.5 }), 0, 0.66, 0, 12), 1.06));
-  if (snowCap) { const pts = []; for (let i = 0; i <= 8; i++) { const a = i / 8 * Math.PI / 2; pts.push(new THREE.Vector2(Math.cos(a) * 0.27, Math.sin(a) * 0.12)); } const sc = new THREE.Mesh(new THREE.LatheGeometry(pts.reverse(), 14), snowMat()); sc.position.y = 0.7; sc.castShadow = true; g.add(sc); }
+  if (snowCap) { const pts = []; for (let i = 0; i <= 8; i++) { const a = i / 8 * Math.PI / 2; pts.push(new THREE.Vector2(Math.cos(a) * 0.27, Math.sin(a) * 0.12)); } const sc = new THREE.Mesh(new THREE.LatheGeometry(pts, 14), snowMat()); sc.position.y = 0.7; sc.castShadow = true; g.add(sc); }
   return g;
 }
 // grain/coffee sack: soft squashed pillow with a tied neck

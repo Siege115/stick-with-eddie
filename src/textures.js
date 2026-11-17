@@ -493,9 +493,10 @@ export function iceSheet(grid = 8) {
   k.fillStyle = '#9fc4dc'; k.fillRect(0, 0, 1024, 1024);
   for (let i = 0; i < 90; i++) { const x = r() * 1024, y = r() * 1024, s = 40 + r() * 160; const g = k.createRadialGradient(x, y, 1, x, y, s); g.addColorStop(0, `rgba(240,246,252,${0.25 + r() * 0.35})`); g.addColorStop(1, 'rgba(240,246,252,0)'); k.fillStyle = g; k.fillRect(0, 0, 1024, 1024); }
   for (let i = 0; i < 25; i++) { k.strokeStyle = 'rgba(255,255,255,.5)'; k.lineWidth = 1.5; let x = r() * 1024, y = r() * 1024; k.beginPath(); k.moveTo(x, y); for (let j = 0; j < 4; j++) { x += (r() - 0.5) * 200; y += (r() - 0.5) * 200; k.lineTo(x, y); } k.stroke(); }
-  k.strokeStyle = 'rgba(40,70,100,.55)'; k.lineWidth = 3;
-  for (let i = 0; i <= grid; i++) { const p = i * 1024 / grid; k.beginPath(); k.moveTo(p, 0); k.lineTo(p + (r() - 0.5) * 6, 1024); k.stroke(); k.beginPath(); k.moveTo(0, p); k.lineTo(1024, p + (r() - 0.5) * 6); k.stroke(); }
-  k.strokeStyle = 'rgba(255,255,255,.4)'; k.lineWidth = 1.5;
+  // scribed marks: faint, hand-cut (slightly wavy, broken), not a tile grid
+  k.lineWidth = 2;
+  for (let i = 0; i <= grid; i++) for (const vert of [0, 1]) { const p = i * 1024 / grid; let q = 0; while (q < 1024) { const seg = 60 + r() * 140, gap = r() < 0.25 ? 20 + r() * 40 : 0; k.strokeStyle = `rgba(50,80,110,${0.18 + r() * 0.17})`; k.beginPath(); const j = (r() - 0.5) * 4; if (vert) { k.moveTo(p + j, q); k.lineTo(p - j, q + seg); } else { k.moveTo(q, p + j); k.lineTo(q + seg, p - j); } k.stroke(); q += seg + gap; } }
+  k.strokeStyle = 'rgba(255,255,255,.18)'; k.lineWidth = 1.2;
   for (let i = 0; i <= grid; i++) { const p = i * 1024 / grid + 3; k.beginPath(); k.moveTo(p, 0); k.lineTo(p, 1024); k.stroke(); k.beginPath(); k.moveTo(0, p); k.lineTo(1024, p); k.stroke(); }
   return tex(c);
 }

@@ -6,6 +6,7 @@ import * as T from './textures.js';
 import * as K from './kit.js';
 import { buildWaterSet } from './ship.js';
 import { buildWharf } from './wharf.js';
+import { buildPond } from './pond.js';
 const { std, box, cyl, ink } = K;
 
 // ===================== Berlin courtyard ~1904 (S01) =====================
@@ -301,4 +302,4 @@ export function buildEmpty(scene, opts = {}) {
   return K.setHandle(g);
 }
 
-export const SETS = { courtyard: buildCourtyard, testyard: buildTestYard, empty: buildEmpty, water: buildWaterSet, wharf: buildWharf };
+export const SETS = { courtyard: buildCourtyard, testyard: buildTestYard, empty: buildEmpty, water: buildWaterSet, wharf: buildWharf, pond: buildPond };
