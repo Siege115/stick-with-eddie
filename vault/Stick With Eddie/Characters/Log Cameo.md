@@ -1,7 +1,7 @@
 ---
 type: "character"
 category: "Characters"
-role: "One-frame easter egg"
+role: "Running one-frame easter egg (every Short)"
 look: "Wooden log character with tree rings on top, big eyes, grin and a bat (our own drawing, an homage)"
 appears_in:
   - "[[S01 The Horse That Could Do Math]]"
@@ -20,3 +20,5 @@ tags:
 **Appears in:** [[S01 The Horse That Could Do Math]]
 
 All characters follow [[Visual Style]] and [[Animation Rules]].
+
+**Running gag (decided 2026-11-17):** appears for exactly one frame in every Short, peeking through a window or porthole. S02: a porthole or a harbour window.
