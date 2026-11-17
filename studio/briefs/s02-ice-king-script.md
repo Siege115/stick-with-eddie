@@ -69,10 +69,10 @@ He filled a ship with ice from a frozen pond. Then he sent it all the way to the
 | 9 | Boston laughed harder | 15 | Dramatization of real mockery plus later losses |
 | 10 | Tried hay, straw, rice husks | 16 | No coal dust, wheat chaff or bark |
 | 11 | Too much of it still melted | 17 | |
-| 12 | Over many years he found something better | 18, 21 | Not dated; does not say trip 1 had no sawdust; Calcutta is not called "first" |
+| 12 | ~~Over many years he found something better~~ (cut, trim A) | 18, 21 | Not dated; does not say trip 1 had no sawdust; Calcutta is not called "first" |
 | 13 | In 1833 he sent a ship of ice to Calcutta, in India | 24 | "(now Kolkata)" on screen; *Tuscany* on the stern prop |
 | 14 | About 15,000 miles | 27 | |
-| 14 | Four months at sea | 28 | |
+| 14 | ~~Four months at sea~~ (cut, trim B) | 28 | |
 | 14 | His longest, hottest trip yet | 31 | |
 | 15 | Most of the ice is still there | 26, 29 | Not "the ice is still there" |
 | 16 | They called him the Ice King | 34 | |
