@@ -87,3 +87,56 @@ Sources:
 - **Points I couldn't settle:** the 1806 tonnage (80 vs 130), whether the Martinique ice survived the voyage, the exact Gazette wording and date, and the year sawdust became standard. The safe wordings sidestep all four.
 - **Limits:** search only. The original *Boston Gazette* (Feb 1806) and Tudor's diaries at Baker Library were not reachable. americanheritage.com, newenglandhistoricalsociety.com and amusingplanet.com can't be fetched in this session. No paid credits were used.
 - **Next:** the scriptwriter writes from the "Safe wording" column. I re-check the final script line by line, then mark it APPROVED. The art director needs the two safety flags: the frozen pond and respectful port crowds.
+
+---
+
+## Script check: `s02-ice-king-script.md` draft 1 (2026-11-17)
+
+I checked every narrated line, the second-voice line, the on-screen captions and the prop text against the claims table above. I ran two more free searches on beat 2 and spent no paid credits.
+
+| Beat | Line / caption / prop | Verdict | Note | Exact replacement (if any) |
+|---|---|---|---|---|
+| 1 | "He filled a ship with ice from a frozen pond." | ✅ | Row 2. Hand saws and adult workers in the shot match rows 36 and safety flag 1. | — |
+| 2 | "Then he sailed it to the Caribbean." | ⚠️ | New finding: I can't confirm that Frederic sailed with the *Favorite*. Sources show he **sent** the ice. His brother William and cousin James Savage went to the islands for him (Savage's journal, Nov 1805–Jun 1806). Weightman says Frederic "had a miserable time in Martinique", but that is one source and gives no date. | **"Then he sent it all the way to the Caribbean."** Shot: Eddie-Tudor waves the brig off from the wharf instead of standing at the rail. |
+| 2 | Stern prop "Favorite" | ✅ | Row 3. | — |
+| 3 | "You see, in 1806, there were no fridges." + "1806" card | ✅ | Row 7. This means no machines that make cold; ice-filled boxes existed but needed harvested ice. | — |
+| 3 | Shot: "wooden icebox-shaped gap" | ✅ | It's an empty space, not a claim. | — |
+| 4 | "In hot places, almost nobody had ice." | ✅ | Row 8, safe wording used. | — |
+| 5 | "Frederic Tudor, from Boston, wanted to sell them winter." + caption "Frederic Tudor" | ✅ | Row 1. "Sell them winter" is a clear figure of speech for selling ice cut in winter, and kids will read it that way. | — |
+| 6 | "Boston laughed. A newspaper joked it might be a 'slippery speculation.'" | ✅ | Rows 9–10. The Gazette's "we hope this will not prove … a slippery speculation" is a joke that it might be one, so the paraphrase is fair. Only the agreed phrase is in quote marks. | — |
+| 6 | Prop: "BOSTON NEWS / 1806", only "slippery speculation" readable | ✅ | Row 11. It is a generic, invented masthead. | — |
+| 7 | "His ice reached the island of Martinique." + caption "Martinique" | ✅ | Rows 5 and 12. True whichever account of the voyage is right. | — |
+| 7 | Transition: "zoom out of the newspaper **photo**" | ⚠️ | Anachronism. Newspapers had no photos in 1806 (photography came in the 1820s–30s, and printed photos in papers decades after that). | Zoom out of a small **woodcut-style drawing** of a ship on the paper, or out of the map. |
+| 8 | "But there was nowhere to keep it cold." | ✅ | Row 12. | — |
+| 8 | line2 merchant: "Lovely. And… what do I do with it?" | ✅ as dramatization | Row 14. It reads as in-scene dialogue: a character's voice with no name tag, date or source. **Rule:** if captioned, show it as a speech bubble from the merchant, never in quote marks or as a caption block, and never on the newspaper prop. Keep the neutral voice with no accent. | — |
+| 9 | "It melted away, and he lost a lot of money." | ✅ | Rows 12–13. No figure. | — |
+| 9 | "Boston laughed harder." | ✅ as dramatization | Row 15. | — |
+| 9 | Shot: Eddie's top hat droops on the Martinique dock | ⚠️ | Same issue as beat 2: Tudor being in Martinique in 1806 is unconfirmed. | Put the hat droop **in Boston** after the match cut, with Eddie reading a letter that shows a drawn puddle and no text. |
+| 10 | "So he tried packing the ice in hay. Then straw. Then rice husks." | ⚠️ | All three materials are sourced (row 16). But "Then … Then" sets an order, and no source gives one. | **"So he tried packing the ice in hay. He tried straw. He tried rice husks."** The 1-2-3 count on screen is fine as a count of tries, not a timeline. |
+| 11 | "Too much of it still melted." | ✅ | Row 17. | Shot note: let the blocks **shrink a lot but not vanish**, so the picture matches "too much", not "all". |
+| 12 | "Over many years, he found something better." | ✅ | Rows 18 and 21. Not dated, and it doesn't say "first". Fine if trim A drops it: beat 17 still carries the sawdust. | — |
+| 13 | "In 1833, he sent a ship of ice to Calcutta, in India." + captions "1833", "Calcutta (now Kolkata)" | ✅ | Row 24. "He sent" is fine; he was one of three partners and supplied the ice. | — |
+| 13 | Prop: *Tuscany* on the stern | ✅ | Row 24. | — |
+| 13 | Map card: dotted line Boston → Calcutta | ⚠️ | The route has to go **around the southern tip of Africa** (Cape of Good Hope). The Suez Canal didn't open until 1869. | Draw the line down the Atlantic, around Africa, then up to the Bay of Bengal. |
+| 14 | "About 15,000 miles." + caption "15,000 miles" | ⚠️ (caption only) | Row 27. The narration says "about"; the caption drops it and looks exact. | Caption **"about 15,000 miles"** (or "~15,000 miles"). |
+| 14 | "Four months at sea." | ✅ | Row 28. Fine to keep or trim (B). | — |
+| 14 | "His longest, hottest trip yet." | ✅ | Row 31. | — |
+| 14 | Thermometer prop climbs | ✅ | Show no exact number on it. | — |
+| 15 | "The ship docks. The hatch opens, and most of the ice is still there." | ✅ | Rows 26 and 29. The few puddles in the shot fit. | — |
+| 16 | "They called him the Ice King." | ✅ | Row 34. Placed after Calcutta, when he was successful, so the timing is fine. | — |
+| 17 | "His secret? Sawdust, the stuff sawmills threw away, …" | ✅ | Rows 18, 20 and 32. "Secret" is figurative, for the hidden reason. | — |
+| 17 | "…packed thick around the ice to keep the heat out." | ✅ | Rows 22 and 32: a thick dry-sawdust layer around the *Tuscany*'s hold. "Keep the heat out" is a fair kid-level way to say insulation slows heat getting in, and beat 15's "most of the ice" already shows it wasn't perfect. | — |
+| 17 | Shot: heat arrows **bounce off** the sawdust | ⚠️ | "Bounce off" suggests reflection, but sawdust works by **slowing** heat (trapped air). | Have the arrows **slow down and fade** as they push into the sawdust layer, and only a faint one reaches the ice. |
+| Titles | 1 "The Man Who Shipped Ice to the Tropics" · 2 "He Sold Winter to the Tropics" · 3 "Why the Ice King Packed Sawdust" | ✅ | All three are true: he did sell ice in Havana, Calcutta and elsewhere. | — |
+
+### Script check verdict
+**CHANGES NEEDED.** Two narration fixes and five shot/caption fixes, all small. With the edits below the script can be counted as **APPROVED**, with no new check needed if they are applied word for word:
+1. Beat 2 narration: "Then he sent it all the way to the Caribbean." Eddie waves from the wharf.
+2. Beat 10 narration: "So he tried packing the ice in hay. He tried straw. He tried rice husks."
+3. Beat 7: woodcut drawing or map, not a newspaper photo.
+4. Beat 9: hat droop in Boston, not on the Martinique dock.
+5. Beat 13: map route goes around Africa.
+6. Beat 14: caption "about 15,000 miles".
+7. Beat 17: heat arrows slow and fade; they don't bounce.
+
+These change the spoken word count by +2 (beat 2: +3; beat 10: −1), which barely affects timing.

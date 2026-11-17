@@ -2,7 +2,7 @@
 type: "video"
 category: "Videos"
 id: "s02-ice-king"
-status: "In production – script"
+status: "In production – art & storyboard"
 format: "Short"
 story_year: 1806
 setting: "New England pond → Boston wharf → Martinique → Calcutta"
