@@ -23,3 +23,5 @@ tags:
 **Appears in:** [[S01 The Horse That Could Do Math]] · [[S02 The Man Who Shipped Ice to the Tropics]] · [[EP01 What If You Never Had to Sleep Again]] · [[EP02 What If You Could Hear Everyone's Thoughts]]
 
 All characters follow [[Visual Style]] and [[Animation Rules]].
+
+**Rule:** Eddie keeps his sneakers in every costume. They're his signature.

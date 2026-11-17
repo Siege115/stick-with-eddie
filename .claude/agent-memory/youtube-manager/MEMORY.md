@@ -4,6 +4,9 @@
 - The owner controls every posting date and the cadence. Never propose dates, even when asked "what's next". Only record the dates the owner gives.
 - The owner picks each topic before any scripting starts. Bring 1 recommendation + 2 alternates with hook, setup, three-step escalation, payoff, sets, reuse, difficulty and sources.
 
+- The owner may delegate creative choices ("you pick"). Pick using the bible, explain each pick in one line, record it in PIPELINE.md and the vault Decisions note.
+- Standing choices: Eddie always keeps his sneakers; the one-frame log cameo is a running easter egg in every Short (window or porthole); stay within 55–65 s (trim lines rather than run long).
+
 ## Topic selection lessons (2026-11-17, Short #2 round)
 - Pattern that scores best: an absurd concrete action (hook) + a real mocking line from a powerful person or newspaper (conflict) + a journey or attempts that naturally come in threes + one humble hidden object as the payoff (e.g. sawdust).
 - Prefer topics with a primary-source quote (journal, newspaper). Popular "fun facts" often have wobbly numbers, so list the discrepancies as open questions for the fact-checker.
