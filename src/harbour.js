@@ -50,7 +50,7 @@ function shadeTree(parent, x, z, kind, s = 1) {
   if (kind === 'banyan') { // limbs and hanging aerial roots, a few reaching the ground as props
     for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2 + 0.3; K.rope(g, [0, 3.6, 0], [Math.cos(a) * 3.4, 4.6, Math.sin(a) * 3.4], 0.22, barkM); }
     const rootM = std({ color: 0x7a6a55, roughness: 1 });
-    for (let i = 0; i < 26; i++) { const a = r() * 6.3, rr = 1.2 + r() * 3.6, L = 1.2 + r() * 2.4; const reach = i % 6 === 0; K.rope(g, [Math.cos(a) * rr, 4.3, Math.sin(a) * rr], [Math.cos(a) * rr + 0.05, reach ? 0 : 4.3 - L, Math.sin(a) * rr], reach ? 0.09 : 0.03, rootM); }
+    for (let i = 0; i < 40; i++) { const a = r() * 6.3, rr = 1.2 + r() * 3.6, L = 1.2 + r() * 2.4; const reach = i % 5 === 0; K.rope(g, [Math.cos(a) * rr, 4.3, Math.sin(a) * rr], [Math.cos(a) * rr + 0.05, reach ? 0 : 4.3 - L, Math.sin(a) * rr], reach ? 0.12 : 0.055, rootM); }
   }
   return g;
 }

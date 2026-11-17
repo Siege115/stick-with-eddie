@@ -16,12 +16,7 @@ export const meta = {
     river: { base: 'water', tint: 'river', ship: null },
     tropicWater: { base: 'water', tint: 'tropic', ship: null },
   },
-  // the snow and May looks with the fog pushed back, so an empty wide set reads (the episode will tune per shot)
-  lights: {
-    snowWide: { bg: '#d9dee6', fog: '#cfd6df', near: 22, far: 80, sun: '#f4f6fb', sunI: 1.3, sunPos: [5, 12, 7], hemiS: '#e8edf5', hemiG: '#6c7380', hemiI: 1.3, lamp: 0.15, spot: 0, beam: 0, rim: '#e6eeff', tint: '#f4f6fa', exp: 1.05, mote: 0.8, motes: 'snow', long: 0.25, vig: '#1a2230', vigA: 0.3, shimmer: 0 },
-    mayWarm: { bg: '#f4c890', fog: '#efc392', near: 26, far: 90, sun: '#ffe0b0', sunI: 2.8, sunPos: [-10, 9, 8], hemiS: '#ffeccc', hemiG: '#6b4a32', hemiI: 1.0, lamp: 0.7, spot: 0, beam: 0, rim: '#ffc27a', tint: '#fff1e2', exp: 1.0, mote: 0.3, motes: 'dust', long: 0.8, vig: '#1e0f00', vigA: 0.32, shimmer: 0 },
-    seaDay: { bg: '#8fc3e8', fog: '#a9d2ee', near: 30, far: 110, sun: '#fff4dc', sunI: 3.0, sunPos: [-8, 12, 9], hemiS: '#d6ecff', hemiG: '#2c4a63', hemiI: 1.1, lamp: 0, spot: 0, beam: 0, rim: '#fff2c8', tint: '#fff8ec', exp: 1.0, mote: 0, motes: 'none', long: 0.3, vig: '#0a1a2a', vigA: 0.25, shimmer: 0 },
-  },
+  // snowWide / mayWarm / seaDay are stage presets now (src/stage.js LIGHTS)
 };
 export const cast = {};
 

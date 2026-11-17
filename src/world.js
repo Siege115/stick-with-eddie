@@ -8,6 +8,8 @@ import { buildWaterSet } from './ship.js';
 import { buildWharf } from './wharf.js';
 import { buildPond } from './pond.js';
 import { buildHarbour } from './harbour.js';
+import { buildHold, buildCutaway } from './hold.js';
+import { buildKitchen, buildWorkshop, buildSawmill } from './rooms.js';
 const { std, box, cyl, ink } = K;
 
 // ===================== Berlin courtyard ~1904 (S01) =====================
@@ -303,4 +305,4 @@ export function buildEmpty(scene, opts = {}) {
   return K.setHandle(g);
 }
 
-export const SETS = { courtyard: buildCourtyard, testyard: buildTestYard, empty: buildEmpty, water: buildWaterSet, wharf: buildWharf, pond: buildPond, harbour: buildHarbour };
+export const SETS = { courtyard: buildCourtyard, testyard: buildTestYard, empty: buildEmpty, water: buildWaterSet, wharf: buildWharf, pond: buildPond, harbour: buildHarbour, hold: buildHold, cutaway: buildCutaway, kitchen: buildKitchen, workshop: buildWorkshop, sawmill: buildSawmill };

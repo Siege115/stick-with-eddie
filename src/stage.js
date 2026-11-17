@@ -106,9 +106,13 @@ const LIGHTS = {
   // overexposed white-orange sun, orange far fog, strong heat shimmer
   blaze: { bg: '#ffb35c', fog: '#ff9a45', near: 18, far: 55, sun: '#fff0c8', sunI: 3.8, sunPos: [0, 6, -14], hemiS: '#ffe1b0', hemiG: '#8a4a20', hemiI: 1.2, lamp: 0, spot: 0, beam: 0, rim: '#fff0b0', tint: '#fff2e0', exp: 1.18, mote: 0.5, motes: 'heat', long: 0.6, vig: '#5a1e00', vigA: 0.4, shimmer: 6 },
   // dark cool interior, white-gold shaft from the hatch (uses the set's spot + beam), motes in the shaft
-  hold: { bg: '#05080d', fog: '#070b12', near: 6, far: 20, sun: '#4a5a7a', sunI: 0.18, sunPos: [6, 10, 6], hemiS: '#22324a', hemiG: '#080606', hemiI: 0.3, lamp: 0.1, spot: 80, beam: 0.6, rim: '#fff1cc', tint: '#ffffff', exp: 1.05, mote: 0.9, motes: 'dust', long: 0, vig: '#000000', vigA: 0.6, shimmer: 0 },
+  hold: { bg: '#05080d', fog: '#070b12', near: 8, far: 24, sun: '#4a5a7a', sunI: 0.18, sunPos: [6, 10, 6], hemiS: '#2e4262', hemiG: '#0e0a08', hemiI: 0.55, lamp: 0.1, spot: 80, beam: 0.6, rim: '#fff1cc', tint: '#ffffff', exp: 1.05, mote: 0.9, motes: 'dust', long: 0, vig: '#000000', vigA: 0.6, shimmer: 0 },
   // warm key from the left/outside, cool blue fill on the ice
-  cutaway: { bg: '#26314a', fog: '#26314a', near: 14, far: 40, sun: '#ffb070', sunI: 2.6, sunPos: [-12, 5, 4], hemiS: '#8fb8ff', hemiG: '#2a1a10', hemiI: 0.8, lamp: 0, spot: 0, beam: 0, rim: '#bfe0ff', tint: '#f4f8ff', exp: 1.0, mote: 0.4, motes: 'sawdust', long: 0, vig: '#0a1020', vigA: 0.45, shimmer: 0 },
+  cutaway: { bg: '#26314a', fog: '#26314a', near: 14, far: 40, sun: '#ffb070', sunI: 2.6, sunPos: [-7, 5, 9], hemiS: '#8fb8ff', hemiG: '#2a1a10', hemiI: 0.8, lamp: 0, spot: 0, beam: 0, rim: '#bfe0ff', tint: '#f4f8ff', exp: 1.0, mote: 0.4, motes: 'sawdust', long: 0, vig: '#0a1020', vigA: 0.45, shimmer: 0 },
+  // wide, readable versions for empty or wide sets (fog pushed back): the snowy wharf, Boston in May 1833, a clear day at sea
+  snowWide: { bg: '#d9dee6', fog: '#cfd6df', near: 22, far: 80, sun: '#f4f6fb', sunI: 1.3, sunPos: [5, 12, 7], hemiS: '#e8edf5', hemiG: '#6c7380', hemiI: 1.3, lamp: 0.15, spot: 0, beam: 0, rim: '#e6eeff', tint: '#f4f6fa', exp: 1.05, mote: 0.8, motes: 'snow', long: 0.25, vig: '#1a2230', vigA: 0.3, shimmer: 0 },
+  mayWarm: { bg: '#f4c890', fog: '#efc392', near: 26, far: 90, sun: '#ffe0b0', sunI: 2.8, sunPos: [-10, 9, 8], hemiS: '#ffeccc', hemiG: '#6b4a32', hemiI: 1.0, lamp: 0.7, spot: 0, beam: 0, rim: '#ffc27a', tint: '#fff1e2', exp: 1.0, mote: 0.3, motes: 'dust', long: 0.8, vig: '#1e0f00', vigA: 0.32, shimmer: 0 },
+  seaDay: { bg: '#8fc3e8', fog: '#a9d2ee', near: 30, far: 110, sun: '#fff4dc', sunI: 3.0, sunPos: [-8, 12, 9], hemiS: '#d6ecff', hemiG: '#2c4a63', hemiI: 1.1, lamp: 0, spot: 0, beam: 0, rim: '#fff2c8', tint: '#fff8ec', exp: 1.0, mote: 0, motes: 'none', long: 0.3, vig: '#0a1a2a', vigA: 0.25, shimmer: 0 },
 };
 export { LIGHTS };
 const col = (c) => new THREE.Color(c);
