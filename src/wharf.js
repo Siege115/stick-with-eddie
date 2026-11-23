@@ -143,9 +143,11 @@ export function buildWharf(scene, opts = {}) {
     // walls around a real doorway in the front (z = +D/2)
     ih.add(box(W, Hh, 0.18, plank, 0, Hh / 2, -D / 2)); for (const s of [-1, 1]) ih.add(box(0.18, Hh, D, plank, s * W / 2, Hh / 2, 0));
     ih.add(box((W - DW) / 2, Hh, 0.18, plank, -(W + DW) / 4, Hh / 2, D / 2)); ih.add(box((W - DW) / 2, Hh, 0.18, plank, (W + DW) / 4, Hh / 2, D / 2)); ih.add(box(DW, Hh - DH, 0.18, plank, 0, DH + (Hh - DH) / 2, D / 2));
-    const inside = new THREE.Mesh(new THREE.BoxGeometry(W - 0.4, Hh - 0.1, D - 0.4), dark); inside.position.y = Hh / 2; ih.add(inside);
+    const inside = new THREE.Mesh(new THREE.BoxGeometry(W - 0.4, Hh - 0.1, D - 0.4), std({ map: T.wood([96, 70, 46], 6), side: THREE.BackSide, roughness: 1 })); inside.position.y = Hh / 2; ih.add(inside);
+    { const il = new THREE.PointLight(0xffd29a, 3.0, 6, 1.2); il.position.set(0.3, 2.2, 0.2); ih.add(il); /* S02 v2: a lantern inside, so the push through the door never looks into black */
+      const lan = K.hangingLantern(ih, 0.3, 2.35, 0.2, { range: 0.1 }); if (lan && lan.pl) lan.pl.intensity = 0; }
     const straw = new THREE.Mesh(new THREE.PlaneGeometry(W - 0.5, D - 0.5), std({ map: T.hay(), color: 0x6a5a3a })); straw.rotation.x = -Math.PI / 2; straw.position.y = 0.02; ih.add(straw);
-    for (let i = 0; i < 4; i++) ih.add(box(0.6, 0.4, 0.45, std({ map: T.ice(i), color: 0x8aa8bb }), -0.9 + i * 0.62, 0.22 + (i % 2) * 0.42, -0.9, 0.05 * i, false));
+    for (let i = 0; i < 4; i++) ih.add(box(0.6, 0.4, 0.45, std({ map: T.ice(i), color: 0xc8e2f2, emissive: 0x1a3a56 }), -0.9 + i * 0.62, 0.22 + (i % 2) * 0.42, -0.9, 0.05 * i, false));
     const shed = K.gableHouse(ih, 0, 0, 0, { w: W + 0.2, d: D + 0.2, h: 0.001, roofH: 1.6, wall: () => plank, roof: roofOf(shT, 4.4), snow: snowy }); shed.position.y = Hh;
     shed.children[0].visible = false; // the gable house's wall box is the walls above; keep only roof + gables
     for (const s of [-1, 1]) ih.add(ink(box(0.16, DH + 0.1, 0.24, std({ color: 0x4a3420 }), s * (DW / 2 + 0.08), DH / 2, D / 2 + 0.05), 1.04));

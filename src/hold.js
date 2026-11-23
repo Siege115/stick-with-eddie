@@ -35,7 +35,7 @@ export function buildHold(scene, opts = {}) {
     const gr = k.createLinearGradient(0, 0, 0, 512); gr.addColorStop(0, '#6f9cc8'); gr.addColorStop(0.55, '#a9c3da'); gr.addColorStop(1, '#d9c49a'); k.fillStyle = gr; k.fillRect(0, 0, 512, 512);
     for (let i = 0; i < 14; i++) { const x = rr() * 512, y = rr() * 512, w = 60 + rr() * 120; const cg = k.createRadialGradient(x, y, 0, x, y, w); cg.addColorStop(0, 'rgba(240,236,226,.55)'); cg.addColorStop(1, 'rgba(240,236,226,0)'); k.fillStyle = cg; k.fillRect(x - w, y - w, 2 * w, 2 * w); }
     const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t; })();
-  const sky = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), new THREE.MeshBasicMaterial({ map: skyT, color: opts.sky ?? 0xdcecff, fog: false, toneMapped: false })); sky.rotation.x = Math.PI / 2; sky.position.y = DECK + 2.2; g.add(sky);
+  const sky = new THREE.Mesh(new THREE.PlaneGeometry(18, 18), new THREE.MeshBasicMaterial({ map: skyT, color: opts.sky ?? 0xdcecff, fog: false, toneMapped: false })); sky.rotation.x = Math.PI / 2; sky.position.y = DECK + 2.2; g.add(sky);
   for (const [w, d, x, z] of [[2.3, 0.15, 0, 0.93], [2.3, 0.15, 0, -0.93], [0.15, 1.7, 1.08, 0], [0.15, 1.7, -1.08, 0]]) g.add(box(w, 0.35, d, ribM, x, DECK + 0.3, z));
   const hinge = new THREE.Group(); hinge.position.set(0, DECK + 0.48, 1.0); g.add(hinge);
   const cover = new THREE.Group(); cover.position.z = -1.0; hinge.add(cover); cover.add(ink(box(2.3, 0.1, 2.0, deckM, 0, 0.05, 0), 1.02));

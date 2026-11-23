@@ -45,7 +45,7 @@ const tint = (id, over) => ({ ...C[id].c, ...over });
 export const cast = {
   // Eddie as Tudor (Boston only): 1806 on the wharf and in the workshop; 1833 on the wharf
   eddie: { card: 'hero', home: [3.6, 2.2], set: ['pond', 'wharf', 'workshop'], c: { ...C.eddie1806.c, hatInHand: true } },
-  eddie33: { card: 'hero', home: [0.6, -4.4], set: ['wharf33'], c: { ...C.eddie1833.c, item: undefined, itemL: 'cane' } },
+  eddie33: { card: 'hero', home: [0.6, -4.4], set: ['wharf33'], c: { ...C.eddie1833.c, item: undefined, itemL: 'cane', hatInHand: true } },
   // pond: four grown-up ice cutters on thick ice, well away from the open channel
   w1: P('iceSaw1', 'mid', [6.7, -7.6], ['pond']), w2: P('iceTongs', 'mid', [5.85, -6.3], ['pond']),
   w3: P('icePike', 'mid', [3.9, -8.3], ['pond']), w5: P('iceTongs', 'mid', [-0.45, -5.1], ['pond'], { c: { hat: 'roundHat', hatColor: '#4a3a2a', hatBand: '#2a2018', scarf: '#7a2a2a', body: '#5a4a3a' } }), w4: P('iceSaw2', 'mid', [7.9, -8.9], ['pond']),
@@ -147,7 +147,7 @@ export const beats = [
   },
   { // 4 — a hot port (Martinique dressing, no caption name): a cup of water in the sun, the merchant fans himself
     line: 'In hot places, almost nobody had ice.', min: 2.8, light: 'tropic', set: 'mq', amb: 'tropic',
-    shots: [sh(0, [[-6.6, 1.36, -6.55], [-6.6, 1.38, -6.75]], [[-6.55, 1.32, -9.75], [-6.55, 1.34, -9.75]], [40, 38], 'wipe:flare', { captionY: 0.86, shimmer: { amp: 4, y: [0.55, 0.75] } })],
+    shots: [sh(0, [[-6.6, 1.36, -6.55], [-6.6, 1.38, -6.75]], [[-6.55, 1.32, -9.75], [-6.55, 1.34, -9.75]], [40, 38], 'wipe:flare', { captionY: 0.72, shimmer: { amp: 4, y: [0.55, 0.75] } })], /* caption on his coat, clear of the cup */
     pos: { mer: [[0, [-6.55, -9.75]]] },
     acts: { mer: [[0, 'fan', { item: 'fan' }], [1.4, 'sweat', { item: 'fan' }], [2.2, 'fan', { item: 'fan' }]] },
     look: { mer: 'camera' },
@@ -240,9 +240,9 @@ export const beats = [
   },
   { // 11 — time-lapse: the blocks shrink a lot but not to nothing; Eddie sighs
     line: 'Too much of it still melted.', min: 2.2, light: 'warm', set: 'workshop', amb: 'room',
-    shots: [sh(0, [[3.5, 2.75, 0.95], [3.45, 2.7, 0.9]], [[-0.4, 0.45, -1.7], [-0.4, 0.45, -1.7]], [54, 54], 'cut', { captionY: 0.86 })], /* along the row: three shrunken blocks still there, puddles, Eddie sighs */
+    shots: [sh(0, [[2.9, 2.6, -2.7], [2.85, 2.55, -2.65]], [[-0.9, 0.55, -1.0], [-0.9, 0.55, -1.0]], [62, 62], 'cut', { captionY: 0.86 })], /* along the row: three shrunken blocks still there, puddles, Eddie sighs */
     open: { melt: [[0, 0.05], ['end', 1]], season: [[0, 0]] },
-    pos: { eddie: [[0, [0.95, -2.75]]] },
+    pos: { eddie: [[0, [-0.95, -0.4]]] },
     acts: { eddie: [[0, 'handChin'], [0.9, 'sigh']] },
     look: { eddie: [0, 0.6, -1.6] }, cast: ['eddie'],
     sfx: [[0.2, 'drip'], [0.8, 'drip'], [1.3, 'drip']],
@@ -275,9 +275,9 @@ export const beats = [
     line: 'The ship docks. The hatch opens, and most of the ice is still there.', min: 4.2, light: 'tropicHaze', set: 'ca', amb: [[0, 'river'], ['w:hatch-0.1', 'hold']],
     shots: [
       sh(0, [[6.45, 2.55, -0.45], [6.5, 2.45, -0.15]], [[6.6, 0.55, 4.6], [6.6, 0.5, 4.6]], [50, 48], 'push', { captionY: 0.88 }),
-      sh('w:hatch-0.1', [[-3.6, 1.2, 0.5], [-3.25, 1.18, 0.45]], [[1.2, 1.25, -0.1], [1.2, 1.2, -0.1]], [62, 60], 'push', { set: 'hold', light: 'hold', captionY: 0.86 }), /* proof shot: the stacked ice in sawdust, puddles, the shaft and a lit sky in the hatch */
+      sh('w:hatch-0.1', [[3.6, 0.85, 0.55], [3.25, 0.9, 0.45]], [[-0.6, 1.95, 0.0], [-0.6, 1.85, 0.0]], [66, 64], 'push', { set: 'hold', light: 'hold', captionY: 0.86 }), /* proof shot: the stacked ice in sawdust, puddles, the shaft and a lit sky in the hatch */
     ],
-    ship: [[0, CA_DOCK, Math.PI]], open: { sails: [[0, 0.25]], moored: [[0, 1]], hatch: [[0, 0], ['w:hatch', 0], ['w:hatch+0.6', 1]], crate: [[0, 0]] },
+    ship: [[0, CA_DOCK, Math.PI]], open: { sails: [[0, 0.25]], moored: [[0, 1]], hatch: [[0, 0.18], ['w:hatch', 0.18], ['w:hatch+0.6', 1]], crate: [[0, 0]] }, /* ajar at first: a sliver of light, never a black frame */
     pos: { ca1: [[0, [5.55, 5.0, -0.6]], ['w:hatch-0.1', [-1.25, 1.12, 2.72]]], ca3: [[0, [7.7, 5.05, -0.6]], ['w:hatch-0.1', [1.3, 1.1, 2.72]]], ca2: [[0, [6.6, 5.4, -0.6]]], ca4: [[0, [4.6, 4.6, -0.6]]], ca6: [[0, [8.65, 4.55, -0.6]]] },
     acts: { ca1: [[0, 'holdLedger'], [1.2, 'point'], ['w:hatch', 'watch'], ['w:most', 'clap']], ca3: [[0, 'watch'], [1.0, 'point'], ['w:most', 'cheerOne']], ca6: [[0, 'watch'], [1.5, 'clap']] },
     mood: { ca: 'watch' }, lookAll: [6.6, -0.4, 3.85],
@@ -290,7 +290,7 @@ export const beats = [
     shots: [sh(0, [[0.95, 0.9, -1.55], [0.8, 1.0, -2.0]], [[0.6, 1.75, -4.4], [0.6, 1.8, -4.4]], [46, 44], 'cut', { captionY: 0.84 })],
     ship: [[0, [30, 120, -2], NORTH]], open: { moored: [[0, 0]] },
     pos: { eddie33: [[0, [0.6, -4.4]]] },
-    acts: { eddie33: [[0, 'oldStand'], ['w:called', 'hatLift']] },
+    acts: { eddie33: [[0, 'oldStand'], ['w:called', 'hatWave2'], ['w:King', 'hatWave']] }, /* hat held in the raised hand, clear of the head */
     look: { eddie33: 'camera' }, mood: { crowd: 'cheer' }, lookAll: [0.6, 1.5, -4.4],
     sparkle: ['w:King', [0.6, 2.75, -4.4]],
     sfx: [['w:called', 'cheer'], ['w:King', 'ding']],
@@ -301,9 +301,9 @@ export const beats = [
     line: 'His secret? Sawdust, the stuff sawmills threw away, packed thick around the ice to keep the heat out.', voice: 'narrator', min: 7.7, light: 'hold', set: 'hold',
     amb: [[0, 'hold'], ['w:Sawdust-0.1', 'mill'], ['w:packed-0.15', 'hold']],
     shots: [
-      sh(0, [[1.15, 1.2, 1.6], [0.85, 1.02, 1.2]], [[0.1, 0.55, 0.2], [0.1, 0.6, 0.2]], [46, 42], 'cut', { ease: 'inout', captionY: 0.86 }),
+      sh(0, [[3.3, 1.35, 0.7], [2.8, 1.2, 0.6]], [[0.15, 0.5, 0.2], [0.15, 0.55, 0.2]], [42, 40], 'cut', { ease: 'inout', captionY: 0.86 }),
       sh('w:Sawdust-0.08', [[-2.9, 3.4, 4.3], [-2.5, 3.15, 3.8]], [[0.35, 0.95, -0.9], [0.4, 0.88, -0.95]], [46, 43], 'whip', { set: 'sawmill', light: 'warm', ease: 'inout', captionY: 0.88 }),
-      sh('w:sawmills-0.1', [[4.5, 2.05, -0.55], [4.2, 1.85, -0.9]], [[1.5, 0.8, -3.7], [1.6, 0.8, -3.8]], [50, 48], 'cut', { set: 'sawmill', light: 'warm', captionY: 0.88 }),
+      sh('w:sawmills-0.1', [[3.2, 2.3, -0.1], [3.0, 2.15, -0.45]], [[1.6, 0.8, -3.9], [1.7, 0.8, -4.0]], [54, 52], 'cut', { set: 'sawmill', light: 'warm', captionY: 0.88 }),
       sh('w:packed-0.15', [[-0.45, 1.05, 10.5], [0.45, 0.5, 2.6]], [[-0.45, 1.0, 0], [0.5, 0.42, 0]], [34, 30], 'match', { set: 'cutaway', light: 'cutaway', ease: 'inout', captionY: 0.86 }),
       sh('w:heat-0.2', [[0.45, 0.5, 2.6], END_CAM], [[0.5, 0.42, 0], END_LOOK], [30, HOOK_FOV], 'cut', { set: 'cutaway', light: 'nightReadable', ease: 'out', captionY: 0.88, grade: GRADE_NIGHT }),
     ],

@@ -121,7 +121,7 @@ export function buildWorkshop(scene, opts = {}) {
   const blocks = [], puddles = [];
   BIN_X.forEach((bx, i) => {
     const bz = -1.6; const bin = new THREE.Group(); bin.position.set(bx, 0, bz); g.add(bin);
-    for (const [w, d, x, z] of [[1.5, 0.08, 0, 0.55], [1.5, 0.08, 0, -0.55], [0.08, 1.1, 0.71, 0], [0.08, 1.1, -0.71, 0]]) bin.add(ink(box(w, 0.75, d, darkM, x, 0.45, z), 1.03));
+    for (const [w, d, x, z] of [[1.5, 0.08, 0, 0.55], [1.5, 0.08, 0, -0.55], [0.08, 1.1, 0.71, 0], [0.08, 1.1, -0.71, 0]]) { const lo = z > 0; bin.add(ink(box(w, lo ? 0.5 : 0.75, d, darkM, x, lo ? 0.325 : 0.45, z), 1.03)); } /* low front board: the packing and the block show from the side */
     bin.add(box(1.5, 0.08, 1.1, darkM, 0, 0.1, 0)); for (const [x, z] of [[-0.7, -0.5], [0.7, -0.5], [-0.7, 0.5], [0.7, 0.5]]) bin.add(box(0.08, 0.1, 0.08, darkM, x, 0.05, z));
     const fill = new THREE.Mesh(new THREE.BoxGeometry(1.36, 0.5, 0.98), packs[i].m); fill.position.y = 0.4; bin.add(fill);
     const blk = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.42, 0.44), iceMat()); blk.position.y = 0.72; blk.castShadow = true; bin.add(ink(blk, 1.03)); blocks.push(blk);
@@ -131,7 +131,7 @@ export function buildWorkshop(scene, opts = {}) {
     const ms = new THREE.Group(); ms.position.set(0.85, 0, 0.45); bin.add(ms); ms.add(ink(box(0.06, 1.3, 0.04, std({ color: 0xe9dcb8 }), 0, 0.65, 0), 1.06)); for (let y = 0.15; y < 1.3; y += 0.1) ms.add(box(Math.round(y * 10) % 5 === 0 ? 0.06 : 0.035, 0.012, 0.045, std({ color: 0x1b1b1b }), 0.02, y, 0));
     const pd = new THREE.Mesh(new THREE.CircleGeometry(1, 24), new THREE.MeshStandardMaterial({ color: 0x8fb4cc, roughness: 0.05, metalness: 0.5, transparent: true, opacity: 0.85, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 })); pd.rotation.x = -Math.PI / 2; pd.position.set(bx + 0.2, 0.015, bz + 0.9); pd.scale.set(0.01, 0.01, 1); g.add(pd); puddles.push(pd);
   });
-  H.open.melt = (v) => { v = Math.min(1, Math.max(0, v)); blocks.forEach((b, i) => { const s = 1 - v * [0.45, 0.55, 0.35][i]; b.scale.set(s, s, s); b.position.y = 0.57 + 0.21 * s; /* sits a little higher so even the shrunken block shows above the packing */ }); puddles.forEach((p, i) => { const s = 0.05 + v * [0.55, 0.65, 0.42][i]; p.scale.set(s * 1.4, s, 1); p.visible = v > 0.01; }); };
+  H.open.melt = (v) => { v = Math.min(1, Math.max(0, v)); blocks.forEach((b, i) => { const s = 1 - v * [0.45, 0.55, 0.35][i]; b.scale.set(s, s, s); b.position.y = 0.6 + 0.21 * s; /* sits a little higher so even the shrunken block shows above the packing */ }); puddles.forEach((p, i) => { const s = 0.05 + v * [0.55, 0.65, 0.42][i]; p.scale.set(s * 1.4, s, 1); p.visible = v > 0.01; }); };
   H.binAt = BIN_X.map((x) => [x, 0.72, -1.6]);
   // sacks "RICE HUSKS", a hay bale, a straw bundle, pitchfork + shovel, workbench with the notebook and an ink pot, lantern
   for (const [x, z, ry] of [[3.2, -0.2, 0.3], [3.4, 0.5, -0.4]]) { const s = K.sack(g, x, 0, z, ry, 0xc9b07a); const lb = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.18), std({ map: T.signText('RICE HUSKS', { bg: '#efe2bd', fg: '#3a2410', w: 512, h: 210, border: null, grain: false }) })); lb.position.set(0, 0.22, 0.24); lb.rotation.x = -0.4; s.add(lb); }
