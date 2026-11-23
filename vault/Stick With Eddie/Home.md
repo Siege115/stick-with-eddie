@@ -7,6 +7,8 @@ tags:
 ---
 # Stick With Eddie: Home
 
+> 🧠 **Memory main page:** open **Stick With Eddie Mainpage.base**. Read [[Standing Rules]] and [[Current Status]] first.
+
 **Channel:** Stick With Eddie (@stickwitheddie)
 **Format:** YouTube **Shorts only**, vertical 9:16, about 45–65 s. True fun-fact stories: one odd object, rule or decision with a hidden reason, told as a little story.
 **Look:** flat cut-out stick characters (pill bodies, flat white heads, thick black outlines) inside real 3D sets, with dramatic camera moves and small captions.

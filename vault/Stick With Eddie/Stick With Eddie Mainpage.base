@@ -1,0 +1,71 @@
+filters:
+  and:
+    - file.hasTag("stick-with-eddie")
+properties:
+  file.name:
+    displayName: Note
+  category:
+    displayName: Category
+  priority:
+    displayName: Priority
+  summary:
+    displayName: What it holds
+  updated:
+    displayName: Updated
+  type:
+    displayName: Type
+  status:
+    displayName: Status
+views:
+  - type: table
+    name: Memory (read first)
+    filters:
+      and:
+        - type == "memory"
+    groupBy:
+      property: priority
+      direction: ASC
+    order:
+      - file.name
+      - summary
+      - category
+      - updated
+  - type: cards
+    name: Memory cards
+    filters:
+      and:
+        - type == "memory"
+    order:
+      - file.name
+      - summary
+      - updated
+  - type: table
+    name: Videos
+    filters:
+      and:
+        - type == "video"
+    order:
+      - file.name
+      - id
+      - status
+      - length_s
+      - posted
+      - post_date
+  - type: table
+    name: Decisions and logs
+    filters:
+      and:
+        - type == "log"
+    order:
+      - file.name
+      - category
+  - type: table
+    name: Everything
+    groupBy:
+      property: type
+      direction: ASC
+    order:
+      - file.name
+      - type
+      - category
+      - status
