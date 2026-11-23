@@ -38,5 +38,6 @@ tags:
 - No transcription tool is available here, so a person should listen once for swallowed words.
 
 **Sound**
-- Music is warm and acoustic-sounding (pizzicato, soft piano, bass, light percussion). **Never 8-bit or chiptune.** Notes fade out; no clicks.
+- Music is warm and acoustic-sounding and must **fit the story's world**: sea and ship stories get a sea-shanty / ocean soundtrack (squeezebox, fiddle, upright bass, frame drum, waves and creaking timbers); town stories get pizzicato, soft piano and bass. **Never 8-bit or chiptune** (the owner has flagged this twice). Notes fade out; no clicks.
+- **Team double-check before every full render:** art director, QA and fact-checker review the preview stills; the sound designer checks the mix.
 - −14 LUFS integrated, true peak ≤ −1 dBTP. One clop or effect per counted action.
