@@ -128,6 +128,8 @@ const LIGHTS = {
   blaze: { bg: '#ffb35c', fog: '#ff9a45', near: 18, far: 55, sun: '#fff0c8', sunI: 3.8, sunPos: [0, 6, -14], hemiS: '#ffe1b0', hemiG: '#8a4a20', hemiI: 1.2, lamp: 0, spot: 0, beam: 0, rim: '#fff0b0', tint: '#fff2e0', exp: 1.18, mote: 0.5, motes: 'heat', long: 0.6, vig: '#5a1e00', vigA: 0.4, shimmer: 6 },
   // dark cool interior, white-gold shaft from the hatch (uses the set's spot + beam), motes in the shaft
   hold: { bg: '#05080d', fog: '#070b12', near: 8, far: 24, sun: '#4a5a7a', sunI: 0.18, sunPos: [6, 10, 6], hemiS: '#2e4262', hemiG: '#0e0a08', hemiI: 0.9, lamp: 0.6, spot: 80, beam: 0.6, rim: '#fff1cc', tint: '#ffffff', exp: 1.15, mote: 0.9, motes: 'dust', long: 0, vig: '#000000', vigA: 0.6, shimmer: 0 },
+  // readable night (S02 round 1b): the same navy mood, but a stronger moon key, more fill, lanterns brighter, cool rim on people
+  nightReadable: { bg: '#0e1c3c', fog: '#13234a', near: 12, far: 46, sun: '#b8ccff', sunI: 1.7, sunPos: [-8, 12, 6], hemiS: '#6178ad', hemiG: '#1a2236', hemiI: 0.95, lamp: 1.25, spot: 0, beam: 0, rim: '#cfe0ff', tint: '#e8eeff', exp: 1.12, mote: 0.85, motes: 'snow', long: 0.3, vig: '#000814', vigA: 0.45, shimmer: 0 },
   // warm key from the left/outside, cool blue fill on the ice
   cutaway: { bg: '#26314a', fog: '#26314a', near: 14, far: 40, sun: '#ffb070', sunI: 2.6, sunPos: [-7, 5, 9], hemiS: '#8fb8ff', hemiG: '#2a1a10', hemiI: 0.8, lamp: 0, spot: 0, beam: 0, rim: '#bfe0ff', tint: '#f4f8ff', exp: 1.0, mote: 0.4, motes: 'sawdust', long: 0, vig: '#0a1020', vigA: 0.45, shimmer: 0 },
   // wide, readable versions for empty or wide sets (fog pushed back): the snowy wharf, Boston in May 1833, a clear day at sea
@@ -493,6 +495,7 @@ export async function setup(beatsUrl, tlUrl) {
       const amt = alt ? w : 1 - w;
       p.headTilt += amt * (v - 0.5) * 0.18; p.brow = clamp(p.brow + amt * (v > 0.5 ? 0.25 : -0.15), -1, 1);
       p.armL.b += amt * 0.12; p.armR.a += amt * (v - 0.5) * 0.2; p.lookX += amt * (v > 0.5 ? 1 : -1); }
+    if (opts.freeze) { if (opts.item !== undefined) p.item = opts.item; if (opts.itemL !== undefined) p.itemL = opts.itemL; p.dir = scr.dir; p.turn = scr.turn; p.lookX = clamp(p.lookX + scr.turn * 1.5, -1.2, 1.2); return p; } // S02: deadpan hold — a true micro-freeze (no bob, no blink)
     // procedural layers
     const seed = hash(c.id) * 10;
     p.bob += Math.sin(t * 2.2 + seed) * 2;
@@ -769,6 +772,7 @@ export async function setup(beatsUrl, tlUrl) {
     O.setTransform(1, 0, 0, 1, 0, 0); O.filter = 'none'; O.globalAlpha = 1; O.globalCompositeOperation = 'source-over';
     O.drawImage(glCanvas, 0, 0);
     if (L.shimmer > 0.05) shimmer(t, L.shimmer, shot.shimmer && shot.shimmer.y);
+    if (shot.grade) gradeFrame(shot.grade); // S02: per-shot grade (local contrast, black-level lift)
     const hud = shot.hud;
     if (hud && hud.kind !== 'stamp') drawHud(hud, shot, t, hp);
     // sparkle on Hans (proud)
@@ -994,6 +998,11 @@ export async function setup(beatsUrl, tlUrl) {
     const parts = text.split(' '); let cx = bx + 35; O.textAlign = 'left';
     for (const p of parts) { O.fillStyle = /\d/.test(p) ? '#1f9d36' : '#111'; O.fillText(p, cx, by + th / 2 + 4); cx += O.measureText(p + ' ').width; }
     O.restore();
+  }
+  // grade: { contrast: 1.1 (mid-contrast boost), lift: 0.05 (black level raised, 0..1), liftTint: [r, g, b] multipliers }
+  function gradeFrame(g) {
+    if (g.contrast && g.contrast !== 1) { TM.setTransform(1, 0, 0, 1, 0, 0); TM.clearRect(0, 0, W, H); TM.drawImage(out, 0, 0); O.save(); O.filter = `contrast(${g.contrast}) saturate(${g.saturate ?? 1})`; O.drawImage(tmp, 0, 0); O.restore(); }
+    if (g.lift) { const tn = g.liftTint || [0.9, 0.95, 1.15]; O.save(); O.globalCompositeOperation = 'lighter'; O.fillStyle = `rgb(${tn.map((k) => Math.round(255 * g.lift * k)).join(',')})`; O.fillRect(0, 0, W, H); O.restore(); }
   }
   function bubbleWrap(text, x, y, s) { // multi-line speech bubble, tail to the speaker, kept inside the frame
     O.save(); O.font = 'bold 66px "DejaVu Sans", sans-serif';

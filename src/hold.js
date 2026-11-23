@@ -105,12 +105,12 @@ export function buildCutaway(scene, opts = {}) {
   g.add(ink(box(3.0, 0.18, D + 0.1, ribM, 0.2, HT + 0.18, 0), 1.01)); // the deck beam over the hold
   g.add(ink(box(1.9, 0.12, D, plankM, 0.36, 0.06, 0), 1.01)); // hold floor planks
   // the ice, cool blue-white (own lighting so the warm key never turns it lilac)
-  const iceM = new THREE.MeshStandardMaterial({ map: T.ice(3), color: 0xeaf6ff, emissive: 0x3a6c98, emissiveIntensity: 0.4, roughness: 0.2 });
+  const iceM = new THREE.MeshStandardMaterial({ map: T.ice(3), color: 0xeaf6ff, emissive: 0x3a6c98, emissiveIntensity: 0.3, /* matched to the pond block of frame 0 (loop) */ roughness: 0.2 });
   const iw = 0.74, ih = 0.56;
   g.add(ink(box(iw, ih, 0.6, iceM, ICE_X, 0.12 + ih / 2, 0.35), 1.01)); // the hero block, in front
   for (const [x, y, z] of [[ICE_X - 0.45, 0.12 + ih / 2, -0.3], [ICE_X + 0.45, 0.12 + ih / 2, -0.3], [ICE_X, 0.12 + ih * 1.5 + 0.02, -0.3]]) g.add(ink(box(iw, ih, 0.6, iceM, x, y, z), 1.01));
   for (const [x, z, r] of [[ICE_X - 0.5, 0.45, 0.22], [ICE_X + 0.48, 0.5, 0.2], [-0.4, 0.3, 0.25]]) { const pl = new THREE.Mesh(new THREE.SphereGeometry(r, 14, 8, 0, 6.3, 0, 1.5), sawM); pl.scale.y = 0.5; pl.position.set(x, 0.12, z); g.add(pl); } // sawdust packed round the blocks
-  const cool = new THREE.PointLight(0x9cc8ff, 3.0, 4, 1.2); cool.position.set(ICE_X + 0.2, 1.4, 1.2); g.add(cool);
+  const cool = new THREE.PointLight(0x9cc8ff, 2.5, 4, 1.2); cool.position.set(ICE_X + 0.2, 1.4, 1.2); g.add(cool);
   g.add(ink(box(3.8, 0.16, D + 0.4, std({ color: 0x1b2438 }), -0.4, -0.08, 0), 1.01)); // plinth
   H.iceAt = [ICE_X, 0.12 + ih / 2, 0.65];
   return H;

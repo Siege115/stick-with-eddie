@@ -55,11 +55,28 @@ export function resolver(tl) {
   };
 }
 
+const LITTLE = new Set(['a', 'an', 'the', 'to', 'of', 'in', 'on', 'at', 'from', 'with', 'and', 'it', 'his', 'he', 'for', 'by', 'but', 'so', 'there', 'was', 'were', 'what', 'do', 'i', 'is', 'they', 'him', 'them', 'too']);
+const ends = (w) => /[.,?!:;"…]$/.test(w.w);
+const chars = (c) => c.reduce((n, w) => n + clean(w.w).length, 0);
+// one caption phrase starting at word i: up to 3 words / 14 letters, broken at punctuation, never ending on a little word
+function phraseChunk(ws, i) {
+  const chunk = [ws[i]];
+  while (i + chunk.length < ws.length && !ends(chunk[chunk.length - 1])) {
+    const next = ws[i + chunk.length], cand = [...chunk, next];
+    if (cand.length > 3 || chars(cand) > 14) break;
+    if (chunk.length >= 2 && !LITTLE.has(clean(chunk[chunk.length - 1].w))) break;
+    chunk.push(next);
+  }
+  const last = chunk[chunk.length - 1], nx = ws[i + chunk.length];
+  if (LITTLE.has(clean(last.w)) && !ends(last) && nx) { if (chars([...chunk, nx]) <= 16 && chunk.length < 4) chunk.push(nx); else if (chunk.length > 1) chunk.pop(); }
+  return chunk;
+}
 const NUMBER_WORDS = new Set(['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'thirteen', 'hundred']);
 
 export function compile(meta, beats, tl) {
   const R = resolver(tl);
-  const taps = [], poise = [], sfx = [], trans = [], captions = [];
+  const taps = [], poise = [], sfx = [], trans = [], captions = [], amb = [];
+  const phrase = meta.captionMode === 'phrase'; // S02+: phrase chunks that never end on a little word ("from a | frozen pond" → "from a frozen | pond")
   beats.forEach((b, bi) => {
     const bt = tl.beats[bi];
     if (b.taps) {
@@ -68,6 +85,8 @@ export function compile(meta, beats, tl) {
     }
     if (b.hans && b.hans.poise) for (const [a, z] of b.hans.poise) poise.push([R(a, bi), Math.min(bt.end, bt.start + z)]);
     (b.sfx || []).forEach(([at, name, arg]) => sfx.push([R(at, bi), name, arg]));
+    // room tone per location: `amb: 'name'` or `amb: [[at, 'name'], …]` (a switch inside the beat follows a location change)
+    if (typeof b.amb === 'string') amb.push([bt.start, b.amb]); else if (Array.isArray(b.amb)) for (const [at, name] of b.amb) amb.push([R(at, bi), name]);
     b.shots.forEach((s, si) => {
       const t0 = R(s.at, bi);
       if (si === 0 && bi === 0) return;
@@ -78,13 +97,14 @@ export function compile(meta, beats, tl) {
       const ws = p.words; let i = 0;
       while (i < ws.length) {
         const a = ws[i], b2 = ws[i + 1];
-        const take2 = b2 && !/[.,?!:;]$/.test(a.w) && (clean(a.w).length + clean(b2.w).length <= 11);
-        const chunk = take2 ? [a, b2] : [a];
+        let chunk;
+        if (phrase) chunk = phraseChunk(ws, i);
+        else { const take2 = b2 && !/[.,?!:;]$/.test(a.w) && (clean(a.w).length + clean(b2.w).length <= 11); chunk = take2 ? [a, b2] : [a]; }
         captions.push({ t0: chunk[0].t0 - 0.03, t1: chunk[chunk.length - 1].t1, words: chunk.map((w) => ({ w: w.w.replace(/"/g, '').replace(/,(?!\d)/g, '').replace(/[.:;]$/, ''), /* keep commas inside numbers (15,000) */ num: NUMBER_WORDS.has(clean(w.w)) || /\d/.test(w.w) })) });
         i += chunk.length;
       }
     }
   });
   for (let i = 0; i < captions.length - 1; i++) captions[i].t1 = Math.min(Math.max(captions[i].t1 + 0.15, captions[i].t1), captions[i + 1].t0);
-  return { taps, poise, sfx, trans, captions };
+  return { taps, poise, sfx, trans, captions, amb };
 }

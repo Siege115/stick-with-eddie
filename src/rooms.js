@@ -180,26 +180,27 @@ export function buildSawmill(scene, opts = {}) {
   carriage.add(box(1.6, 0.86, 0.025, std({ color: 0x1a1008 }), -1.25, 0.73, -0.6)); // the kerf (cut so far)
   // sawdust: pouring from under the saw (particles), a big smooth heap, and a chute dumping some toward the river
   const sawT = T.sawdust([2, 2]); const sawM = std({ map: sawT, roughness: 1 });
-  const heap = new THREE.Mesh(new THREE.LatheGeometry([[2.3, -0.02], [2.0, 0.25], [1.4, 0.75], [0.7, 1.15], [0.001, 1.3]].map(([x, y]) => new THREE.Vector2(x, y)), 28), sawM); heap.position.set(-0.4, 0.25, 1.4); heap.scale.set(1, 1, 0.65); heap.castShadow = true; heap.receiveShadow = true; g.add(K.inkOffset(heap, 0.025));
-  const PN = 160; const pp = new Float32Array(PN * 3); const pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.BufferAttribute(pp, 3));
-  const pour = new THREE.Points(pg, new THREE.PointsMaterial({ color: 0xd9b27a, size: 0.045, transparent: true, opacity: 0.95, depthWrite: false })); pour.frustumCulled = false; g.add(pour);
+  const heap = new THREE.Mesh(new THREE.LatheGeometry([[2.3, -0.02], [2.0, 0.25], [1.4, 0.75], [0.7, 1.15], [0.001, 1.3]].map(([x, y]) => new THREE.Vector2(x, y)), 28), sawM); heap.position.set(1.3, 0.25, -2.4); heap.scale.set(0.6, 0.6, 0.42); /* behind the saw: the saw and the falling sawdust are the hero */ heap.castShadow = true; heap.receiveShadow = true; g.add(K.inkOffset(heap, 0.025));
+  const PN = 260; const pp = new Float32Array(PN * 3); const pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.BufferAttribute(pp, 3));
+  const pour = new THREE.Points(pg, new THREE.PointsMaterial({ color: 0xf0c98a, size: 0.1, transparent: true, opacity: 0.95, depthWrite: false })); pour.frustumCulled = false; g.add(pour);
   const seeds = []; for (let i = 0; i < PN; i++) seeds.push([r(), r(), r()]);
-  { const ch = new THREE.Group(); ch.position.set(2.6, 0.9, 1.6); ch.rotation.z = -0.35; g.add(ch); ch.add(ink(box(2.8, 0.06, 0.6, woodD, 0, 0, 0), 1.03)); for (const s of [-1, 1]) ch.add(box(2.8, 0.25, 0.05, woodD, 0, 0.12, s * 0.3)); ch.add(box(2.6, 0.05, 0.5, sawM, 0, 0.05, 0)); for (const [x, y] of [[-1.0, -0.5], [0.9, -0.95]]) ch.add(box(0.1, 1.0, 0.1, woodD, x, y, 0)); }
-  { const sp = new THREE.Mesh(new THREE.CircleGeometry(1.6, 18), new THREE.MeshStandardMaterial({ map: sawT, transparent: true, opacity: 0.8 })); sp.rotation.x = -Math.PI / 2; sp.position.set(7.4, -0.78, 1.8); sp.scale.set(1.6, 0.8, 1); g.add(sp); } // sawdust drifting on the river (fact-check row 20)
+  { const pile = new THREE.Mesh(new THREE.LatheGeometry([[0.5, 0], [0.38, 0.07], [0.2, 0.14], [0.001, 0.17]].map(([x, y]) => new THREE.Vector2(x, y)), 20), sawM); pile.position.set(0.12, 0.245, 0.3); pile.scale.set(1, 1, 0.7); pile.receiveShadow = true; g.add(K.inkOffset(pile, 0.015)); } /* the little pile under the pour */
+  { const ch = new THREE.Group(); ch.position.set(3.7, 0.7, -2.4); ch.rotation.z = -0.35; g.add(ch); ch.add(ink(box(2.8, 0.06, 0.6, woodD, 0, 0, 0), 1.03)); for (const s of [-1, 1]) ch.add(box(2.8, 0.25, 0.05, woodD, 0, 0.12, s * 0.3)); ch.add(box(2.6, 0.05, 0.5, sawM, 0, 0.05, 0)); for (const [x, y] of [[-1.0, -0.5], [0.9, -0.95]]) ch.add(box(0.1, 1.0, 0.1, woodD, x, y, 0)); }
+  { const sp = new THREE.Mesh(new THREE.CircleGeometry(1.6, 18), new THREE.MeshStandardMaterial({ map: sawT, transparent: true, opacity: 0.8 })); sp.rotation.x = -Math.PI / 2; sp.position.set(7.4, -0.78, -2.2); sp.scale.set(1.6, 0.8, 1); g.add(sp); } // sawdust drifting on the river (fact-check row 20)
   // boards stacked, logs waiting (bark sides, ring ends), a cant hook leaning, a hand cart
   for (let l = 0; l < 6; l++) for (let i = 0; i < 5; i++) g.add(ink(box(3.2, 0.06, 0.28, woodL, -2.0, 0.28 + l * 0.07, -2.2 + i * 0.3 + (l % 2) * 0.05), 1.02));
   for (let i = 0; i < 5; i++) { const lg = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.38, 4.0, 16), [barkM, endM, endM]); lg.rotation.z = Math.PI / 2; lg.position.set(-1.2 + (i % 3) * 0.05, 0.37 + Math.floor(i / 3) * 0.62, -5.0 - (i % 3) * 0.76 + Math.floor(i / 3) * 0.38); lg.castShadow = true; g.add(K.inkOffset(lg, 0.02)); }
   { const ck = new THREE.Group(); ck.position.set(-3.6, 0.25, -0.9); ck.rotation.z = 0.25; g.add(ck); ck.add(cyl(0.035, 0.04, 1.5, woodD, 0, 0.75, 0, 8)); const hk = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.025, 6, 12, Math.PI * 1.2), std({ color: 0x2a2c30, metalness: 0.5 })); hk.position.set(0.12, 1.1, 0); ck.add(ink(hk, 1.1)); }
-  K.handCart(g, -6.2, 1.8, 0.6, woodL, woodD, false); K.sack(g, 3.0, 0.25, -2.4, 0.2, 0xc9b07a);
+  K.handCart(g, -6.2, 1.8, 0.6, woodL, woodD, false); K.sack(g, 3.6, 0.25, 1.4, 0.2, 0xc9b07a);
   // pine forest backdrop (scenery only)
   const pineM = std({ color: 0x2f5a36, roughness: 1, flatShading: true });
   for (let i = 0; i < 40; i++) { const a = r() * Math.PI - Math.PI, R = 20 + r() * 20; const x = Math.cos(a) * R * 0.9 - 4, z = Math.sin(a) * R; const s = 1 + r() * 0.8; const t = new THREE.Group(); t.position.set(x, 0, z); t.scale.setScalar(s); g.add(t); t.add(cyl(0.2, 0.25, 1.5, std({ color: 0x4a3420 }), 0, 0.75, 0, 6)); for (let k = 0; k < 4; k++) { const c = new THREE.Mesh(new THREE.ConeGeometry(2.0 - k * 0.42, 2.0, 9), pineM); c.position.y = 1.6 + k * 1.15; t.add(c); } }
   H.motes = K.dustMotes(g, r, { n: 220, w: 6, h: 3.5, z0: -3, d: 6, x0: 0 });
-  H.sawAt = [0, 1.0, -0.6]; H.heapAt = [-0.4, 1.0, 1.4];
+  H.sawAt = [0, 1.0, -0.6]; H.heapAt = [1.3, 0.8, -2.4];
   H.tick = (t) => {
     wheel.rotation.z = -t * 0.9; foamT.offset.x = t * 0.4;
     sash.position.y = Math.sin(t * 9) * 0.22; // up-and-down sash saw
-    for (let i = 0; i < PN; i++) { const [a, b, c] = seeds[i]; const age = (t * 0.9 + a) % 1; pp[i * 3] = -0.05 + (b - 0.5) * 0.25 + age * -0.25; pp[i * 3 + 1] = 0.95 - age * 0.95 + 0.3; pp[i * 3 + 2] = -0.25 + age * 1.3 + (c - 0.5) * 0.25; }
+    for (let i = 0; i < PN; i++) { const [a, b, c] = seeds[i]; const age = (t * 0.9 + a) % 1; pp[i * 3] = 0.05 + (b - 0.5) * 0.22 + age * 0.12; pp[i * 3 + 1] = 1.05 - age * age * 0.8 + (c - 0.5) * 0.04; pp[i * 3 + 2] = -0.1 + age * 0.35 + (c - 0.5) * 0.12; } /* sawdust pouring out of the front of the cut onto a small pile in the foreground (the big heap sits behind) */
     pg.attributes.position.needsUpdate = true;
   };
   return H;

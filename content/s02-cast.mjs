@@ -18,7 +18,7 @@ export const S02_COSTUMES = {
   iceSaw2: { label: 'Ice cutter · leather apron', c: { body: '#4a4a52', hat: 'knit', hatColor: '#6a6a6a', hatBand: '#4a4a4a', pom: false, gloves: '#6a4a2a', apronLong: '#7a5a3a', item: 'saw', shoes: 'boot' }, pose: 'saw' },
   // ---- sailors ----
   sailor1: { label: 'Sailor · hauling (Boston)', c: { body: '#f4f1e8', stripes: '#1d3557', neckerchief: '#c0392b', hat: 'knit', hatColor: '#1d3557', hatBand: '#14263d', pom: false, shoes: 'boot' }, pose: 'hoist' },
-  sailor2: { label: 'Sailor · coiling rope', c: { body: '#2b3d5a', neckerchief: '#e9e2d0', hat: 'knit', hatColor: '#7a2a2a', hatBand: '#5a1f1f', pom: false, item: 'rope', shoes: 'boot' }, pose: 'coilRope' },
+  sailor2: { label: 'Sailor · coiling rope', c: { body: '#efe8d8', stripes: '#7a2a2a', neckerchief: '#1d3557', hat: 'knit', hatColor: '#1d3557', hatBand: '#14263d', pom: false, item: 'rope', shoes: 'boot' }, pose: 'coilRope' }, // striped shirt + knit cap: never mistaken for Eddie
   sailor3: { label: 'Sailor · straw hat (at sea)', c: { body: '#f4f1e8', stripes: '#7a2a2a', neckerchief: '#1d3557', hat: 'straw', hatColor: '#e3c87a', hatBand: '#1d3557', shoes: 'boot' }, pose: 'wheel' },
   // ---- Boston crowd, 1806 ----
   b06man: { label: 'Boston 1806 · gentleman', c: { coat: coat('#3a2a22'), cravat: '#ffffff', shirt: '#e8dcc0', hat: 'topTall', hatColor: '#222', hatBand: '#5a3a2a', breeches: '#c9b48a', stockings: '#f2efe6', shoes: 'small' }, pose: 'laughPoint' },

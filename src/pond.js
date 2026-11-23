@@ -40,11 +40,20 @@ export function buildPond(scene, opts = {}) {
   // the hero block (beat 1's first frame = its face): freshly cut, on solid ice well away from the channel
   const HERO = [5.2, -6.2]; H.heroBlock = [HERO[0], 0.21, HERO[1] + 0.22];
   g.add(ink(box(0.62, 0.42, 0.44, iceBlockM, HERO[0], 0.21, HERO[1]), 1.03));
+  // the hook block (frame 0): hauled up out of the channel onto the north lip by two cutters with tongs (movers.pblock)
+  { const pb = new THREE.Group(); pb.userData.bob = 0; pb.position.set(-1.0, -0.12, -3.35); g.add(pb);
+    const bm = std({ map: T.ice(3), roughness: 0.12, color: 0xeaf6ff, emissive: 0x2e5f88 });
+    pb.add(ink(box(0.66, 0.46, 0.46, bm, 0, 0.23, 0), 1.03));
+    const gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: T.radial('rgba(255,255,255,1)', 'rgba(200,230,255,0)'), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })); gl.position.set(0.2, 0.4, 0.24); gl.scale.set(0.1, 0.1, 1); pb.add(gl);
+    H.movers.pblock = pb; H.pblock = pb;
+    const warm = new THREE.PointLight(0xffb060, 3.5, 5, 1.4); warm.position.set(-0.1, 1.3, -4.7); g.add(warm); H.lamps.push({ pl: warm, glow: { material: {} } });
+  }
   { const saw = new THREE.Group(); saw.position.set(HERO[0], 0, HERO[1]); g.add(saw);
     const steel = std({ color: 0xb8c0c8, metalness: 0.8, roughness: 0.3 });
-    const blade = new THREE.Mesh(new THREE.BoxGeometry(0.06, 1.4, 0.012), std({ color: 0xc8d2dc, metalness: 0.4, roughness: 0.3, emissive: 0x3a4a5a })); blade.position.set(0, 0.7, 0.23); saw.add(K.inkOffset(blade, 0.006)); // flat side to the camera, cutting the block's front edge
-    for (let y = 0.05; y < 1.4; y += 0.05) { const th = new THREE.Mesh(new THREE.ConeGeometry(0.012, 0.03, 3), steel); th.position.set(-0.035, y, 0.23); th.rotation.z = Math.PI / 2; saw.add(th); }
-    saw.add(ink(box(0.42, 0.05, 0.05, std({ map: T.wood([120, 88, 56], 3) }), 0, 1.42, 0), 1.06));
+    const blade = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.85, 0.012), std({ color: 0xc8d2dc, metalness: 0.4, roughness: 0.3, emissive: 0x3a4a5a })); blade.position.set(0, 0.425, 0.23); saw.add(K.inkOffset(blade, 0.006)); // flat side to the camera, cutting the block's front edge
+    for (let y = 0.05; y < 0.85; y += 0.05) { const th = new THREE.Mesh(new THREE.ConeGeometry(0.012, 0.03, 3), steel); th.position.set(-0.055, y, 0.23); th.rotation.z = Math.PI / 2; saw.add(th); }
+    saw.add(ink(box(0.42, 0.05, 0.05, std({ map: T.wood([120, 88, 56], 3) }), 0, 0.87, 0.23), 1.06));
+    g.add(box(0.025, 0.012, 0.46, std({ color: 0x1a3a56 }), HERO[0], 0.425, HERO[1], 0, false)); // the saw groove along the top
     const chipsT = T.radial('rgba(235,248,255,1)', 'rgba(235,248,255,0)'); const chips = [];
     for (let i = 0; i < 10; i++) { const c = new THREE.Sprite(new THREE.SpriteMaterial({ map: chipsT, transparent: true, depthWrite: false })); c.visible = false; g.add(c); chips.push(c); }
     let sawV = 0; H.open.saw = (v) => { sawV = v; saw.visible = v > 0.01; };

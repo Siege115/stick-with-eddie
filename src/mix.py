@@ -251,6 +251,28 @@ def sawmill(dur=3.0):  # up-and-down sash saw strokes over running water
     y = strokes + water
     return _fade(y / (np.abs(y).max() + 1e-9), 0.1, 0.3)
 
+def ice_crack():  # impact punctuation: sharp crack transient + a short low thump + crystalline tail
+    n = int(0.7 * SR); t = np.arange(n) / SR
+    crack = hp(noise(n), 2500) * np.exp(-t / 0.012) * 1.2
+    thump = np.sin(2 * np.pi * (95 - 40 * t) * t) * np.exp(-t / 0.09) * 0.9
+    tail = sum(np.sin(2 * np.pi * f * t) * np.exp(-t / d) for f, d in [(3100, .18), (4700, .12), (6200, .08)]) * 0.12
+    y = crack + thump + tail
+    return y / (np.abs(y).max() + 1e-9)
+def riser(dur=1.0):  # soft rising swell into a reveal
+    n = int(dur * SR); t = np.arange(n) / SR; out = np.zeros(n); x = noise(n); seg = 1024
+    for k in range(0, n, seg):
+        f = 400 + 3200 * (k / n) ** 1.6
+        out[k:k + seg] = bp(x[max(0, k - 2048):k + seg], f * 0.7, min(f * 1.4, 18000))[-len(x[k:k + seg]):]
+    tone = np.sin(2 * np.pi * np.cumsum(220 + 440 * (t / dur) ** 2) / SR) * 0.25
+    y = (out + tone) * (t / dur) ** 2
+    return _fade(y / (np.abs(y).max() + 1e-9), 0.05, 0.03)
+def soft_impact():  # a felt (sub) thud with a little wood
+    n = int(0.5 * SR); t = np.arange(n) / SR
+    sub = np.sin(2 * np.pi * (70 - 25 * t) * t) * np.exp(-t / 0.12)
+    wood = bp(noise(n), 300, 1500) * np.exp(-t / 0.03) * 0.5
+    y = sub + wood
+    return y / (np.abs(y).max() + 1e-9)
+
 NAMED = {
     "ding": lambda a: (ding(), 0.25), "ping": lambda a: (ping(), 0.3), "pop": lambda a: (pop(), 0.35), "tick": lambda a: (tick(), 0.35),
     "stamp": lambda a: (stamp(), 0.8), "chalk": lambda a: (chalk(a or 1.0), 0.25), "paper": lambda a: (paper(), 0.45),
@@ -260,8 +282,11 @@ NAMED = {
     "crowdMurmur": lambda a: (murmur(a or 4), 0.12),
     "iceSaw": lambda a: (ice_saw(a or 1.2), 0.35), "drip": lambda a: (drip(), 0.3), "splash": lambda a: (splash(), 0.35),
     "gulls": lambda a: (gulls(a or 2.0), 0.18), "waves": lambda a: (waves(a or 4.0), 0.3), "wind": lambda a: (wind(a or 4.0), 0.3),
-    "sawmill": lambda a: (sawmill(a or 3.0), 0.3), "steps2": lambda a: (np.concatenate([step(0), np.zeros(int(.3 * SR)), step(1)]), 0.6),
+    "sawmill": lambda a: (sawmill(a or 3.0), 0.3),
+    "iceCrack": lambda a: (ice_crack(), 0.55), "riser": lambda a: (riser(a or 1.0), 0.3), "softImpact": lambda a: (soft_impact(), 0.5),
+    "silence": lambda a: (np.zeros(10), 0.0), "steps2": lambda a: (np.concatenate([step(0), np.zeros(int(.3 * SR)), step(1)]), 0.6),
 }
+SILENCE = [(t, t + (arg or 0.4)) for t, name, arg in EV["sfx"] if name == "silence"]
 for t, name, arg in EV["sfx"]:
     x, g = NAMED[name](arg)
     place(sfx, x, t, g, rng.uniform(-0.25, 0.25))
@@ -352,10 +377,18 @@ AMB = {  # S02 room tones by name (beat `amb`)
     "mill": lambda d: lp(noise(int(d * SR)), 1200) * 0.3 + birds(d) * 0.4,
     "none": lambda d: np.zeros(int(d * SR)),
 }
+if MIX and EV.get("amb"):
+    segs = sorted(EV["amb"]); PRE = 0.2  # J-cut: the next place is heard 0.2 s before we see it
+    for k, (t0, name) in enumerate(segs):
+        t1 = segs[k + 1][0] if k + 1 < len(segs) else DUR
+        a = max(0.0, t0 - (PRE if k else 0)); d = max(0.1, t1 - a + 0.15)
+        x = AMB.get(name, AMB["room"])(d); n = len(x); e = np.ones(n); fi, fo = int(0.15 * SR), int(0.15 * SR)
+        e[:fi] = np.linspace(0, 1, fi) if k else 1; e[-fo:] *= np.linspace(1, 0, fo)
+        place(amb, x * e, a, 0.22)
 for bi, b in enumerate(TL["beats"]):
     d = b["end"] - b["start"]
     if MIX:
-        place(amb, AMB.get(b.get("amb") or "room", AMB["room"])(d), b["start"], 0.22)
+        if not EV.get("amb"): place(amb, AMB.get(b.get("amb") or "room", AMB["room"])(d), b["start"], 0.22)
         continue
     if 12 <= bi <= 14:
         place(amb, lp(noise(int(d * SR)), 300) * 0.25, b["start"], 0.3)
@@ -364,7 +397,18 @@ for bi, b in enumerate(TL["beats"]):
 
 # ---------------- final ----------------
 sfx = reverb(sfx, 0.6, 0.16)
+if MIX and SILENCE:  # silence drop: music, room tone and sfx tails dip out for a beat (fast fades, no clicks)
+    g = np.ones(N)
+    for a, z in SILENCE:
+        ia, iz = t2i(a), t2i(z); f = int(0.04 * SR)
+        g[max(0, ia):min(N, iz)] = 0.0
+        g[max(0, ia - f):max(0, ia)] = np.linspace(1, 0, max(0, ia) - max(0, ia - f))
+        g[min(N, iz):min(N, iz + f)] = np.linspace(0, 1, min(N, iz + f) - min(N, iz))
+    music *= g[:, None]; amb *= g[:, None]; sfx *= g[:, None]  # sfx tails (cheer reverb) too, so the drop is a real silence
 mix = voice * 1.0 + sfx * 0.9 + music * 0.18 + amb * 0.5
 mix = mix / (np.abs(mix).max() + 1e-9) * 0.89
+if MIX:  # true-peak guard: 4x oversampled peak kept under -1 dBTP before loudness normalisation re-checks it
+    tp = np.abs(resample_poly(mix, 4, 1, axis=0)).max()
+    if tp > 10 ** (-1.5 / 20): mix *= 10 ** (-1.5 / 20) / tp
 sf.write(OUT, mix.astype(np.float32), SR, subtype="FLOAT")
 print("mix ok", OUT, f"{DUR:.2f}s")
