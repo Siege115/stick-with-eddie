@@ -10,7 +10,7 @@ Method:
 
 Timing: **68.24 s** (2047 frames at 30 fps). Speech is 55.32 s. There are 98 caption chunks.
 
-**Verdict: NOT READY** for the full render. 6 must-fix items (list at the end). Most of the 23 items are fixed. The blockers are mostly new problems that came with the v2 changes.
+**Verdict: NOT READY** for the full render. 7 must-fix items (list at the end). Most of the 23 items are fixed. The blockers are mostly new problems that came with the v2 changes.
 
 ---
 
@@ -25,7 +25,7 @@ Timing: **68.24 s** (2047 frames at 30 fps). Speech is 55.32 s. There are 98 cap
 | 5 | Whole hat inside the card, in the raised hand | ✅ | 5.27–5.90 s: the hat is held by the brim in the raised hand, uncut, clear of the head. |
 | 6 | Gulls fly their own paths | ✅ (stills) | Gulls sit in the sky at different spots across 4.50–5.50 s; none sits on Eddie's line. Motion paths can't be proven from stills. |
 | 7 | Jug: handle attached, beads, drips | ✅ | 9.50–11.87 s: the handle joins the body; beads sit on the surface. The ring on the table is mostly below frame. |
-| 8 | Detailed cup | ✅ | 13.40–16.43 s: pewter cup with rim, banding, handle, beads, shadow ring. |
+| 8 | Detailed cup | ❌ (fact) | 13.40–16.43 s: pewter cup with rim, banding, handle, beads, shadow ring: detailed as asked. But the fact-checker's v2 check (V12, `studio/briefs/s02-ice-king-factcheck.md`, commit 43a32ca) says the **condensation beads and wet ring must go**: a sweating cup means a cold drink, which contradicts "almost nobody had ice". |
 | 9 | No dead air before "His secret?" | ✅ | 59.49–60.68 s: the mix stays at −16 to −22 dBFS RMS (100 ms windows), with the riser at 60.04 s. The quietest 50 ms in the whole file is −30.3 dBFS (56.95 s); nothing falls below −40. |
 | 10 | Payoff given room (8–10 s), crate → mill → shovelling → slow cutaway with fading arrows | ❌ | Crate with a lid at 60.57–61.50 s ✅. Sawdust pours at 61.57–62.55 s (only ~1 s). Shovelling at 62.57–63.63 s (~1 s; the shovel blade hides the right worker's face). Cutaway 63.66–68.24 s, slow, settling on the block ✅. **No heat arrows are visible at any time** (63.77, 64.00, 64.50, 65.00, 65.50 s), although the beats file schedules them for 63.78–66.0 s. "His secret?" to the end = **7.56 s** (target about 8–10). |
 | 11 | More detail on backgrounds | ✅ | Window boxes, smoke, signage ("ICE CUTTING / WORKERS ONLY"), market awnings, barrels and logs are in every set. |
@@ -73,7 +73,7 @@ Timing: **68.24 s** (2047 frames at 30 fps). Speech is 55.32 s. There are 98 cap
 ### Facts
 | | Item | Result |
 |---|---|---|
-| ✅ | Fact-checker APPROVED | Narration unchanged from the approved script; captions match it word for word |
+| ❌ | Fact-checker APPROVED | Narration unchanged from the approved script, and captions match it word for word. The v2 visual check has **one open fix**: V12, no condensation on the hot-port cup (13.40–16.43 s). |
 | ✅ | Shot fact rules | "about 15,000"; no tonnage seen; thermometer with no numbers; "(now Kolkata)"; route round Africa; woodcut ship on the 1806 paper; "most of the ice" shows blocks plus a few puddles |
 | ❌ | Cutaway supports "packed thick around the ice to keep the heat out" | No heat arrows appear, so the "heat slows and fades in the sawdust" shot note is not shown. The ice sits on a shelf with small tan mounds; the sawdust is only in the hull wall at the left. |
 | ✅ | Sources in the description | 8 sources, verbatim |
@@ -107,6 +107,7 @@ Timing: **68.24 s** (2047 frames at 30 fps). Speech is 55.32 s. There are 98 cap
 4. **Beat 15 hat, 58.50–60.50 s:** move k4 (the old man in the top hat) away from Eddie's hat side, or raise the hat clearly above head height on Eddie's side, so the lifted hat never sits on or over another person's head.
 5. **Click at 25.13 s:** give the reversed `zoom` whoosh a short release (5–10 ms) or end it just before the cut, so it doesn't stop at full level.
 6. **Beat 8, 27.97–30.00 s:** make the merchant's block read as ice (larger, clearly blue, with visible thickness and drips) and get the growing puddle into frame. Today it reads as an envelope (proof-shot rule).
+7. **Beat 4 cup, 13.40–16.43 s (fact-check V12):** remove the condensation beads and the wet ring from the hot-port cup. Keep the rim, water surface, highlight and shadow, and show heat with the shimmer.
 
 ## Should fix (not blocking)
 - 3.90–4.37 s: the foreground post and snow disc cover the slide's end. Move the camera path off the post, or drop the post.
@@ -118,7 +119,7 @@ Timing: **68.24 s** (2047 frames at 30 fps). Speech is 55.32 s. There are 98 cap
 - The Calcutta riverfront is still never shown (beat 14 opens on deck): carried over from v1.
 
 ## READY / NOT READY
-**NOT READY.** Fix the 6 items above, re-preview 4.3–6.0, 25.0–25.3 (audio), 27.9–30.1, 38.3–41.7, 58.0–60.6 and 63.6–66.2 s, then the full render can go. Re-check the music when the new sea-shanty bed lands (loudness, true peak, no clicks, no dead air at 59.5–60.7 s).
+**NOT READY.** Fix the 7 items above, re-preview 4.3–6.0, 13.4–16.4, 25.0–25.3 (audio), 27.9–30.1, 38.3–41.7, 58.0–60.6 and 63.6–66.2 s, then the full render can go. Re-check the music when the new sea-shanty bed lands (loudness, true peak, no clicks, no dead air at 59.5–60.7 s).
 
 ## Hand-off note (qa-reviewer → youtube-manager)
-**Done: NOT READY.** Report: `studio/reports/s02-ice-king-v2-preqa.md`; stills in `projects/review-qa/` (+`p2/`, `p3/`), test mix `projects/review-qa/mix.wav`. 21 of 23 v2 items pass (#3 and #10 fail; #1 and #16 pass with notes). Loudness −14.1 LUFS / −1.4 dBTP, end fade, English cheers (by code), cameo (frame 794 only), loop and captions pass. Six must-fix items: rope-less hook, cropped 1-2-3 counts, missing heat arrows, hat over k4, a click at 25.13 s, and the merchant's ice that reads as an envelope. Open: word clarity and the cheer still need a human listen; the music needs re-checking after the new bed. No code changed, no paid credits, nothing published, no dates touched.
+**Done: NOT READY.** Report: `studio/reports/s02-ice-king-v2-preqa.md`; stills in `projects/review-qa/` (+`p2/`, `p3/`), test mix `projects/review-qa/mix.wav`. 20 of 23 v2 items pass (#3 and #10 fail; #8 is done but must be partly undone for fact-check V12; #1 and #16 pass with notes). Loudness −14.1 LUFS / −1.4 dBTP, end fade, English cheers (by code), cameo (frame 794 only), loop and captions pass. Seven must-fix items: rope-less hook, cropped 1-2-3 counts, missing heat arrows, hat over k4, a click at 25.13 s, the merchant's ice that reads as an envelope, and the beads on the hot-port cup (fact-check V12). The new sea-shanty bed (commit 1035ce5) landed after my mix, so the audio needs a re-check on it. Open: word clarity and the cheer still need a human listen; the music needs re-checking after the new bed. No code changed, no paid credits, nothing published, no dates touched.
