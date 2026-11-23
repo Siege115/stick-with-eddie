@@ -22,7 +22,7 @@ Rejected on purpose: anything with "unmelted", "all the ice" or "perfect" (row 2
 
 ## First frame / thumbnail
 
-**First frame (locked by the loop, art plan beat 1A):** extreme close-up of a clear ice block face filling the frame, cool blue, a hand-saw blade biting in from the top, chips flying. It must stay that way so the last frame (beat 17, the block nested in sawdust) loops into it. No text on the first frame other than the normal small caption.
+**First frame (locked by the loop, round 1b):** low night shot on the frozen pond: two adult ice cutters haul a big, clear, glinting ice block out of the dark channel with tongs, lantern glow and falling snow, and Eddie-Tudor (top hat, sneakers) points toward the wharf. The last frame (the same block, same size and position, packed in sawdust) loops into it. No text on the first frame other than the normal small caption.
 
 **Cover / thumbnail concept: "SELLING WINTER"**
 - **One idea:** ice in a hot place.
