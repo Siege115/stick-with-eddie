@@ -64,4 +64,5 @@ Notes: <owner feedback, bible rules that matter here>
 | `studio/reports/` | QA, analytics, comment reports | specialists |
 | `content/` | Beats files and packages | scriptwriter, packaging-lead |
 | `src/`, `render-episode.mjs` | The 3D render pipeline | animator, sound-designer |
+| `reference/editing/` | Owner's editing guide library (hooks, framing, transitions, colour, sound, captions, comedy) | read-only for everyone |
 | `deliver/` | Finished videos, contact sheets, review boards | animator, art-director |
