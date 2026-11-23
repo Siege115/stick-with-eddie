@@ -11,7 +11,7 @@ tags:
 # Open Questions
 
 - S01: posting date (owner) · QA pass not yet run.
-- S02: approve the round 1b fixes board → then the full render.
+- S02: approve the round 1b fixes board (`deliver/s02-round1b-fixes.jpg`) → then the full render (about 30–45 min).
 - Voice: switch to ElevenLabs "Mark"? Needs the audio download allowed (it was denied in-session).
 - EP02 ("What If" era): post it or not (owner).
 - Short #3 topic (owner picks from `studio/IDEAS.md`).
