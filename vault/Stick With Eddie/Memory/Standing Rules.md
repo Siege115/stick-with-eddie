@@ -29,6 +29,12 @@ tags:
 - Period-correct: no bowlers before 1849, no gas lamps in 1806, no photos in 1806 papers, sail only before steam, no Suez before 1869.
 - Respectful depiction of every culture; no caricature.
 
+**QA lessons (S02 v1)**
+- **Proof shots:** when the narration claims something ("most of the ice is still there", "he tried hay"), the object must be clearly on screen.
+- No near-black frames in pushes through doors; no floating props or hats; dialogue lines are speech bubbles only (no duplicate captions); captions stay 1–2 words.
+- Never reuse another Short's voice lines by accident (S01's "Wunderbar!" leaked into S02 cheers).
+- No transcription tool is available here, so a person should listen once for swallowed words.
+
 **Sound**
 - Music is warm and acoustic-sounding (pizzicato, soft piano, bass, light percussion). **Never 8-bit or chiptune.** Notes fade out; no clicks.
 - −14 LUFS integrated, true peak ≤ −1 dBTP. One clop or effect per counted action.
