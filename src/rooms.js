@@ -54,8 +54,16 @@ export function buildKitchen(scene, opts = {}) {
   const stone = std({ map: T.plaster('#9aa6b0'), roughness: 0.6 });
   const jug = lathe([[0.001, 0], [0.13, 0], [0.17, 0.08], [0.18, 0.2], [0.14, 0.32], [0.09, 0.38], [0.1, 0.42], [0.11, 0.44]], stone, 20); jug.position.set(TX + 0.2, 0.83, TZ + 0.1); g.add(K.inkOffset(jug, 0.012));
   const band = cyl(0.181, 0.181, 0.04, std({ color: 0x2a4a8a }), 0, 0.2, 0, 20); jug.add(band);
-  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.02, 6, 12, Math.PI * 1.1), stone); handle.position.set(-0.17, 0.25, 0); handle.rotation.z = Math.PI / 2 + 0.2; jug.add(ink(handle, 1.1));
-  const dropM = std({ color: 0xe8f6ff, roughness: 0.02, metalness: 0.3, emissive: 0x2a4a66 }); for (let i = 0; i < 22; i++) { const a = r() * 6.3, y = 0.06 + r() * 0.3, rr = 0.17 * (1 - Math.abs(y - 0.2) * 0.4); const dp = new THREE.Mesh(new THREE.SphereGeometry(0.006 + r() * 0.004, 6, 5), dropM); dp.scale.y = 1.6; dp.position.set(Math.cos(a) * rr, y, Math.sin(a) * rr); jug.add(dp); }
+  // S02 v2: the handle is a tube whose two ends sit on the body surface; condensation beads sit ON the surface (radius from the
+  // lathe profile), and three slow drips run down the side to the wet ring on the table
+  const JP = [[0.001, 0], [0.13, 0], [0.17, 0.08], [0.18, 0.2], [0.14, 0.32], [0.09, 0.38], [0.1, 0.42], [0.11, 0.44]];
+  const jr = (y) => { for (let i = 1; i < JP.length; i++) if (y <= JP[i][1]) { const [r0, y0] = JP[i - 1], [r1, y1] = JP[i]; return r0 + (r1 - r0) * (y - y0) / (y1 - y0); } return JP[JP.length - 1][0]; };
+  { const c = new THREE.CatmullRomCurve3([new THREE.Vector3(-jr(0.34) + 0.02, 0.34, 0), new THREE.Vector3(-jr(0.34) - 0.09, 0.36, 0), new THREE.Vector3(-0.3, 0.25, 0), new THREE.Vector3(-jr(0.13) - 0.08, 0.12, 0), new THREE.Vector3(-jr(0.13) + 0.02, 0.13, 0)]);
+    const handle = new THREE.Mesh(new THREE.TubeGeometry(c, 24, 0.022, 8), stone); handle.castShadow = true; jug.add(ink(handle, 1.1)); }
+  const dropM = std({ color: 0xe8f6ff, roughness: 0.02, metalness: 0.3, emissive: 0x2a4a66, transparent: true, opacity: 0.85 });
+  for (let i = 0; i < 40; i++) { const a = r() * 6.3, y = 0.05 + r() * 0.3; if (Math.abs(Math.cos(a) + 1) < 0.25 && y > 0.1 && y < 0.36) continue; /* not under the handle */ const rr = jr(y) + 0.001; const dp = new THREE.Mesh(new THREE.SphereGeometry(0.005 + r() * 0.004, 6, 5), dropM); dp.scale.set(1, 1.3, 0.5); dp.position.set(Math.cos(a) * rr, y, Math.sin(a) * rr); dp.lookAt(Math.cos(a) * 2, y, Math.sin(a) * 2); jug.add(dp); }
+  const drips = []; for (let i = 0; i < 3; i++) { const dp = new THREE.Mesh(new THREE.SphereGeometry(0.008, 8, 6), dropM); dp.scale.set(1, 1.9, 0.6); jug.add(dp); drips.push({ dp, a: 0.6 + i * 0.9, ph: i * 0.37 }); }
+  H.tick = (t) => { drips.forEach(({ dp, a, ph }) => { const u = (t * 0.22 + ph) % 1, y = 0.3 - u * 0.29, rr = jr(y) + 0.002; dp.position.set(Math.cos(a) * rr, y, Math.sin(a) * rr); dp.lookAt(Math.cos(a) * 2, y, Math.sin(a) * 2); }); };
   const ring = new THREE.Mesh(new THREE.RingGeometry(0.16, 0.24, 24), new THREE.MeshStandardMaterial({ color: 0x8a6a48, transparent: true, opacity: 0.6, roughness: 0.1 })); ring.rotation.x = -Math.PI / 2; ring.position.set(TX + 0.2, 0.832, TZ + 0.1); g.add(ring);
   H.jugAt = [TX + 0.2, 1.05, TZ + 0.1];
   { const lf = new THREE.Mesh(new THREE.SphereGeometry(0.18, 14, 10), std({ color: 0xb07a3a })); lf.scale.set(1.4, 0.7, 0.9); lf.position.set(TX - 0.55, 0.92, TZ - 0.15); g.add(K.inkOffset(lf, 0.012)); for (let i = 0; i < 3; i++) g.add(box(0.03, 0.02, 0.18, std({ color: 0xe8c890 }), TX - 0.7 + i * 0.13, 1.04, TZ - 0.15, 0, false)); }

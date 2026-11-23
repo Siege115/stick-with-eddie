@@ -331,9 +331,10 @@ export function gulls(parent, cx, cy, cz, n = 3, sitters = [], rad = 6) {
   const sit = sitters.map(([x, y, z]) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.4), mS); m.geometry.translate(0, 0.125, 0); /* feet on the perch point */ m.position.set(x, y, z); parent.add(m); return m; });
   return (t, camera) => {
     fly.forEach((m, i) => {
-      const a = t * (0.35 + i * 0.07) + i * 2.1, r = rad * (0.7 + 0.3 * Math.sin(i * 1.7));
-      m.position.set(cx + Math.cos(a) * r, cy + Math.sin(t * 0.6 + i) * 0.6 + i * 0.8, cz + Math.sin(a) * r * 0.6);
-      const vx = -Math.sin(a), vz = Math.cos(a) * 0.6; // travel direction
+      // wide passes across the sky on their own paths (never circling near one spot, so no gull seems to track a character)
+      const u = (t * (0.045 + i * 0.011) + i * 0.37) % 1, sd = i % 2 ? 1 : -1, arc = Math.sin(u * Math.PI);
+      m.position.set(cx + sd * (-28 + 56 * u), cy + arc * 1.5 + i * 0.8 + Math.sin(t * 0.9 + i) * 0.25, cz + (i - 1) * 4 + arc * rad);
+      const vx = sd * 56, vz = Math.cos(u * Math.PI) * Math.PI * rad; // travel direction
       m.lookAt(camera.position); m.scale.x = Math.sign(screenDir(m, vx, vz, camera)) || 1; // face the way it travels on screen
       m.material = Math.sin(t * 7 + i * 1.3) > -0.2 ? mU : mD; // longer up-stroke, quick down-beat
     });

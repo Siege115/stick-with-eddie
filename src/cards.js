@@ -76,10 +76,13 @@ function letter(k) {
 const MAP = { lon0: -82, lon1: 102, lat0: -50, lat1: 56 };
 // sailing route Boston → across the Atlantic → south past Brazil's longitude → round the Cape of Good Hope → up the Indian Ocean → Bay of Bengal → Calcutta
 export const ROUTE = [[-70.9, 42.3], [-62, 37], [-45, 28], [-30, 15], [-26, 2], [-28, -12], [-22, -26], [-5, -37], [18, -40], [35, -37], [52, -29], [63, -15], [74, -2], [84, 8], [88.2, 17], [88.2, 21.6], [88.4, 22.6]];
+// S02 v2: the Caribbean leg (beat 2): Boston → Martinique (Saint-Pierre, about 14.7 N 61.2 W), on a zoomed view of the same map
+export const ROUTE_MQ = [[-70.9, 42.3], [-67.5, 38.5], [-63.5, 32], [-61.5, 24], [-60.6, 18], [-61.1, 14.7]];
+const MAP_MQ = { lon0: -92, lon1: -38, lat0: 4, lat1: 52 };
 function map(k, s = {}) {
-  const W = 1600, H = 1060, pad = 70; const p = s.route ?? 1;
+  const mq = s.dest === 'mq'; const W = mq ? 1200 : 1600, H = mq ? 1200 : 1060, pad = 70; const p = s.route ?? 1; const M = mq ? MAP_MQ : MAP;
   agedPaper(k, W, H, 53, '#ead9b0');
-  const X = (lon) => pad + (lon - MAP.lon0) / (MAP.lon1 - MAP.lon0) * (W - 2 * pad), Y = (lat) => pad + (MAP.lat1 - lat) / (MAP.lat1 - MAP.lat0) * (H - 2 * pad);
+  const X = (lon) => pad + (lon - M.lon0) / (M.lon1 - M.lon0) * (W - 2 * pad), Y = (lat) => pad + (M.lat1 - lat) / (M.lat1 - M.lat0) * (H - 2 * pad);
   k.save(); k.beginPath(); k.rect(pad, pad, W - 2 * pad, H - 2 * pad); k.clip();
   // sea hatching near the coasts (engraved look), then land
   k.lineJoin = 'round';
@@ -90,20 +93,21 @@ function map(k, s = {}) {
   // labels
   k.textAlign = 'center'; k.textBaseline = 'middle'; k.fillStyle = '#3a2410';
   const lab = (t, lo, la, size, it) => { k.font = `${it ? 'italic ' : 'bold '}${size}px "DejaVu Serif", serif`; k.fillText(t, X(lo), Y(la)); };
-  lab('AFRICA', 20, 5, 44); lab('ATLANTIC', -35, -2, 34, true); lab('OCEAN', -35, -8, 34, true); lab('INDIAN OCEAN', 72, -26, 34, true);
+  if (mq) { lab('ATLANTIC', -50, 34, 40, true); lab('OCEAN', -50, 30.5, 40, true); lab('CARIBBEAN SEA', -76, 13.5, 32, true); }
+  else { lab('AFRICA', 20, 5, 44); lab('ATLANTIC', -35, -2, 34, true); lab('OCEAN', -35, -8, 34, true); lab('INDIAN OCEAN', 72, -26, 34, true); }
   // route: dotted, drawn up to p
-  const pts = ROUTE.map(([lo, la]) => [X(lo), Y(la)]); const seg = []; let tot = 0; for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); seg.push(d); tot += d; }
+  const pts = (mq ? ROUTE_MQ : ROUTE).map(([lo, la]) => [X(lo), Y(la)]); const seg = []; let tot = 0; for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); seg.push(d); tot += d; }
   let left = tot * p, tip = pts[0], ang = 0; k.setLineDash([2, 18]); k.lineCap = 'round'; k.strokeStyle = '#a3171b'; k.lineWidth = 11; k.beginPath(); k.moveTo(...pts[0]);
   for (let i = 1; i < pts.length && left > 0; i++) { const u = Math.min(1, left / seg[i - 1]); tip = [pts[i - 1][0] + (pts[i][0] - pts[i - 1][0]) * u, pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * u]; ang = Math.atan2(pts[i][1] - pts[i - 1][1], pts[i][0] - pts[i - 1][0]); k.lineTo(...tip); left -= seg[i - 1]; }
   k.stroke(); k.setLineDash([]);
   // the two ports
-  for (const [t, lo, la, dx, dy] of [['BOSTON', -70.9, 42.3, 78, -40] /* nudged right so the map border never clips it */, ['CALCUTTA', 88.4, 22.6, -10, -42]]) { k.fillStyle = '#a3171b'; k.beginPath(); k.arc(X(lo), Y(la), 12, 0, 7); k.fill(); k.strokeStyle = INK; k.lineWidth = 4; k.stroke(); k.fillStyle = '#1b1b1b'; k.font = 'bold 40px "DejaVu Serif", serif'; k.lineWidth = 8; k.strokeStyle = 'rgba(234,217,176,.9)'; k.strokeText(t, X(lo) + dx, Y(la) + dy); k.fillText(t, X(lo) + dx, Y(la) + dy); }
-  { k.fillStyle = '#3a2410'; k.font = 'italic 28px "DejaVu Serif", serif'; k.textAlign = 'center'; k.lineWidth = 6; k.strokeStyle = 'rgba(234,217,176,.9)'; k.strokeText('(now Kolkata)', X(88.4) - 10, Y(22.6) + 44); k.fillText('(now Kolkata)', X(88.4) - 10, Y(22.6) + 44); }
+  for (const [t, lo, la, dx, dy] of (mq ? [['BOSTON', -70.9, 42.3, 90, -38], ['MARTINIQUE', -61.1, 14.7, -20, 46]] : [['BOSTON', -70.9, 42.3, 78, -40] /* nudged right so the map border never clips it */, ['CALCUTTA', 88.4, 22.6, -10, -42]])) { k.fillStyle = '#a3171b'; k.beginPath(); k.arc(X(lo), Y(la), 12, 0, 7); k.fill(); k.strokeStyle = INK; k.lineWidth = 4; k.stroke(); k.fillStyle = '#1b1b1b'; k.font = 'bold 40px "DejaVu Serif", serif'; k.lineWidth = 8; k.strokeStyle = 'rgba(234,217,176,.9)'; k.strokeText(t, X(lo) + dx, Y(la) + dy); k.fillText(t, X(lo) + dx, Y(la) + dy); }
+  if (!mq) { k.fillStyle = '#3a2410'; k.font = 'italic 28px "DejaVu Serif", serif'; k.textAlign = 'center'; k.lineWidth = 6; k.strokeStyle = 'rgba(234,217,176,.9)'; k.strokeText('(now Kolkata)', X(88.4) - 10, Y(22.6) + 44); k.fillText('(now Kolkata)', X(88.4) - 10, Y(22.6) + 44); }
   // tiny ship riding the route tip
-  if (p > 0.01 && p < 0.999) { k.save(); k.translate(...tip); k.scale(Math.cos(ang) < 0 ? -1 : 1, 1); k.fillStyle = INK; k.beginPath(); k.moveTo(-26, 0); k.lineTo(26, 0); k.lineTo(18, 12); k.lineTo(-20, 12); k.closePath(); k.fill(); k.fillRect(-2, -34, 4, 34); k.fillStyle = '#f6eedb'; k.strokeStyle = INK; k.lineWidth = 3; k.beginPath(); k.moveTo(2, -32); k.quadraticCurveTo(22, -18, 2, -4); k.closePath(); k.fill(); k.stroke(); k.restore(); }
+  if (p > 0.01 && (mq || p < 0.999)) { k.save(); k.translate(...tip); k.scale(Math.cos(ang) < 0 ? -1 : 1, 1); k.fillStyle = INK; k.beginPath(); k.moveTo(-26, 0); k.lineTo(26, 0); k.lineTo(18, 12); k.lineTo(-20, 12); k.closePath(); k.fill(); k.fillRect(-2, -34, 4, 34); k.fillStyle = '#f6eedb'; k.strokeStyle = INK; k.lineWidth = 3; k.beginPath(); k.moveTo(2, -32); k.quadraticCurveTo(22, -18, 2, -4); k.closePath(); k.fill(); k.stroke(); k.restore(); }
   k.restore();
   // compass rose (south-east corner of the ocean) and border
-  k.save(); k.translate(X(-58), Y(-38)); k.strokeStyle = INK; k.lineWidth = 3; k.beginPath(); k.arc(0, 0, 60, 0, 7); k.stroke();
+  k.save(); k.translate(mq ? X(-84) : X(-58), mq ? Y(10) : Y(-38)); k.strokeStyle = INK; k.lineWidth = 3; k.beginPath(); k.arc(0, 0, 60, 0, 7); k.stroke();
   for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, L = i % 2 ? 40 : 78; k.fillStyle = i % 2 ? '#7a5a30' : '#3a2410'; k.beginPath(); k.moveTo(Math.sin(a) * L, -Math.cos(a) * L); k.lineTo(Math.sin(a + 0.35) * 14, -Math.cos(a + 0.35) * 14); k.lineTo(Math.sin(a - 0.35) * 14, -Math.cos(a - 0.35) * 14); k.closePath(); k.fill(); }
   k.fillStyle = '#3a2410'; k.font = 'bold 34px "DejaVu Serif", serif'; k.textAlign = 'center'; k.fillText('N', 0, -96); k.restore();
   k.strokeStyle = '#4a3418'; k.lineWidth = 8; k.strokeRect(pad - 14, pad - 14, W - 2 * pad + 28, H - 2 * pad + 28); k.lineWidth = 3; k.strokeRect(pad - 4, pad - 4, W - 2 * pad + 8, H - 2 * pad + 8);
@@ -124,4 +128,4 @@ function thermo(k, s = {}) {
   k.fillStyle = '#ffcf4a'; k.strokeStyle = INK; k.lineWidth = 5; k.beginPath(); k.arc(x, 90, 26, 0, 7); k.fill(); k.stroke();
 }
 
-export const CARDS = { year: { size: [640, 380], draw: year }, news: { size: [1350, 1800], draw: news }, letter: { size: [1100, 1400], draw: letter }, map: { size: [1600, 1060], draw: map }, thermo: { size: [420, 1300], draw: thermo } };
+export const CARDS = { year: { size: [640, 380], draw: year }, news: { size: [1350, 1800], draw: news }, letter: { size: [1100, 1400], draw: letter }, map: { size: [1600, 1060], draw: map }, mapMq: { size: [1200, 1200], draw: (k, s) => map(k, { ...s, dest: 'mq' }) }, thermo: { size: [420, 1300], draw: thermo } };

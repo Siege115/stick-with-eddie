@@ -190,8 +190,29 @@ export function buildWharf(scene, opts = {}) {
     // the block being loaded (beat 1C): an ice block on a sling, moved by `movers: { block: [[at, [x, z, y], 0, 'sail']] }`
     const blk = new THREE.Group(); blk.userData.bob = 0; g.add(blk); blk.position.set(3.2, 0.3, -5.5);
     blk.add(ink(box(0.62, 0.42, 0.44, std({ map: T.ice(3), roughness: 0.15, color: 0xe2f3ff, emissive: 0x2a5a80 }), 0, 0.21, 0), 1.03));
-    for (const xx of [-0.2, 0.2]) K.rope(blk, [xx, 0.43, -0.23], [xx, 0.43, 0.23], 0.018); K.rope(blk, [0, 0.43, 0], [0, 1.6, 0], 0.02);
+    { const iron = std({ color: 0x2a2c30, metalness: 0.6, roughness: 0.4 }); // ice tongs gripping the block, a ring and a hook (no rope to nowhere)
+      for (const sx of [-1, 1]) { K.rope(blk, [sx * 0.34, 0.16, 0], [sx * 0.36, 0.5, 0], 0.018, iron); K.rope(blk, [sx * 0.36, 0.5, 0], [0, 0.74, 0], 0.018, iron); blk.add(box(0.05, 0.05, 0.08, iron, sx * 0.33, 0.16, 0)); }
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.012, 6, 14), iron); ring.position.set(0, 0.78, 0); blk.add(ring);
+      const hook = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.016, 6, 14, Math.PI * 1.4), iron); hook.position.set(0, 0.86, 0); hook.rotation.z = -0.6; blk.add(ink(hook, 1.1)); }
     H.movers.block = blk; H.blockRest = [3.2, -5.5, 0.3];
+    // cargo rig (S02 v2): a boom from the mainmast with a pulley at its tip over the hatch; the lift rope runs down to the hook
+    // on the block, the hauling part down to the sailors' hands on deck and on to a coil. Every rope ends on something.
+    const rig = new THREE.Group(); rig.visible = false; ship.group.add(rig);
+    const hx = ship.hatchAt[0], D = ship.deckY, spar = std({ map: T.wood([120, 88, 56], 3) });
+    const heel = new THREE.Vector3(hx - 3.4, D + 1.2, 0), tip = new THREE.Vector3(hx + 0.15, D + 5.4, 0.6), head = new THREE.Vector3(hx - 3.4, D + 8.6, 0);
+    K.rope(rig, heel.toArray(), tip.toArray(), 0.075, spar); K.rope(rig, tip.toArray(), head.toArray(), 0.02); /* boom + topping lift */
+    const pul = new THREE.Group(); pul.position.copy(tip).add(new THREE.Vector3(0, -0.22, 0)); rig.add(pul);
+    pul.add(ink(box(0.12, 0.3, 0.2, spar, 0, 0, 0), 1.06)); const sheave = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.025, 6, 16), std({ color: 0x3a2a1a })); sheave.rotation.y = Math.PI / 2; pul.add(sheave);
+    const seg = () => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 1, 6), K.ROPE_M || std({ color: 0xb08a55, roughness: 1 })); m.visible = false; g.add(m); return m; };
+    const setSeg = (m, a, b) => { m.position.copy(a).lerp(b, 0.5); m.scale.set(1, a.distanceTo(b), 1); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize()); };
+    const lift = seg(), haul1 = seg(), haul2 = seg();
+    const HAND = new THREE.Vector3(9.3, 0.45, 4.35), HAND2 = new THREE.Vector3(9.45, 0.45, 3.55); K.ropeCoil(g, 9.6, -0.6, 2.7, 0.28, 3);
+    const COIL = new THREE.Vector3(9.6, -0.45, 2.7); let rigOn = false;
+    H.open.tackle = (v) => { rigOn = v > 0.5; rig.visible = rigOn; [lift, haul1, haul2, haul2.userData.tail].forEach((m) => m && (m.visible = rigOn)); }; H.openRest.tackle = 0;
+    H.rigTick = () => { if (!rigOn) return; ship.group.updateMatrixWorld(true); blk.updateMatrixWorld(true);
+      const P = pul.localToWorld(new THREE.Vector3(0, -0.12, 0)), Hk = blk.localToWorld(new THREE.Vector3(0, 0.9, 0));
+      setSeg(lift, P, Hk); setSeg(haul1, P, HAND); setSeg(haul2, HAND, HAND2); /* the hauling part runs through both sailors' hands */
+      if (!haul2.userData.tail) { haul2.userData.tail = seg(); } const tl = haul2.userData.tail; tl.visible = true; setSeg(tl, HAND2, COIL); };
   }
   // bollards along both edges (snow caps in 1806)
   const bollardZ = [-9, -3, 3, 9, 15];
@@ -245,7 +266,7 @@ export function buildWharf(scene, opts = {}) {
 
   // ---------------- per frame ----------------
   H.tick = (t, L, camera) => {
-    water.tick(t); if (ship) ship.tick(t); gullTick(t, camera);
+    water.tick(t); if (ship) ship.tick(t); gullTick(t, camera); if (H.rigTick) H.rigTick();
     // lamps are oil: lit only when it is dark (bright presets put them out)
     const c = new THREE.Color(L.bg); const lum = 0.3 * c.r + 0.59 * c.g + 0.11 * c.b;
     const lit = lum < 0.3 ? 1 : 0;

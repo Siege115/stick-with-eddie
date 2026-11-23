@@ -166,9 +166,10 @@ export function drawPerson(ctx, c, p, rim) {
   ctx.restore();
   if (inHand) {
     const hry = c.egg ? 102 : 92, hrx = c.egg ? 84 : 92;
-    ctx.save(); ctx.translate(aR[2] + 4, aR[3] + 18); ctx.rotate(0.32); ctx.scale(0.82, 0.82); ctx.translate(-hx, -(hy - hry));
-    drawHat(ctx, c, hx, hy - hry, hrx); ctx.restore();
-    hand(ctx, aR[2], aR[3], c.gloves); /* fingers over the brim */
+    const hd = (c.dir || 1) < 0 ? aL : aR, sg = Math.sign(hd[2]) || 1; /* the stage mirrors the arms for dir < 0, so the raised hand is aL then */
+    ctx.save(); ctx.translate(hd[2] - sg * 26, hd[3] + 14); ctx.rotate(sg * 0.16); ctx.scale(0.74, 0.74); ctx.translate(-hx, -(hy - hry));
+    drawHat(ctx, c, hx, hy - hry, hrx); ctx.restore(); /* kept well inside the 512 px person card: no clipped brim */
+    hand(ctx, hd[2], hd[3], c.gloves); /* fingers over the brim */
   }
 
   ctx.restore(); // body lean
