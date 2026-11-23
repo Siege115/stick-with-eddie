@@ -15,6 +15,8 @@ OUT = sys.argv[3]
 BEATS = sys.argv[4] if len(sys.argv) > 4 else None
 DUR = TL["duration"] + 0.3
 N = int(DUR * SR)
+# S02 (or any Short with meta.mix.music == 'shanty'): original 6/8 sea-shanty bed + ocean layer from src/shanty.py
+SHANTY = (TL.get("mix") or {}).get("music") == "shanty" or os.path.basename(BEATS or "").startswith("s02-ice-king")
 voice = np.zeros((N, 2)); sfx = np.zeros((N, 2)); music = np.zeros((N, 2)); amb = np.zeros((N, 2))
 
 def t2i(t): return int(round(t * SR))
@@ -288,6 +290,9 @@ NAMED = {
     "iceCrack": lambda a: (ice_crack(), 0.55), "riser": lambda a: (riser(a or 1.0), 0.3), "softImpact": lambda a: (soft_impact(), 0.5),
     "silence": lambda a: (np.zeros(10), 0.0), "steps2": lambda a: (np.concatenate([step(0), np.zeros(int(.3 * SR)), step(1)]), 0.6),
 }
+if SHANTY:  # ship timbers instead of the old door creak (no square-ish source)
+    import shanty
+    NAMED["creak"] = lambda a: (shanty.timber_creak(0.9), 0.4)
 SILENCE = [(t, t + (arg or 0.4)) for t, name, arg in EV["sfx"] if name == "silence"]
 for t, name, arg in EV["sfx"]:
     x, g = NAMED[name](arg)
@@ -317,44 +322,48 @@ def pad(m, dur):
     return x * np.minimum(1, t / 0.6) * np.minimum(1, (t[-1] - t) / 0.6)
 def shaker():
     n = int(0.09 * SR); return fade(bp(noise(n), 4000, 9000) * np.exp(-np.arange(n) / (0.025 * SR)), 0.002, 0.03)
-bpm = 100; beat = 60 / bpm
-mel = [62, None, 65, 69, 67, None, 65, 64, 62, None, 69, 72, 71, 69, 67, 65,
-       62, None, 65, 69, 70, None, 69, 67, 65, 64, 62, 64, 65, None, 57, None]
-roots = [38, 38, 43, 45]                                   # D, D, G, A (one per bar)
-chords = [[62, 65, 69], [62, 65, 69], [62, 67, 70], [61, 64, 67]]
-cache = {}
-def C(fn, m):
-    k = (fn.__name__, m)
-    if k not in cache: cache[k] = fn(m)
-    return cache[k]
 MIX = TL.get("mix") or {}
-if "tense" in MIX: spot_from = TL["beats"][MIX["tense"][0]]["start"]; spot_to = TL["beats"][MIX["tense"][1]]["start"]
-elif MIX: spot_from = spot_to = DUR + 1  # no tense section
-else: spot_from = TL["beats"][12]["start"]; spot_to = TL["beats"][15]["start"]
-t = 0.0; i = 0
-while t < DUR:
-    tense = spot_from <= t < spot_to
-    bar = (i // 8) % 4
-    if not tense:
-        m = mel[i % len(mel)]
-        if m is not None: place(music, C(pizz, m), t, 0.55, 0.25)
-        if i % 8 in (0, 4):
-            for k2, cm in enumerate(chords[bar]): place(music, C(piano, cm), t + k2 * 0.012, 0.16, -0.15)
-        if i % 2 == 0: place(music, C(bass, roots[bar] + (7 if i % 4 == 2 else 0)), t, 0.6, -0.1)
-        place(music, shaker(), t + 0.01, 0.07 if i % 2 else 0.04, 0.35)
-    elif i % 4 == 0:  # soft low heartbeat under the test scene
-        place(music, partials(48, 0.35, [(1, 1, .09), (2, .3, .05)], 0.004, 0.08), t, 0.8)
-    t += beat / 2; i += 1
-# sustained low pad through the tense test
-if spot_to > spot_from and spot_from < DUR: place(music, pad(38, spot_to - spot_from) * 0.5 + pad(45, spot_to - spot_from) * 0.3, spot_from, 0.5)
-music = lp(music.T, 5500).T
-music = reverb(music, 1.2, 0.22)
+if SHANTY:
+    music = shanty.build(TL, DUR)
+else:
+    bpm = 100; beat = 60 / bpm
+    mel = [62, None, 65, 69, 67, None, 65, 64, 62, None, 69, 72, 71, 69, 67, 65,
+           62, None, 65, 69, 70, None, 69, 67, 65, 64, 62, 64, 65, None, 57, None]
+    roots = [38, 38, 43, 45]                                   # D, D, G, A (one per bar)
+    chords = [[62, 65, 69], [62, 65, 69], [62, 67, 70], [61, 64, 67]]
+    cache = {}
+    def C(fn, m):
+        k = (fn.__name__, m)
+        if k not in cache: cache[k] = fn(m)
+        return cache[k]
+    if "tense" in MIX: spot_from = TL["beats"][MIX["tense"][0]]["start"]; spot_to = TL["beats"][MIX["tense"][1]]["start"]
+    elif MIX: spot_from = spot_to = DUR + 1  # no tense section
+    else: spot_from = TL["beats"][12]["start"]; spot_to = TL["beats"][15]["start"]
+    t = 0.0; i = 0
+    while t < DUR:
+        tense = spot_from <= t < spot_to
+        bar = (i // 8) % 4
+        if not tense:
+            m = mel[i % len(mel)]
+            if m is not None: place(music, C(pizz, m), t, 0.55, 0.25)
+            if i % 8 in (0, 4):
+                for k2, cm in enumerate(chords[bar]): place(music, C(piano, cm), t + k2 * 0.012, 0.16, -0.15)
+            if i % 2 == 0: place(music, C(bass, roots[bar] + (7 if i % 4 == 2 else 0)), t, 0.6, -0.1)
+            place(music, shaker(), t + 0.01, 0.07 if i % 2 else 0.04, 0.35)
+        elif i % 4 == 0:  # soft low heartbeat under the test scene
+            place(music, partials(48, 0.35, [(1, 1, .09), (2, .3, .05)], 0.004, 0.08), t, 0.8)
+        t += beat / 2; i += 1
+    # sustained low pad through the tense test
+    if spot_to > spot_from and spot_from < DUR: place(music, pad(38, spot_to - spot_from) * 0.5 + pad(45, spot_to - spot_from) * 0.3, spot_from, 0.5)
+    music = lp(music.T, 5500).T
+    music = reverb(music, 1.2, 0.22)
 
+if os.environ.get("MIX_MUSIC_STEM"): sf.write(os.environ["MIX_MUSIC_STEM"], music.astype(np.float32), SR, subtype="FLOAT")  # review: the bed alone, before ducking
 # duck music under the voice
 venv = np.abs(voice).mean(1)
 k = int(0.15 * SR); venv = np.convolve(venv, np.ones(k) / k, mode="same")
 venv /= venv.max() + 1e-9
-duck = 1 - 0.55 * np.clip(venv * 4, 0, 1)
+duck = 1 - (0.62 if SHANTY else 0.55) * np.clip(venv * 4, 0, 1)
 music *= duck[:, None]
 
 # ---------------- room tone ----------------
