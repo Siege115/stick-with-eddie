@@ -201,6 +201,10 @@ export function buildSawmill(scene, opts = {}) {
   for (let i = 0; i < 5; i++) { const lg = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.38, 4.0, 16), [barkM, endM, endM]); lg.rotation.z = Math.PI / 2; lg.position.set(-1.2 + (i % 3) * 0.05, 0.37 + Math.floor(i / 3) * 0.62, -5.0 - (i % 3) * 0.76 + Math.floor(i / 3) * 0.38); lg.castShadow = true; g.add(K.inkOffset(lg, 0.02)); }
   { const ck = new THREE.Group(); ck.position.set(-3.6, 0.25, -0.9); ck.rotation.z = 0.25; g.add(ck); ck.add(cyl(0.035, 0.04, 1.5, woodD, 0, 0.75, 0, 8)); const hk = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.025, 6, 12, Math.PI * 1.2), std({ color: 0x2a2c30, metalness: 0.5 })); hk.position.set(0.12, 1.1, 0); ck.add(ink(hk, 1.1)); }
   K.handCart(g, -6.2, 1.8, 0.6, woodL, woodD, false); K.sack(g, 3.6, 0.25, 1.4, 0.2, 0xc9b07a);
+  { /* S02 v2 ("the stuff sawmills threw away"): barrels and a cart being filled with sawdust from the heap */
+    const fl = new THREE.Group(); fl.position.y = 0.25; g.add(fl);
+    for (const [x, z] of [[2.45, -3.75], [3.25, -4.05], [2.1, -4.55]]) { K.barrel(fl, x, z); const top = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.08, 16), sawM); top.position.set(x, 0.92, z); fl.add(top); }
+    K.handCart(fl, 0.2, -4.35, 0.15, woodL, woodD, false); const ld = new THREE.Mesh(new THREE.SphereGeometry(0.62, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), sawM); ld.scale.set(1.15, 0.45, 0.8); ld.position.set(0.25, 0.95, -4.35); fl.add(K.inkOffset(ld, 0.015)); }
   // pine forest backdrop (scenery only)
   const pineM = std({ color: 0x2f5a36, roughness: 1, flatShading: true });
   for (let i = 0; i < 40; i++) { const a = r() * Math.PI - Math.PI, R = 20 + r() * 20; const x = Math.cos(a) * R * 0.9 - 4, z = Math.sin(a) * R; const s = 1 + r() * 0.8; const t = new THREE.Group(); t.position.set(x, 0, z); t.scale.setScalar(s); g.add(t); t.add(cyl(0.2, 0.25, 1.5, std({ color: 0x4a3420 }), 0, 0.75, 0, 6)); for (let k = 0; k < 4; k++) { const c = new THREE.Mesh(new THREE.ConeGeometry(2.0 - k * 0.42, 2.0, 9), pineM); c.position.y = 1.6 + k * 1.15; t.add(c); } }

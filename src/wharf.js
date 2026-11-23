@@ -203,7 +203,7 @@ export function buildWharf(scene, opts = {}) {
     K.rope(rig, heel.toArray(), tip.toArray(), 0.075, spar); K.rope(rig, tip.toArray(), head.toArray(), 0.02); /* boom + topping lift */
     const pul = new THREE.Group(); pul.position.copy(tip).add(new THREE.Vector3(0, -0.22, 0)); rig.add(pul);
     pul.add(ink(box(0.12, 0.3, 0.2, spar, 0, 0, 0), 1.06)); const sheave = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.025, 6, 16), std({ color: 0x3a2a1a })); sheave.rotation.y = Math.PI / 2; pul.add(sheave);
-    const seg = () => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 1, 6), K.ROPE_M || std({ color: 0xb08a55, roughness: 1 })); m.visible = false; g.add(m); return m; };
+    const seg = () => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1, 6), K.ROPE_M || std({ color: 0xb08a55, roughness: 1 })); m.visible = false; g.add(m); return m; };
     const setSeg = (m, a, b) => { m.position.copy(a).lerp(b, 0.5); m.scale.set(1, a.distanceTo(b), 1); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize()); };
     const lift = seg(), haul1 = seg(), haul2 = seg();
     const HAND = new THREE.Vector3(9.3, 0.45, 4.35), HAND2 = new THREE.Vector3(9.45, 0.45, 3.55); K.ropeCoil(g, 9.6, -0.6, 2.7, 0.28, 3);

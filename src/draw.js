@@ -167,7 +167,7 @@ export function drawPerson(ctx, c, p, rim) {
   if (inHand) {
     const hry = c.egg ? 102 : 92, hrx = c.egg ? 84 : 92;
     const hd = (c.dir || 1) < 0 ? aL : aR, sg = Math.sign(hd[2]) || 1; /* the stage mirrors the arms for dir < 0, so the raised hand is aL then */
-    ctx.save(); ctx.translate(hd[2] - sg * 26, hd[3] + 14); ctx.rotate(sg * 0.16); ctx.scale(0.74, 0.74); ctx.translate(-hx, -(hy - hry));
+    ctx.save(); ctx.translate(hd[2] - sg * 10, hd[3] + 12); ctx.rotate(sg * 0.12); ctx.scale(0.66, 0.66); ctx.translate(-hx, -(hy - hry));
     drawHat(ctx, c, hx, hy - hry, hrx); ctx.restore(); /* kept well inside the 512 px person card: no clipped brim */
     hand(ctx, hd[2], hd[3], c.gloves); /* fingers over the brim */
   }

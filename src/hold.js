@@ -71,8 +71,13 @@ export function buildHold(scene, opts = {}) {
   // the canvas-covered crate (what is inside is not shown); slides on movers.crate
   { const cr = new THREE.Group(); cr.position.set(0, 0, 0); g.add(cr); cr.rotation.order = 'YXZ';
     cr.add(ink(box(0.9, 0.7, 0.7, std({ map: T.wood([150, 110, 70], 4, false) }), 0, 0.35, 0), 1.03));
-    const cloth = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.72, 0.8, 4, 3, 4), std({ map: T.sailcloth('#d9cfb2'), roughness: 1 })); { const p = cloth.geometry.attributes.position; for (let i = 0; i < p.count; i++) if (p.getY(i) < 0.3) { p.setX(i, p.getX(i) * 1.06); p.setZ(i, p.getZ(i) * 1.1); } cloth.geometry.computeVertexNormals(); } cloth.position.y = 0.42; cloth.castShadow = true; cr.add(K.inkOffset(cloth, 0.02));
-    for (const xx of [-0.3, 0.3]) K.rope(cr, [xx, 0.79, -0.42], [xx, 0.79, 0.42], 0.02, undefined, -0.05);
+    const cloth = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.72, 0.8, 4, 3, 4), std({ map: T.sailcloth('#d9cfb2'), roughness: 1 })); { const p = cloth.geometry.attributes.position; for (let i = 0; i < p.count; i++) if (p.getY(i) < 0.3) { p.setX(i, p.getX(i) * 1.06); p.setZ(i, p.getZ(i) * 1.1); } cloth.geometry.computeVertexNormals(); } cloth.position.y = 0.42 - 0.78; cloth.position.z = 0.42; cloth.castShadow = true;
+    // S02 v2 ("His secret?"): the cover lifts from its back edge (open.lid 0 … 1) and a warm glow of sawdust shows underneath
+    const top = new THREE.Group(); top.position.set(0, 0.78, -0.42); cr.add(top); top.add(K.inkOffset(cloth, 0.02));
+    for (const xx of [-0.3, 0.3]) K.rope(top, [xx, 0.01, 0], [xx, 0.01, 0.84], 0.02, undefined, -0.05);
+    const dust = new THREE.Mesh(new THREE.PlaneGeometry(0.84, 0.64), std({ map: T.sawdust([1, 1]), roughness: 1, emissive: 0x5a3a10, emissiveIntensity: 0.4 })); dust.rotation.x = -Math.PI / 2; dust.position.y = 0.705; cr.add(dust);
+    const glow = new THREE.PointLight(0xffc070, 0, 1.6, 1.5); glow.position.set(0, 0.75, 0.1); cr.add(glow);
+    H.open.lid = (v) => { v = Math.min(1, Math.max(0, v)); top.rotation.x = -v * 0.55; top.position.y = 0.78 + v * 0.04; glow.intensity = v * 2.2; }; H.openRest.lid = 0;
     cr.visible = opts.crate ?? false; H.movers.crate = cr; H.open.crate = (v) => { cr.visible = v > 0.5; }; H.openRest.crate = opts.crate ? 1 : 0; }
   H.tick = (t) => { for (const sp of glints) { const k = Math.max(0, Math.sin(t * 3 + sp.userData.ph)); const s = 0.08 + k * 0.22; sp.scale.set(s, s, 1); sp.material.opacity = k; } };
   return H;

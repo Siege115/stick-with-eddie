@@ -50,7 +50,7 @@ export const cast = {
   w1: P('iceSaw1', 'mid', [6.7, -7.6], ['pond']), w2: P('iceTongs', 'mid', [5.85, -6.3], ['pond']),
   w3: P('icePike', 'mid', [3.9, -8.3], ['pond']), w5: P('iceTongs', 'mid', [-0.45, -5.1], ['pond'], { c: { hat: 'roundHat', hatColor: '#4a3a2a', hatBand: '#2a2018', scarf: '#7a2a2a', body: '#5a4a3a' } }), w4: P('iceSaw2', 'mid', [7.9, -8.9], ['pond']),
   // sailors: one on the deck at the tackle, one on the wharf by the plank (Boston); one on the Martinique quay
-  s1: P('sailor1', 'mid', [9.3, 4.2, -0.6], ['wharf']), s2: P('sailor2', 'mid', [4.1, 4.4], ['wharf']),
+  s1: P('sailor1', 'mid', [9.3, 4.2, -0.6], ['wharf']), s3: P('sailor1', 'mid', [9.45, 3.55, -0.6], ['wharf'], { c: { stripes: '#7a2a2a', hatColor: '#3a4a2a', hatBand: '#2a3420', neckerchief: '#1d3557' } }), s2: P('sailor2', 'mid', [4.1, 4.4], ['wharf']),
   sMq: P('sailor2', 'mid', [10.3, -1.8], ['mq'], { c: { body: '#f2ecdc', stripes: '#1d3557', neckerchief: '#c0392b', hat: 'knit', hatColor: '#8a2a2a', hatBand: '#6a1f1f', pom: true, pomColor: '#e9e2d0', item: undefined } }), // striped shirt, knit cap, round head: never Eddie
   // kitchen cook
   cook: P('cook', 'mid', [-0.5, -0.65], ['kitchen']),
@@ -97,42 +97,42 @@ const docked = (dock, hd) => ({ ship: [[0, dock, hd]] });
 
 // ---------- the 16 beats ----------
 export const beats = [
-  { // 1 — HOOK (show-the-result / surprise visual): a big glinting block hauled out of the dark channel at night by two
-    //     grown-up cutters with tongs, lantern glow, snow, Eddie in the background pointing toward Boston. Then a reveal staircase:
-    //     saw-bite close-up (blade, groove, chips, mittens; ice-crack impact) → the block slides up the gangplank into the brig.
-    line: 'He filled a ship with ice from a frozen pond.', min: 3.1, light: 'nightReadable', set: 'pond', amb: [[0, 'night'], ['w:from-0.25', 'harbour']],
+  { // 1 — HOOK (v2): frame 0 is the burst: the block bursting up out of the dark channel (splash, ice crack, tongs biting,
+    //     a lantern glint sweeping across it, the camera pushing in low, Eddie pointing toward the ship). Reveal staircase:
+    //     the saw cut held ~2.5 s (strokes, groove deepening, chips) → the block slides ON the ice toward the ramp.
+    line: 'He filled a ship with ice from a frozen pond.', min: 4.25, light: 'nightReadable', set: 'pond', amb: 'night',
     shots: [
-      sh(0, [HOOK_CAM, [-1.0, 0.47, -1.3]], [HOOK_LOOK, [-0.95, 0.85, -6.2]], [HOOK_FOV, 52], 'cut', { captionY: 0.88, grade: GRADE_NIGHT }),
-      sh('w:with-0.05', [[5.32, 0.98, -4.85], [5.3, 0.95, -4.95]], [[5.2, 0.55, -6.2], [5.2, 0.55, -6.2]], [42, 40], 'cut', { captionY: 0.88, grade: GRADE_NIGHT }),
-      sh('w:from-0.05', [[1.55, 1.6, -0.75], [1.65, 1.55, -0.55]], [[5.2, 0.55, 3.4], [5.3, 0.55, 3.3]], [56, 54], 'cut', { set: 'wharf', captionY: 0.86, grade: GRADE_NIGHT }),
+      sh(0, [HOOK_CAM, [-1.0, 0.36, -1.75]], [HOOK_LOOK, [-0.98, 0.72, -6.2]], [HOOK_FOV, 50], 'cut', { ease: 'out', captionY: 0.88, grade: GRADE_NIGHT }),
+      sh(0.9, [[6.1, 1.75, -3.7], [5.45, 1.1, -4.7]], [[5.2, 0.85, -6.4], [5.2, 0.6, -6.2]], [52, 42], 'cut', { ease: 'inout', captionY: 0.88, grade: GRADE_NIGHT }),
+      sh(3.4, [[1.9, 0.45, -4.5], [1.65, 0.42, -5.5]], [[-0.7, 0.25, -5.1], [-0.05, 0.22, -6.9]], [52, 50], 'cut', { captionY: 0.88, grade: GRADE_NIGHT }),
     ],
-    open: { saw: [[0, 0], ['w:with-0.06', 0.3], ['w:from-0.06', 0.9]], hatch: [[0, 1]], sails: [[0, 0]], moored: [[0, 1]] },
-    ship: [[0, FAV_DOCK, NORTH]],
-    movers: { pblock: [[0, [-1.0, -3.35, -0.12], 0], ['w:with', [-1.0, -4.5, 0.0], 0, 'sail']],
-      block: [['w:from-0.06', [3.75, 2.95, 0.1], 0], ['end', [5.55, 2.95, 0.46], 0, 'sail']] },
-    pos: { eddie: [[0, [0.6, -7.2]], ['w:from-0.06', [3.15, 1.75]]], w2: [[0, [-1.55, -5.05]]], w1: [[0, [5.3, -6.75]]] },
+    open: { burst: [[0, 0.12], [0.95, 1]], saw: [[0, 0], [0.9, 0.12], [3.35, 0.95]] },
+    movers: { pblock: [[0, [-1.0, -3.35, -0.12], 0], [0.4, [-1.0, -3.5, 0.12], 0, 'sail'], [0.95, [-1.0, -4.4, 0.0], 0, 'sail'], [3.4, [-0.8, -4.65, 0.0], 0], [4.25, [0.1, -7.2, 0.0], 0.15, 'sail']] }, // out of the water ONTO the ice, then slid along the ice
+    pos: { eddie: [[0, [0.6, -7.2]], [3.4, [1.75, -8.6]]], w2: [[0, [-1.55, -5.05]], [3.4, [-0.35, -5.45]], [4.25, [0.6, -7.95]]], w1: [[0, [5.3, -6.75]]], w5: [[0, [-0.45, -5.1]], [3.4, [-1.55, -5.1]], [4.25, [-0.75, -7.3]]] },
     acts: {
-      w2: [[0, 'tongsLift'], [0.7, 'hoist'], [1.4, 'tongsLift']], w5: [[0, 'tongsLift'], [0.8, 'hoist']],
-      w1: [[0, 'saw'], ['w:with', 'saw'], ['w:with+0.25', 'pushPole'], ['w:with+0.5', 'saw']], w3: [[0, 'pushPole'], [1.4, 'watch']], w4: [[0, 'saw'], [0.55, 'pushPole'], [1.1, 'saw']],
-      eddie: [[0, 'pointRight'], [0.9, 'point'], ['w:from', 'point']], s1: [[0, 'hoist']], s2: [[0, 'coilRope']],
+      w2: [[0, 'tongsLift'], [0.45, 'hoist'], [0.95, 'tongsLift'], [3.4, 'tongsLift'], [4.1, 'hoist']], w5: [[0, 'tongsLift'], [0.6, 'hoist'], [3.4, 'pushPole'], [4.05, 'pushPole']],
+      w1: [[0, 'saw'], [0.9, 'saw'], [1.5, 'pushPole'], [1.8, 'saw'], [2.45, 'pushPole'], [2.75, 'saw']], w3: [[0, 'pushPole'], [1.4, 'watch']], w4: [[0, 'saw'], [0.55, 'pushPole'], [1.1, 'saw']],
+      eddie: [[0, 'pointRight'], [0.9, 'point'], [3.4, 'point']],
     },
-    look: { eddie: [9, 1.5, -6], w2: [-1.0, 0.2, -4.0], w5: [-1.0, 0.2, -4.0], s2: [4.6, 0.3, 2.95] },
-    sfx: [[0, 'wind', 3.2], [0.02, 'splash'], ['w:with-0.02', 'iceCrack'], ['w:with+0.05', 'iceSaw', 0.7], ['w:from', 'creak']],
+    look: { eddie: [9, 1.5, -6], w2: [-1.0, 0.2, -4.0], w5: [-1.0, 0.2, -4.0] },
+    sfx: [[0, 'wind', 4.25], [0, 'splash'], [0.02, 'iceCrack'], [0.93, 'iceCrack'], [0.97, 'iceSaw', 2.4], [3.15, 'iceCrack'], [3.45, 'whoosh']],
   },
-  { // 2 — dawn: the Favorite sails; Eddie waves from the wharf, hat in hand
-    line: 'Then he sent it all the way to the Caribbean.', min: 2.7, light: 'snowWide', set: 'wharf', amb: 'harbour',
+  { // 2 — (v2) loading by a real block and tackle: sailors haul, the block swings in on tongs and drops into the hatch; the brig
+    //     leaves (sails filling, Eddie waves, hat in hand); the route card: Boston → Martinique, the ship riding the dotted line
+    line: 'Then he sent it all the way to the Caribbean.', min: 4.6, light: 'snowWide', set: 'wharf', amb: 'harbour',
     shots: [
-      sh(0, [[8.45, -0.1, 5.15], [8.0, 2.6, 3.0]], [[8.45, 3.0, 7.5], [5.0, 1.6, -3.0]], [60, 56], 'push', { ease: 'inout', captionY: 0.8 }),
-      sh('w:sent', [[0.9, 1.25, -5.6], [0.95, 1.3, -5.4]], [[6.4, 2.4, 8.0], [7.0, 3.0, 12.0]], [56, 54], 'cut', { captionY: 0.86 }),
+      sh(0, [[0.6, 2.6, -1.6], [1.0, 2.75, -1.1]], [[6.2, 1.6, 5.2], [7.0, 1.5, 5.3]], [62, 60], 'cut', { ease: 'inout', captionY: 0.84 }),
+      sh('w:all-0.1', [[0.9, 1.25, -5.6], [0.95, 1.3, -5.4]], [[6.4, 2.4, 8.0], [7.0, 3.0, 12.0]], [56, 54], 'cut', { captionY: 0.86 }),
+      sh('w:Caribbean-0.25', [[4.0, 2.2, 2.0], [4.0, 2.25, 2.3]], [[8.0, 2.4, 14], [8.0, 2.4, 14]], [56, 56], 'cut', { captionY: 0.88, hud: { kind: 'card', art: 'mapMq', w: 0.92, y: 0.42, route: [0, 1], unroll: true } }),
     ],
-    open: { sails: [[0, 0], ['w:sent', 0.1], ['end', 1]], hatch: [[0, 1], [0.4, 0]], moored: [[0, 1], ['w:sent-0.05', 0]] },
-    ship: [['w:sent', FAV_DOCK, NORTH], ['end', [8.45, 15.5, -2], NORTH, 'sail']],
-    movers: { block: [[0, [3.2, -5.5, -5], 0]] }, // the loaded block is gone (out of sight under the wharf)
-    pos: { eddie: [[0, [2.4, -1.4]]] },
-    acts: { eddie: [[0, 'watch'], ['w:sent', 'wave'], ['w:Caribbean', 'wave']], s2: [[0, 'watch']] },
-    look: { eddie: [8.4, 2, 12] },
-    cast: ['eddie'],
-    sfx: [[0.1, 'gulls', 2.4], [0, 'waves', 3.2], ['w:sent', 'creak']],
+    open: { tackle: [[0, 1], ['w:all-0.12', 0]], sails: [[0, 0], ['w:all-0.1', 0.15], ['end', 1]], hatch: [[0, 1]], moored: [[0, 1], ['w:all-0.12', 0]] },
+    ship: [[0, FAV_DOCK, NORTH], ['w:all-0.1', FAV_DOCK, NORTH], ['end', [8.45, 15.5, -2], NORTH, 'sail']],
+    movers: { block: [[0, [4.35, 5.15, 0.0], 0], [0.15, [4.35, 5.15, 0.0], 0], [0.75, [4.7, 5.15, 1.9], 0, 'sail'], [1.25, [7.8, 5.2, 2.4], 0, 'sail'], [1.8, [8.4, 5.15, -1.4], 0, 'sail'], ['w:all-0.12', [3.2, -5.5, -5], 0]] },
+    pos: { eddie: [[0, [1.4, 5.6]], ['w:all-0.1', [2.4, -1.4]]], s1: [[0, [9.3, 4.35, -0.6]]], s3: [[0, [9.45, 3.55, -0.6]]], s2: [[0, [3.4, 7.2]]] },
+    acts: { eddie: [[0, 'watch'], ['w:all-0.1', 'hatWave'], ['w:way', 'hatWave2'], ['w:Caribbean', 'hatWave']], s1: [[0, 'hoist'], [0.45, 'pushPole'], [0.9, 'hoist'], [1.35, 'pushPole']], s3: [[0, 'pushPole'], [0.45, 'hoist'], [0.9, 'pushPole'], [1.35, 'hoist']], s2: [[0, 'watch']] },
+    look: { eddie: [8.4, 2, 12], s1: [7.8, 3.0, 5.2], s3: [7.8, 3.0, 5.2], s2: [5.5, 1.5, 5.15] },
+    cast: ['eddie', 's1', 's2', 's3'],
+    sfx: [[0, 'creak'], [0.6, 'creak'], [0.1, 'gulls', 4.5], [0, 'waves', 4.6], [1.85, 'softImpact'], ['w:all', 'creak'], ['w:Caribbean-0.25', 'paper']],
   },
   { // 3 — 1806 kitchen: no fridges (year card; the outline pops in and away)
     line: 'You see, in 1806, there were no fridges.', min: 3.0, light: 'warm', set: 'kitchen', amb: 'room',
@@ -286,7 +286,7 @@ export const beats = [
     sfx: [[0, 'crowdMurmur', 2.0], ['w:hatch-0.9', 'riser', 0.9], ['w:hatch', 'creak'], ['w:hatch+0.35', 'softImpact'], ['w:most', 'ping']],
   },
   { // 15 — the Ice King: Eddie (1833) lifts his top hat; the same Boston people now cheer; an ice-crown sparkle
-    line: 'They called him the Ice King.', min: 2.75, light: 'mayWarm', set: 'wharf33', amb: 'harbour',
+    line: 'They called him the Ice King.', min: 2.4, light: 'mayWarm', set: 'wharf33', amb: 'harbour',
     shots: [sh(0, [[0.95, 0.9, -1.55], [0.8, 1.0, -2.0]], [[0.6, 1.75, -4.4], [0.6, 1.8, -4.4]], [46, 44], 'cut', { captionY: 0.84 })],
     ship: [[0, [30, 120, -2], NORTH]], open: { moored: [[0, 0]] },
     pos: { eddie33: [[0, [0.6, -4.4]]] },
@@ -295,17 +295,25 @@ export const beats = [
     sparkle: ['w:King', [0.6, 2.75, -4.4]],
     sfx: [['w:called', 'cheer'], ['w:King', 'ding']],
   },
-  { // 16 — payoff: the sawmill's waste sawdust → the cutaway: heat arrows slow and fade; push in until the block fills the frame
-    line: 'His secret? Sawdust, the stuff sawmills threw away, packed thick around the ice to keep the heat out.', min: 5.4, light: 'warm', set: 'sawmill', amb: [[0, 'mill'], ['w:packed-0.15', 'hold']],
+  { // 16 — payoff (v2, normal reading pace, ~8–9 s): "His secret?" the cover of a crate in the hold starts to lift (curiosity) →
+    //     "Sawdust" the mill: sawdust pours off the saw, held → "the stuff sawmills threw away" workers shovel it into barrels and
+    //     a cart → "packed thick around the ice…" the cutaway, slow; arrows fade in the sawdust; the push settles on the block (loop)
+    line: 'His secret? Sawdust, the stuff sawmills threw away, packed thick around the ice to keep the heat out.', voice: 'narrator', min: 7.7, light: 'hold', set: 'hold',
+    amb: [[0, 'hold'], ['w:Sawdust-0.1', 'mill'], ['w:packed-0.15', 'hold']],
     shots: [
-      sh(0, [[-2.9, 3.4, 4.3], [-2.55, 3.2, 3.85]], [[0.35, 0.95, -0.9], [0.4, 0.9, -0.95]], [46, 44], 'whip', { ease: 'inout', captionY: 0.88 }),
-      sh('w:packed-0.15', [[-0.45, 1.05, 10.5], [0.45, 0.5, 2.6]], [[-0.45, 1.0, 0], [0.5, 0.42, 0]], [34, 30], 'match', { set: 'cutaway', light: 'cutaway', ease: 'in', captionY: 0.86 }),
+      sh(0, [[1.15, 1.2, 1.6], [0.85, 1.02, 1.2]], [[0.1, 0.55, 0.2], [0.1, 0.6, 0.2]], [46, 42], 'cut', { ease: 'inout', captionY: 0.86 }),
+      sh('w:Sawdust-0.08', [[-2.9, 3.4, 4.3], [-2.5, 3.15, 3.8]], [[0.35, 0.95, -0.9], [0.4, 0.88, -0.95]], [46, 43], 'whip', { set: 'sawmill', light: 'warm', ease: 'inout', captionY: 0.88 }),
+      sh('w:sawmills-0.1', [[4.5, 2.05, -0.55], [4.2, 1.85, -0.9]], [[1.5, 0.8, -3.7], [1.6, 0.8, -3.8]], [50, 48], 'cut', { set: 'sawmill', light: 'warm', captionY: 0.88 }),
+      sh('w:packed-0.15', [[-0.45, 1.05, 10.5], [0.45, 0.5, 2.6]], [[-0.45, 1.0, 0], [0.5, 0.42, 0]], [34, 30], 'match', { set: 'cutaway', light: 'cutaway', ease: 'inout', captionY: 0.86 }),
       sh('w:heat-0.2', [[0.45, 0.5, 2.6], END_CAM], [[0.5, 0.42, 0], END_LOOK], [30, HOOK_FOV], 'cut', { set: 'cutaway', light: 'nightReadable', ease: 'out', captionY: 0.88, grade: GRADE_NIGHT }),
     ],
-    fx: [{ kind: 'arrows', set: 'cutaway', at: 'w:packed', until: 'w:heat+0.1', from: [-2.7, 0.45, 0.76], to: [ICE_X - 0.36, 0.45, 0.76], n: 4, every: 0.4, life: 1.6 }],
-    pos: { m1: [[0, [2.95, -3.45]]], m2: [[0, [3.45, -1.15]]] },
-    acts: { m1: [[0, 'shovel', { item: 'shovel' }], [0.9, 'pushPole', { item: 'shovel' }], [1.8, 'shovel', { item: 'shovel' }]], m2: [[0, 'pushPole'], [1.2, 'watch'], [2.0, 'pushPole']] },
-    look: { m1: [1.3, 0.8, -2.4], m2: [0, 1.0, -0.6] },
-    sfx: [[-0.32, 'silence', 0.45], [0, 'sawmill', 2.8], ['w:packed-0.15', 'whoosh'], ['w:out', 'ding']],
+    open: { crate: [[0, 1]], lid: [[0, 0], [0.35, 0], ['w:Sawdust-0.1', 0.55]], hatch: [[0, 1]] },
+    movers: { crate: [[0, [0.15, 0.25]]] },
+    fx: [{ kind: 'arrows', set: 'cutaway', at: 'w:packed', until: 'w:heat+0.3', from: [-2.7, 0.45, 0.76], to: [ICE_X - 0.36, 0.45, 0.76], n: 4, every: 0.45, life: 1.8 }],
+    pos: { m1: [[0, [2.35, -2.95]]], m2: [[0, [0.95, -3.7]]] },
+    acts: { m1: [[0, 'shovel', { item: 'shovel' }], [0.6, 'pushPole', { item: 'shovel' }], [1.2, 'shovel', { item: 'shovel' }], [1.8, 'pushPole', { item: 'shovel' }], [2.4, 'shovel', { item: 'shovel' }], [3.0, 'pushPole', { item: 'shovel' }]],
+      m2: [[0, 'pushPole', { item: 'shovel' }], [0.5, 'shovel', { item: 'shovel' }], [1.1, 'pushPole', { item: 'shovel' }], [1.7, 'shovel', { item: 'shovel' }], [2.3, 'pushPole', { item: 'shovel' }], [2.9, 'shovel', { item: 'shovel' }]] },
+    look: { m1: [2.6, 0.9, -3.9], m2: [0.25, 0.9, -4.35] },
+    sfx: [[-0.5, 'riser', 0.55], [0.3, 'creak'], ['w:Sawdust-0.08', 'sawmill', 2.6], ['w:packed-0.15', 'whoosh'], ['w:out', 'ding']],
   },
 ];

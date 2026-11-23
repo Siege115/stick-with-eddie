@@ -46,6 +46,17 @@ export function buildPond(scene, opts = {}) {
     pb.add(ink(box(0.66, 0.46, 0.46, bm, 0, 0.23, 0), 1.03));
     const gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: T.radial('rgba(255,255,255,1)', 'rgba(200,230,255,0)'), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })); gl.position.set(0.2, 0.4, 0.24); gl.scale.set(0.1, 0.1, 1); pb.add(gl);
     H.movers.pblock = pb; H.pblock = pb;
+    // S02 v2 hook: the block bursts up out of the dark water (open.burst 0 … 1 = the splash's life) and a lantern glint sweeps
+    // across its face in the first second
+    const SPN = 110, spp = new Float32Array(SPN * 3), spg = new THREE.BufferGeometry(); spg.setAttribute('position', new THREE.BufferAttribute(spp, 3));
+    const spl = new THREE.Points(spg, new THREE.PointsMaterial({ color: 0xe6f2ff, size: 0.07, map: T.radial('rgba(255,255,255,1)', 'rgba(255,255,255,0)'), transparent: true, opacity: 0.95, depthWrite: false })); spl.frustumCulled = false; spl.visible = false; g.add(spl);
+    const sr = K.rng(5); const sseed = []; for (let i = 0; i < SPN; i++) sseed.push([sr() * 6.283, 0.4 + sr() * 1.1, 1.0 + sr() * 1.6]);
+    const foam = new THREE.Mesh(new THREE.RingGeometry(0.3, 0.55, 28), new THREE.MeshBasicMaterial({ map: T.radial('rgba(235,245,255,.9)', 'rgba(235,245,255,0)'), transparent: true, depthWrite: false })); foam.rotation.x = -Math.PI / 2; foam.position.set(-1.0, -0.1, -3.35); foam.visible = false; g.add(foam);
+    H.open.burst = (v) => { spl.visible = foam.visible = v > 0.001 && v < 0.999;
+      for (let i = 0; i < SPN; i++) { const [a, sp, up] = sseed[i]; const tt = v * 1.1; spp[i * 3] = -1.0 + Math.cos(a) * (0.3 + sp * tt * 0.6); spp[i * 3 + 1] = -0.08 + up * tt - 2.6 * tt * tt; spp[i * 3 + 2] = -3.35 + Math.sin(a) * (0.25 + sp * tt * 0.45); }
+      spg.attributes.position.needsUpdate = true; spl.material.opacity = 0.95 * (1 - v * 0.7); foam.scale.setScalar(0.8 + v * 1.6); foam.material.opacity = 1 - v; };
+    H.openRest.burst = 0;
+    H.hookTick = (t) => { const u = Math.min(1, t / 1.1); gl.position.x = -0.32 + u * 0.62; gl.scale.setScalar(0.1 + 0.12 * Math.sin(u * Math.PI)); };
     const warm = new THREE.PointLight(0xffb060, 3.5, 5, 1.4); warm.position.set(-0.1, 1.3, -4.7); g.add(warm); H.lamps.push({ pl: warm, glow: { material: {} } });
   }
   { const saw = new THREE.Group(); saw.position.set(HERO[0], 0, HERO[1]); g.add(saw);
@@ -177,7 +188,7 @@ export function buildPond(scene, opts = {}) {
   const moonS = new THREE.Sprite(new THREE.SpriteMaterial({ map: T.moon(), fog: false, depthWrite: false, transparent: true })); moonS.scale.set(16, 16, 1); moonS.position.set(-55, 22, -60); g.add(moonS);
 
   H.tick = (t, L) => {
-    H.sawTick(t);
+    H.sawTick(t); if (H.hookTick) H.hookTick(t);
     const c = new THREE.Color(L.bg); const night = (0.3 * c.r + 0.59 * c.g + 0.11 * c.b) < 0.15;
     dome.visible = night; moonS.visible = night;
   };

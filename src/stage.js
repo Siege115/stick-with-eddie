@@ -63,6 +63,8 @@ const P = {
   ride: { legL: { a: -0.5, b: 0.5 }, legR: { a: 0.5, b: -0.5 } },
   // ---- S02 acting (art brief 2.1–2.4) ----
   wave: { armR: { a: 2.6, b: 0.25 }, armL: { a: 0.15, b: 0.1 }, brow: 0.6, mouth: 'smile', hatLift: 1 },
+  hatWave: { armR: { a: 2.35, b: -0.35 }, armL: { a: 0.15, b: 0.1 }, brow: 0.6, mouth: 'smile', hatLift: 1 }, // S02: arm out and up, hat held clear of the head
+  hatWave2: { armR: { a: 2.5, b: -0.45 }, armL: { a: 0.15, b: 0.1 }, brow: 0.7, mouth: 'grin', hatLift: 1 },
   hatLift: { armR: { a: 2.75, b: 0.1 }, armL: { a: 0.2, b: 0.2 }, brow: 0.8, mouth: 'grin', hatLift: 1, lean: -0.03 },
   hatDroop: { armL: { a: 0.05, b: 0.05 }, armR: { a: 0.9, b: 1.4 }, brow: 1, mouth: 'frown', headTilt: 0.12, lean: 0.06, hatDroop: 1 },
   presentIce: { armR: { a: 2.2, b: -0.35 }, armL: { a: 0.25, b: 0.2 }, brow: 0.8, mouth: 'grin', lookY: -1 },
