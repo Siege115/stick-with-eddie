@@ -30,16 +30,21 @@ export function buildHold(scene, opts = {}) {
   for (let x = -L / 2 + 0.9; x < L / 2; x += 1.25) if (Math.abs(x) > 1.1) g.add(ink(box(0.22, 0.24, 2 * R, ribM, x, DECK - 0.12, 0), 1.02)); // deck beams
   for (const s of [-1, 1]) { g.add(ink(box(0.22, 0.3, 2 * R, ribM, s * 1.1, DECK - 0.15, 0), 1.02)); g.add(ink(box(2.4, 0.3, 0.2, ribM, 0, DECK - 0.15, s * 0.95), 1.02)); } // hatch framing
   // above the hatch: coaming, bright sky, the hinged cover
-  const sky = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), new THREE.MeshBasicMaterial({ color: opts.sky ?? 0xdcecff, fog: false })); sky.rotation.x = Math.PI / 2; sky.position.y = DECK + 2.2; g.add(sky);
+  const skyT = (() => { /* hazy daytime sky with soft clouds, mid-tones only: the open hatch must not read as a blown-out white square */
+    const cv = document.createElement('canvas'); cv.width = cv.height = 512; const k = cv.getContext('2d'); const rr = K.rng(77);
+    const gr = k.createLinearGradient(0, 0, 0, 512); gr.addColorStop(0, '#6f9cc8'); gr.addColorStop(0.55, '#a9c3da'); gr.addColorStop(1, '#d9c49a'); k.fillStyle = gr; k.fillRect(0, 0, 512, 512);
+    for (let i = 0; i < 14; i++) { const x = rr() * 512, y = rr() * 512, w = 60 + rr() * 120; const cg = k.createRadialGradient(x, y, 0, x, y, w); cg.addColorStop(0, 'rgba(240,236,226,.55)'); cg.addColorStop(1, 'rgba(240,236,226,0)'); k.fillStyle = cg; k.fillRect(x - w, y - w, 2 * w, 2 * w); }
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+  const sky = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), new THREE.MeshBasicMaterial({ map: skyT, color: opts.sky ?? 0xdcecff, fog: false, toneMapped: false })); sky.rotation.x = Math.PI / 2; sky.position.y = DECK + 2.2; g.add(sky);
   for (const [w, d, x, z] of [[2.3, 0.15, 0, 0.93], [2.3, 0.15, 0, -0.93], [0.15, 1.7, 1.08, 0], [0.15, 1.7, -1.08, 0]]) g.add(box(w, 0.35, d, ribM, x, DECK + 0.3, z));
   const hinge = new THREE.Group(); hinge.position.set(0, DECK + 0.48, 1.0); g.add(hinge);
   const cover = new THREE.Group(); cover.position.z = -1.0; hinge.add(cover); cover.add(ink(box(2.3, 0.1, 2.0, deckM, 0, 0.05, 0), 1.02));
-  H.open.hatch = (v) => { hinge.rotation.x = Math.min(1, Math.max(0, v)) * 1.95; sky.material.color.setScalar(1).multiplyScalar(0.25 + 0.75 * Math.min(1, v * 1.5)); };
+  H.open.hatch = (v) => { hinge.rotation.x = Math.min(1, Math.max(0, v)) * 1.95; sky.material.color.setScalar(1).multiplyScalar(0.2 + 0.62 * Math.min(1, v * 1.5)); };
   H.openRest.hatch = opts.hatch ?? 1;
   // light shaft from the hatch (the `hold` preset drives intensity)
   Object.assign(H, K.spotRig(g, { pos: [0.3, 7.5, 0.2], target: [0, 0, 0], angle: 0.3, pen: 0.35, dist: 14, beamPos: [0, 1.3, 0], beamR: 1.15, beamH: 2.7, beamRot: [0, 0, 0.08] }));
   H.spotCenter = [0, 0]; H.spotR = 1.2;
-  H.motes = K.dustMotes(g, r, { n: 110, w: 2.2, h: 2.6, z0: -1.1, d: 2.2, x0: 0 });
+  H.motes = K.dustMotes(g, r, { n: 110, soft: true, w: 2.2, h: 2.6, z0: -1.1, d: 2.2, x0: 0 });
   // ladder up to the hatch
   { const lg = new THREE.Group(); lg.position.set(-0.9, 0, -0.55); lg.rotation.z = -0.28; g.add(lg); for (const zz of [-0.3, 0.3]) lg.add(ink(box(0.08, 2.9, 0.08, ribM, 0, 1.45, zz), 1.06)); for (let y = 0.3; y < 2.8; y += 0.32) lg.add(box(0.06, 0.06, 0.62, ribM, 0, y, 0)); }
   // ice stacked both sides: sawdust packing with the block faces showing through

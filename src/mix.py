@@ -181,7 +181,9 @@ def load_arr(s, sr):
 MEN = ["am_adam", "am_eric", "am_liam", "am_onyx", "bm_george", "bm_daniel", "am_puck", "bm_fable"]
 WOMEN = ["af_bella", "af_sarah", "af_nicole", "bf_emma", "af_sky", "bf_isabella", "af_kore", "af_jessica"]
 def crowd_gasp(): return crowd_voice(["Ooooh!", "Whoa!", "Oh!", "Wow!"], WOMEN[:4] + MEN[:4], 0.18, 1.0, "gasp")
-def crowd_cheer(): return crowd_voice(["Hooray!", "Bravo!", "Yay!", "Wunderbar!"], MEN[:5] + WOMEN[:5], 0.3, 1.0, "cheer")
+def crowd_cheer():
+    if MIX: return crowd_voice(["Hooray!", "Bravo!", "Huzzah!", "Hurrah!"], MEN[:5] + WOMEN[:5], 0.3, 1.0, "cheerEn")  # S02+: English-only cheers (S01 keeps its own)
+    return crowd_voice(["Hooray!", "Bravo!", "Yay!", "Wunderbar!"], MEN[:5] + WOMEN[:5], 0.3, 1.0, "cheer")
 def laugh(): return crowd_voice(["Ha ha ha ha!", "Ho ho ho!", "Hah hah hah!", "Ha ha ha!"], ["bm_george", "bm_lewis", "am_onyx", "bm_daniel", "am_adam", "bm_fable"], 0.35, 1.05, "laugh")
 
 # ---------------- reverb ----------------
@@ -407,6 +409,10 @@ if MIX and SILENCE:  # silence drop: music, room tone and sfx tails dip out for 
     music *= g[:, None]; amb *= g[:, None]; sfx *= g[:, None]  # sfx tails (cheer reverb) too, so the drop is a real silence
 mix = voice * 1.0 + sfx * 0.9 + music * 0.18 + amb * 0.5
 mix = mix / (np.abs(mix).max() + 1e-9) * 0.89
+if MIX:  # loop seam: fade the last 3 frames (0.1 s) into the video's last frame; nothing after it
+    ie, f = t2i(TL["duration"]), int(0.1 * SR)
+    if ie < len(mix): mix[ie:] = 0.0
+    mix[max(0, ie - f):ie] *= np.linspace(1, 0, ie - max(0, ie - f))[:, None]
 if MIX:  # true-peak guard: 4x oversampled peak kept under -1 dBTP before loudness normalisation re-checks it
     tp = np.abs(resample_poly(mix, 4, 1, axis=0)).max()
     if tp > 10 ** (-1.5 / 20): mix *= 10 ** (-1.5 / 20) / tp

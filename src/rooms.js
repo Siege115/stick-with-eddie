@@ -78,7 +78,7 @@ export function buildKitchen(scene, opts = {}) {
   // herbs and dried peppers hanging from the beam over the table
   for (let i = 0; i < 6; i++) { const x = -1.6 + i * 0.6, z = -0.5; K.rope(g, [x, HT - 0.24, z], [x, HT - 0.55, z], 0.008); if (i % 3 === 2) { for (let j = 0; j < 5; j++) { const pp = new THREE.Mesh(new THREE.ConeGeometry(0.025, 0.14, 6), std({ color: 0xb02a1a })); pp.rotation.x = Math.PI; pp.position.set(x + (j - 2) * 0.025, HT - 0.62 - (j % 2) * 0.05, z); g.add(pp); } } else { const bn = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.32, 8), std({ color: i % 2 ? 0x6a8a3a : 0x8a9a4a, roughness: 1 })); bn.rotation.x = Math.PI; bn.position.set(x, HT - 0.72, z); g.add(K.inkOffset(bn, 0.01)); } }
   // sunbeam motes through the window
-  H.motes = K.dustMotes(g, r, { n: 260, w: 3, h: 2.4, z0: -0.8, d: 1.8, x0: -2.2 });
+  H.motes = K.dustMotes(g, r, { n: 260, soft: true, w: 3, h: 2.4, z0: -0.8, d: 1.8, x0: -2.2 });
   return H;
 }
 
@@ -123,7 +123,7 @@ export function buildWorkshop(scene, opts = {}) {
     const ms = new THREE.Group(); ms.position.set(0.85, 0, 0.45); bin.add(ms); ms.add(ink(box(0.06, 1.3, 0.04, std({ color: 0xe9dcb8 }), 0, 0.65, 0), 1.06)); for (let y = 0.15; y < 1.3; y += 0.1) ms.add(box(Math.round(y * 10) % 5 === 0 ? 0.06 : 0.035, 0.012, 0.045, std({ color: 0x1b1b1b }), 0.02, y, 0));
     const pd = new THREE.Mesh(new THREE.CircleGeometry(1, 24), new THREE.MeshStandardMaterial({ color: 0x8fb4cc, roughness: 0.05, metalness: 0.5, transparent: true, opacity: 0.85, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 })); pd.rotation.x = -Math.PI / 2; pd.position.set(bx + 0.2, 0.015, bz + 0.9); pd.scale.set(0.01, 0.01, 1); g.add(pd); puddles.push(pd);
   });
-  H.open.melt = (v) => { v = Math.min(1, Math.max(0, v)); blocks.forEach((b, i) => { const s = 1 - v * [0.45, 0.55, 0.35][i]; b.scale.set(s, s, s); b.position.y = 0.51 + 0.21 * s; }); puddles.forEach((p, i) => { const s = 0.05 + v * [0.55, 0.65, 0.42][i]; p.scale.set(s * 1.4, s, 1); p.visible = v > 0.01; }); };
+  H.open.melt = (v) => { v = Math.min(1, Math.max(0, v)); blocks.forEach((b, i) => { const s = 1 - v * [0.45, 0.55, 0.35][i]; b.scale.set(s, s, s); b.position.y = 0.57 + 0.21 * s; /* sits a little higher so even the shrunken block shows above the packing */ }); puddles.forEach((p, i) => { const s = 0.05 + v * [0.55, 0.65, 0.42][i]; p.scale.set(s * 1.4, s, 1); p.visible = v > 0.01; }); };
   H.binAt = BIN_X.map((x) => [x, 0.72, -1.6]);
   // sacks "RICE HUSKS", a hay bale, a straw bundle, pitchfork + shovel, workbench with the notebook and an ink pot, lantern
   for (const [x, z, ry] of [[3.2, -0.2, 0.3], [3.4, 0.5, -0.4]]) { const s = K.sack(g, x, 0, z, ry, 0xc9b07a); const lb = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.18), std({ map: T.signText('RICE HUSKS', { bg: '#efe2bd', fg: '#3a2410', w: 512, h: 210, border: null, grain: false }) })); lb.position.set(0, 0.22, 0.24); lb.rotation.x = -0.4; s.add(lb); }
@@ -135,10 +135,11 @@ export function buildWorkshop(scene, opts = {}) {
     const ip = lathe([[0.001, 0], [0.05, 0], [0.055, 0.04], [0.03, 0.07], [0.03, 0.08]], std({ color: 0x1b1b1b, roughness: 0.3 }), 12); ip.position.set(0.15, 0.94, 0.1); wb.add(ip); const qu = new THREE.Mesh(new THREE.ConeGeometry(0.02, 0.32, 5), std({ color: 0xf6f0de })); qu.position.set(0.17, 1.1, 0.1); qu.rotation.z = -0.3; wb.add(qu); }
   H.lamps.push(K.hangingLantern(g, 1.6, HT - 0.2, 1.5, { range: 5 }));
   const fillW = new THREE.PointLight(0xffd8a0, 4, 11, 1.1); fillW.position.set(0, 2.4, 0.5); g.add(fillW); // warm daylight bounce inside the shed
+  const binKey = new THREE.PointLight(0xfff0d8, 3.2, 7, 1.2); binKey.position.set(0, 2.5, -0.7); g.add(binKey); /* key over the three bins so ice and packing read */
   // god rays through the board gaps: thin additive slabs from the right wall, dust motes in them
   const rayM = new THREE.MeshBasicMaterial({ color: 0xfff0c8, transparent: true, opacity: 0.12, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide });
   const rays = []; for (let i = 0; i < 6; i++) { const ry = new THREE.Mesh(new THREE.PlaneGeometry(0.06, 6), rayM); ry.position.set(X - 2.2, 1.6, -2.2 + i * 0.85); ry.rotation.set(0, Math.PI / 2, 0.95); g.add(ry); rays.push(ry); }
-  H.motes = K.dustMotes(g, r, { n: 300, w: 6, h: 2.6, z0: -2.6, d: 5, x0: 0 });
+  H.motes = K.dustMotes(g, r, { n: 300, soft: true, w: 6, h: 2.6, z0: -2.6, d: 5, x0: 0 });
   H.open.melt(opts.melt ?? 0); H.openRest.melt = opts.melt ?? 0; H.openRest.season = 0;
   H.tick = (t) => { rays.forEach((ry, i) => { ry.material.opacity = 0.1 + 0.04 * Math.sin(t * 0.7 + i); }); };
   return H;
@@ -195,7 +196,7 @@ export function buildSawmill(scene, opts = {}) {
   // pine forest backdrop (scenery only)
   const pineM = std({ color: 0x2f5a36, roughness: 1, flatShading: true });
   for (let i = 0; i < 40; i++) { const a = r() * Math.PI - Math.PI, R = 20 + r() * 20; const x = Math.cos(a) * R * 0.9 - 4, z = Math.sin(a) * R; const s = 1 + r() * 0.8; const t = new THREE.Group(); t.position.set(x, 0, z); t.scale.setScalar(s); g.add(t); t.add(cyl(0.2, 0.25, 1.5, std({ color: 0x4a3420 }), 0, 0.75, 0, 6)); for (let k = 0; k < 4; k++) { const c = new THREE.Mesh(new THREE.ConeGeometry(2.0 - k * 0.42, 2.0, 9), pineM); c.position.y = 1.6 + k * 1.15; t.add(c); } }
-  H.motes = K.dustMotes(g, r, { n: 220, w: 6, h: 3.5, z0: -3, d: 6, x0: 0 });
+  H.motes = K.dustMotes(g, r, { n: 220, soft: true, w: 6, h: 3.5, z0: -3, d: 6, x0: 0 });
   H.sawAt = [0, 1.0, -0.6]; H.heapAt = [1.3, 0.8, -2.4];
   H.tick = (t) => {
     wheel.rotation.z = -t * 0.9; foamT.offset.x = t * 0.4;

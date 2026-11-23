@@ -58,18 +58,14 @@ export function resolver(tl) {
 const LITTLE = new Set(['a', 'an', 'the', 'to', 'of', 'in', 'on', 'at', 'from', 'with', 'and', 'it', 'his', 'he', 'for', 'by', 'but', 'so', 'there', 'was', 'were', 'what', 'do', 'i', 'is', 'they', 'him', 'them', 'too']);
 const ends = (w) => /[.,?!:;"…]$/.test(w.w);
 const chars = (c) => c.reduce((n, w) => n + clean(w.w).length, 0);
-// one caption phrase starting at word i: up to 3 words / 14 letters, broken at punctuation, never ending on a little word
+// one caption chunk starting at word i (bible: 1–2 words): break after punctuation, and don't end a pair on a little word
+// when more words follow (the little word goes with the next one: "from | a frozen | pond")
 function phraseChunk(ws, i) {
-  const chunk = [ws[i]];
-  while (i + chunk.length < ws.length && !ends(chunk[chunk.length - 1])) {
-    const next = ws[i + chunk.length], cand = [...chunk, next];
-    if (cand.length > 3 || chars(cand) > 14) break;
-    if (chunk.length >= 2 && !LITTLE.has(clean(chunk[chunk.length - 1].w))) break;
-    chunk.push(next);
-  }
-  const last = chunk[chunk.length - 1], nx = ws[i + chunk.length];
-  if (LITTLE.has(clean(last.w)) && !ends(last) && nx) { if (chars([...chunk, nx]) <= 16 && chunk.length < 4) chunk.push(nx); else if (chunk.length > 1) chunk.pop(); }
-  return chunk;
+  const a = ws[i], b = ws[i + 1];
+  if (!b || ends(a)) return [a];
+  if (chars([a, b]) > 13) return [a];
+  if (LITTLE.has(clean(b.w)) && !ends(b) && ws[i + 2]) return [a];
+  return [a, b];
 }
 const NUMBER_WORDS = new Set(['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'thirteen', 'hundred']);
 
@@ -93,7 +89,8 @@ export function compile(meta, beats, tl) {
       trans.push([t0, s.trans || 'cut', bi]);
     });
     // captions: 1–2 words per chunk; break after punctuation
-    for (const p of bt.parts) {
+    for (const [pi, p] of bt.parts.entries()) {
+      if (pi === 1 && b.line2 && b.line2.caption === false) continue; // a spoken line shown only as a speech bubble
       const ws = p.words; let i = 0;
       while (i < ws.length) {
         const a = ws[i], b2 = ws[i + 1];

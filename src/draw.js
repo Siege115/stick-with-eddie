@@ -161,8 +161,15 @@ export function drawPerson(ctx, c, p, rim) {
   ctx.save();
   const hx = 0, hy = c.egg ? -520 : -505;
   ctx.translate(hx, hy + 60); ctx.rotate(p.headTilt); ctx.translate(-hx, -(hy + 60));
-  drawHead(ctx, c, p, hx, hy, rim);
+  const inHand = c.hatInHand && c.hat && (p.hatLift || 0) > 0.5; /* S02: the hat is held in the raised right hand, not floated beside the head */
+  drawHead(ctx, inHand ? { ...c, hat: null } : c, p, hx, hy, rim);
   ctx.restore();
+  if (inHand) {
+    const hry = c.egg ? 102 : 92, hrx = c.egg ? 84 : 92;
+    ctx.save(); ctx.translate(aR[2] + 4, aR[3] + 18); ctx.rotate(0.32); ctx.scale(0.82, 0.82); ctx.translate(-hx, -(hy - hry));
+    drawHat(ctx, c, hx, hy - hry, hrx); ctx.restore();
+    hand(ctx, aR[2], aR[3], c.gloves); /* fingers over the brim */
+  }
 
   ctx.restore(); // body lean
   // icons above head

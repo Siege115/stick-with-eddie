@@ -281,7 +281,17 @@ export function dustMotes(parent, r, o = {}) {
   const geo = new THREE.BufferGeometry(); const mp = [];
   for (let i = 0; i < n; i++) mp.push(x0 + (r() - 0.5) * w, r() * h, z0 + r() * d);
   geo.setAttribute('position', new THREE.Float32BufferAttribute(mp, 3));
-  const motes = new THREE.Points(geo, new THREE.PointsMaterial({ color: o.color ?? 0xfff0c8, size: 0.03, transparent: true, opacity: 0.6, depthWrite: false }));
+  const mat = new THREE.PointsMaterial({ color: o.color ?? 0xfff0c8, size: 0.03, transparent: true, opacity: 0.6, depthWrite: false });
+  if (o.soft) { // S02: round soft motes that fade out near the lens (a mote right at the camera drew as a big flat grey square)
+    const cv = document.createElement('canvas'); cv.width = cv.height = 64; const k = cv.getContext('2d');
+    const gr = k.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.5, 'rgba(255,255,255,.6)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+    k.fillStyle = gr; k.fillRect(0, 0, 64, 64); mat.map = new THREE.CanvasTexture(cv);
+    mat.onBeforeCompile = (sh) => {
+      sh.vertexShader = 'varying float vNear;\n' + sh.vertexShader.replace('#include <fog_vertex>', '#include <fog_vertex>\n\tvNear = smoothstep(0.9, 1.8, -mvPosition.z);');
+      sh.fragmentShader = 'varying float vNear;\n' + sh.fragmentShader.replace('#include <tonemapping_fragment>', 'gl_FragColor.a *= vNear;\n\t#include <tonemapping_fragment>');
+    };
+  }
+  const motes = new THREE.Points(geo, mat);
   parent.add(motes); return motes;
 }
 

@@ -44,7 +44,7 @@ const P = (id, card, home, set, extra = {}) => ({ card, home, set, c: { ...C[id]
 const tint = (id, over) => ({ ...C[id].c, ...over });
 export const cast = {
   // Eddie as Tudor (Boston only): 1806 on the wharf and in the workshop; 1833 on the wharf
-  eddie: { card: 'hero', home: [3.6, 2.2], set: ['pond', 'wharf', 'workshop'], c: { ...C.eddie1806.c } },
+  eddie: { card: 'hero', home: [3.6, 2.2], set: ['pond', 'wharf', 'workshop'], c: { ...C.eddie1806.c, hatInHand: true } },
   eddie33: { card: 'hero', home: [0.6, -4.4], set: ['wharf33'], c: { ...C.eddie1833.c, item: undefined, itemL: 'cane' } },
   // pond: four grown-up ice cutters on thick ice, well away from the open channel
   w1: P('iceSaw1', 'mid', [6.7, -7.6], ['pond']), w2: P('iceTongs', 'mid', [5.85, -6.3], ['pond']),
@@ -189,7 +189,7 @@ export const beats = [
     sfx: [[0, 'waves', 3.0], [0.4, 'gulls', 2.0], [2.5, 'creak']],
   },
   { // 8 — nowhere to keep it cold: the merchant holds the dripping block, polite and puzzled; his line
-    line: 'But there was nowhere to keep it cold.', line2: { text: 'Lovely. And... what do I do with it?', voice: 'merchant' }, min: 4.2, light: 'tropic', set: 'mq', amb: 'tropic',
+    line: 'But there was nowhere to keep it cold.', line2: { text: 'Lovely. And... what do I do with it?', voice: 'merchant', caption: false /* bubble only (fact-check) */ }, min: 4.2, light: 'tropic', set: 'mq', amb: 'tropic',
     shots: [
       sh(0, [[12.0, 0.65, 0.2], [11.8, 0.7, 0.0]], [[8.9, 1.25, -2.4], [8.9, 1.3, -2.4]], [50, 48], 'cut', { captionY: 0.84 }),
       sh('w2:Lovely-0.1', [[10.3, 1.6, -0.9], [10.2, 1.6, -1.0]], [[9.25, 1.75, -2.3], [9.25, 1.75, -2.3]], [40, 38], 'cut', { captionY: 0.86 }),
@@ -226,10 +226,10 @@ export const beats = [
   { // 10 — the ice house door opens, push in; three tests, one per word: 1 · HAY, 2 · STRAW, 3 · RICE HUSKS
     line: 'So he tried packing the ice in hay. He tried straw. He tried rice husks.', min: 4.4, light: 'snowWide', set: 'wharf', amb: [[0, 'harbour'], ['w:hay-0.12', 'room']],
     shots: [
-      sh(0, [[-8.8, 1.7, -9.4], [-9.0, 1.5, -12.6]], [[-9.0, 1.5, -13.6], [-9.0, 1.45, -15]], [52, 56], 'whip', { ease: 'in', captionY: 0.8 }),
-      sh('w:hay-0.12', [[-3.6, 1.0, 0.85], [-3.5, 1.0, 0.65]], [[-1.95, 0.9, -1.6], [-1.95, 0.9, -1.6]], [56, 54], 'push', { set: 'workshop', light: 'warm', captionY: 0.62 }),
-      sh('w:straw-0.12', [[0.45, 1.95, 1.0], [0.4, 1.9, 0.85]], [[0, 0.85, -1.6], [0, 0.85, -1.6]], [52, 50], 'cut', { set: 'workshop', light: 'warm', captionY: 0.62 }),
-      sh('w:rice-0.12', [[2.3, 1.6, 0.75], [2.3, 1.6, 0.55]], [[2.2, 1.15, -2.0], [2.2, 1.15, -2.0]], [58, 56], 'cut', { set: 'workshop', light: 'warm', captionY: 0.84 }),
+      sh(0, [[-8.8, 1.7, -9.4], [-9.0, 1.55, -11.4]], [[-9.0, 1.5, -13.6], [-9.0, 1.45, -15]], [52, 54], 'whip', { ease: 'in', captionY: 0.8 }), /* stops at the doorway: never enters the dark */
+      sh('w:in-0.08', [[-1.8, 2.55, -0.2], [-1.85, 2.45, -0.35]], [[-2.2, 0.62, -1.62], [-2.2, 0.62, -1.62]], [54, 52], 'cut', { set: 'workshop', light: 'warm', captionY: 0.86 }), /* clean cut into the shed: the block nested in hay */
+      sh('w:straw-0.12', [[0.4, 2.55, -0.2], [0.35, 2.45, -0.35]], [[0, 0.62, -1.62], [0, 0.62, -1.62]], [54, 52], 'cut', { set: 'workshop', light: 'warm', captionY: 0.86 }),
+      sh('w:rice-0.12', [[2.6, 2.55, -0.2], [2.55, 2.45, -0.35]], [[2.2, 0.62, -1.62], [2.2, 0.62, -1.62]], [54, 52], 'cut', { set: 'workshop', light: 'warm', captionY: 0.86 }),
     ],
     doors: [[0, 0.1], [0.3, 1]],
     open: { melt: [[0, 0]], season: [[0, 0]] },
@@ -240,9 +240,9 @@ export const beats = [
   },
   { // 11 — time-lapse: the blocks shrink a lot but not to nothing; Eddie sighs
     line: 'Too much of it still melted.', min: 2.2, light: 'warm', set: 'workshop', amb: 'room',
-    shots: [sh(0, [[-1.2, 1.25, 2.3], [-1.2, 1.25, 2.25]], [[0.7, 0.75, -1.3], [0.7, 0.75, -1.3]], [66, 66], 'cut', { captionY: 0.86 })],
+    shots: [sh(0, [[3.5, 2.75, 0.95], [3.45, 2.7, 0.9]], [[-0.4, 0.45, -1.7], [-0.4, 0.45, -1.7]], [54, 54], 'cut', { captionY: 0.86 })], /* along the row: three shrunken blocks still there, puddles, Eddie sighs */
     open: { melt: [[0, 0.05], ['end', 1]], season: [[0, 0]] },
-    pos: { eddie: [[0, [1.2, -0.3]]] },
+    pos: { eddie: [[0, [0.95, -2.75]]] },
     acts: { eddie: [[0, 'handChin'], [0.9, 'sigh']] },
     look: { eddie: [0, 0.6, -1.6] }, cast: ['eddie'],
     sfx: [[0.2, 'drip'], [0.8, 'drip'], [1.3, 'drip']],
@@ -275,7 +275,7 @@ export const beats = [
     line: 'The ship docks. The hatch opens, and most of the ice is still there.', min: 4.2, light: 'tropicHaze', set: 'ca', amb: [[0, 'river'], ['w:hatch-0.1', 'hold']],
     shots: [
       sh(0, [[6.45, 2.55, -0.45], [6.5, 2.45, -0.15]], [[6.6, 0.55, 4.6], [6.6, 0.5, 4.6]], [50, 48], 'push', { captionY: 0.88 }),
-      sh('w:hatch-0.1', [[0.95, 0.55, 0.45], [0.9, 0.5, 0.5]], [[0, 3.6, 0.1], [0, 3.7, 0.12]], [66, 64], 'push', { set: 'hold', light: 'hold', captionY: 0.86 }),
+      sh('w:hatch-0.1', [[-3.6, 1.2, 0.5], [-3.25, 1.18, 0.45]], [[1.2, 1.25, -0.1], [1.2, 1.2, -0.1]], [62, 60], 'push', { set: 'hold', light: 'hold', captionY: 0.86 }), /* proof shot: the stacked ice in sawdust, puddles, the shaft and a lit sky in the hatch */
     ],
     ship: [[0, CA_DOCK, Math.PI]], open: { sails: [[0, 0.25]], moored: [[0, 1]], hatch: [[0, 0], ['w:hatch', 0], ['w:hatch+0.6', 1]], crate: [[0, 0]] },
     pos: { ca1: [[0, [5.55, 5.0, -0.6]], ['w:hatch-0.1', [-1.25, 1.12, 2.72]]], ca3: [[0, [7.7, 5.05, -0.6]], ['w:hatch-0.1', [1.3, 1.1, 2.72]]], ca2: [[0, [6.6, 5.4, -0.6]]], ca4: [[0, [4.6, 4.6, -0.6]]], ca6: [[0, [8.65, 4.55, -0.6]]] },
