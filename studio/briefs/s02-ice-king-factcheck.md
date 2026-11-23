@@ -140,3 +140,42 @@ I checked every narrated line, the second-voice line, the on-screen captions and
 7. Beat 17: heat arrows slow and fade; they don't bounce.
 
 These change the spoken word count by +2 (beat 2: +3; beat 10: −1), which barely affects timing.
+
+---
+
+## v2 check: `content/s02-ice-king.beats.mjs` after the v2 fixes (2026-11-23)
+
+Checked: the beats file (narration, line2, bubble, captions, cards, movers and acts) and the on-screen text it pulls in from `src/cards.js`, `src/textures.js`, `src/wharf.js`, `src/harbour.js`, `src/pond.js`, `src/rooms.js`, `src/ship.js`, plus the cheer list in `src/mix.py`. I used four free web searches, spent no paid credits and changed no code.
+
+### Narration vs the approved script
+| Item | Verdict | Note |
+|---|---|---|
+| All 16 narrated lines | ✅ | A script compare shows the joined `line` fields are **identical** to the script's "Plain narration" (with trims A and B), down to the punctuation. Only beat 16 changes voice (`voice: 'narrator'`, normal pace). The words are the same, so the APPROVED script still holds. |
+| Beat 8 merchant (line2 + bubble) | ✅ | Same words. The spoken text uses "..." and the bubble uses "…", which is the same line. It is a bubble only (`caption: false`), as the script check required. |
+
+### New v2 visuals
+| # | Beat | Item | Verdict | Note / source | Exact fix |
+|---|---|---|---|---|---|
+| V1 | 1 | Block hauled from the channel with tongs, then slid **on the ice** to the ramp | ✅ | This fixes v1's slide over water. Floating blocks were pushed along channels and hauled onto the ice. That method is documented from the Wyeth era (1825 on). Tongs before 1825 are not documented in what I found, but tongs are a simple blacksmith tool, and the shot makes no claim about them. Kid safety: the haulers stand at the channel edge, which is real adult work. Keep their feet on solid ice, with nobody leaning over or slipping and no kids nearby. The "ICE CUTTING / WORKERS ONLY" sign helps. | — |
+| V2 | 1 | Hand ice saw, two-handed strokes, chips | ✅ | Before Wyeth's horse cutter (1825), ice was cut by hand with long saws, axes and breaking bars. This matches row 36. Hagley Museum; Antique Ice Tool Museum; madcohistory.org "Ice saw". | — |
+| V3 | 1 | The block "bursts up" out of the water with a splash | ✅ as dramatization | Ice floats, and a freed block bobs up. The burst is staging for the hook, not a claim. | — |
+| V4 | 2 | Loading by block and tackle from the yard of the brig (1806), sailors hauling, tongs on the block | ✅ | Hoisting cargo with a yard tackle was standard practice on square-riggers long before 1806. Every rope now connects to something. | — |
+| V5 | 2 | Route card Boston → Martinique (`ROUTE_MQ`): offshore to the south-east, then down to the island | ✅ | This route is plausible. Sailing ships bound for the Lesser Antilles stood out to sea and came in from the north-east on the trade winds. At this map scale the line ending on the Atlantic side of Martinique, rather than at Saint-Pierre on the west coast, can't be seen. The labels "BOSTON", "MARTINIQUE", "ATLANTIC OCEAN" and "CARIBBEAN SEA" are all correct. | — |
+| V6 | 12 | Map labels "BOSTON", "CALCUTTA", "(now Kolkata)", "AFRICA", "ATLANTIC OCEAN", "INDIAN OCEAN"; route round the Cape; the "BOSTON" label is no longer clipped | ✅ | Matches rows 24 and 27 and script check beat 13. | — |
+| V7 | 16 | Water-powered up-and-down sash saw at the sawmill (1830s) | ✅ | Sash saws powered by water wheels were the normal New England mill saw until circular saws spread from about 1840 to the Civil War. Sanborn Mills (NH) was built as a sash mill in 1829. Sources: Sanborn Mills; *Northern Woodlands*; *NH Magazine*. | — |
+| V8 | 16 | Workers shovelling sawdust into barrels and a hand cart | ✅ | Sawdust was mill waste (row 20), and the ice trade collected it and carried it away. The shot fits "the stuff sawmills threw away". The shovels are adult work, and nothing in the shot is unsafe to copy. | — |
+| V9 | 16 | Sawdust packed thick around the ice in the hold (cutaway, arrows fade) | ✅ | Rows 22 and 32: the *Tuscany*'s hold had a gap of about 18 in packed with sawdust, and the arrows fade instead of bouncing, as script check beat 17 asked. | — |
+| V10 | 16 | Canvas-covered crate in the hold, lid lifting on "His secret?" | ✅ | It is a curiosity device. Under the lid we see only a warm sawdust glow; no ice is shown inside it. Keep it that way: the ice was stacked loose in the hold, not shipped in crates, so **don't reveal ice blocks inside the crate** in any later edit. | — |
+| V11 | 3 | Stoneware jug with condensation beads and drips (1806 Boston kitchen) | ✅ | Stoneware jugs and pewter on the mantel are normal for 1806. A jug of cold winter water in a warm kitchen does "sweat", so it fits February in Boston. | — |
+| V12 | 4 | **Pewter cup "sweating" in the hot port** (`src/harbour.js` about lines 244–255: 26 condensation beads and a wet ring) | ⚠️ | A pewter cup is fine for 1806. **The beads are wrong for this beat.** Condensation forms only when the drink is colder than the air's dew point, so a sweating cup in the tropical sun says "this water is cold", while the narration says "almost nobody had ice". Kids and teachers will read beads as "cold drink". | **Remove the condensation beads and the wet ring on the hot-port cup.** Keep the rim, the water surface, the highlight and the shadow. To show heat, use the existing heat shimmer, and optionally a dull, warm tint on the water or a fly. (Fix A8 asked for beads, and that request clashes with the script.) |
+| V13 | 15 | Cheers "Hooray! Bravo! Huzzah! Hurrah!" from the 1833 Boston crowd (`cheerEn`) | ✅ | All are period-safe. "Huzza(h)" dates from the 1600s, "hurrah"/"hurray" was in use by the late 1700s, and "hooray" is a variant attested in the late 1600s (sources disagree on spellings and dates). "Bravo" was an Italian loanword used for applause in English theatres in the 1700s; that last date is from general knowledge, not a search result. "Wunderbar!" is gone. Sources: Merriam-Webster; OUP blog "The loudest short word in English: hurrah"; Etymonline. | — |
+| V14 | all | Signs and props: Boston 1806 "SHIP CHANDLER / Rope · Canvas · Tar", "SAIL LOFT", "ROPE & TAR", "COFFEE HOUSE / Newspapers Read Here", "ICE HOUSE", posters "FRESH COD DAILY", "PASSAGE TO NEW YORK / a fast sailing packet", "AUCTION TODAY … at the Coffee House"; Boston 1833 adds "BOUND FOR CALCUTTA / the fine ship now loading", "FINE TEAS / just landed"; pond "ICE CUTTING / WORKERS ONLY"; Martinique "CAFÉ", "FRUITS", "PORT"; Calcutta "CUSTOM HOUSE", "CLOTH MERCHANT", "STRAND ROAD"; stern boards "FAVORITE / BOSTON", "TUSCANY / BOSTON"; slates "1 · HAY", "2 · STRAW", "3 · RICE HUSKS"; "SAWMILL"; "NO FRIDGE YET!"; newspaper "BOSTON NEWS / 1806 / slippery speculation"; year card; wordless letter; thermometer with no numbers | ✅ | All are invented, generic props, and none poses as a real document. There is no tonnage, price or exact date anywhere. Strand Road in Calcutta was completed in **1828**, before the 1833 arrival (Wikipedia "Strand Road, Kolkata"; Hooghly shipyards list). Both stern boards are confirmed (rows 3 and 24). "NO FRIDGE YET!" is a joke caption, true for 1806. | — |
+| V15 | 1–16 | Earlier safety and respect rules (Eddie-Tudor only in Boston and at the pond; respectful Martinique and Calcutta crowds; gulls on their own paths) | ✅ | All still hold in the v2 beats. Eddie never appears in `mq`, `ca` or `hold`. | — |
+
+### v2 check verdict
+**CHANGES NEEDED: one small art fix, and the narration is unchanged.**
+1. Beat 4 hot-port cup (`src/harbour.js`): remove the condensation beads and the wet ring. A sweating cup means a cold drink, which contradicts "almost nobody had ice". Keep everything else on the cup.
+
+Once that is done the Short is **APPROVED** for the full render, with no new check needed if the fix is exactly that. Keep V10 as it is: the crate shows sawdust, never ice inside it.
+
+**New sources for this check:** Hagley Museum, "Chilling with the Ice King of New England" (hagley.org); Antique Ice Tool Museum, "1825: a more efficient way to harvest ice" (antiqueicetoolmuseum.org); Sanborn Mills, "The Saw Mill" (sanbornmills.org); *Northern Woodlands*, "The Thunderstorm Mill" (northernwoodlands.org); "Strand Road, Kolkata," Wikipedia; Merriam-Webster "hooray"; OUP blog, "The loudest short word in English: hurrah" (2022). None of them needs to go in the video description.
