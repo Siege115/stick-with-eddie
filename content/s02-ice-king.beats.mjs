@@ -5,6 +5,8 @@
 // Fact-check rules kept: Eddie-Tudor only in Boston (wharf, workshop) — never in Martinique or Calcutta; hat droops in Boston
 // over the letter; no tonnage anywhere; "about 15,000 miles"; "most of the ice" (a few puddles in the hold); heat arrows fade in
 // the sawdust; adults only on the pond, away from the open channel; respectful crowds (same faces, period dress).
+// Decisions (owner, 2026-11-23, v2 brief): the payoff is read at normal pace (beat 16 `voice: 'narrator'`), earlier beats stay
+// brisk; the Short may run up to about 68 s (now 68.24 s): the owner prefers clarity over rushing.
 // Loop: the first frame (beat 1, pond block face) and the last frame (beat 16, cutaway block face) share framing, texture and light.
 import { S02_COSTUMES as C } from './s02-cast.mjs';
 
@@ -34,7 +36,7 @@ export const meta = {
     workshop: {}, sea: { base: 'water', tint: 'sea', ship: 'tuscany', sails: 1 }, hold: {}, sawmill: {}, cutaway: {},
   },
   // the running easter egg: the log peeks through the open upper window in Saint-Pierre for exactly one frame (beat 7)
-  cameo: { t: 23.40, pos: [-0.6, 4.6, -15.0], set: 'mq' }, // = cameoSpot in src/harbour.js
+  cameo: { t: 26.4667, pos: [-0.6, 4.6, -15.0], set: 'mq' }, /* frame 794 (v2 timing: 1.40 s into beat 7) */ // = cameoSpot in src/harbour.js
   // sound: no tense section; room tones per beat (`amb`), soft acoustic bed from src/mix.py
   mix: { music: 'acoustic' },
 };

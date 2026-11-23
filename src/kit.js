@@ -488,3 +488,10 @@ export function doorway(g, x, z, w = 1.4, h = 2.3, o = {}) {
   const open = (v) => { for (const [hg, s] of leaves) hg.rotation.y = s * (o.inward ? -1 : 1) * v * 1.6 * -1; };
   open(o.openAt ?? 0); return open;
 }
+
+// S02 v2: chimney smoke: soft puffs rising and drifting with the wind; returns tick(t)
+export function smoke(parent, x, y, z, o = {}) {
+  const n = o.n ?? 7, tex = T.radial('rgba(205,210,220,.55)', 'rgba(205,210,220,0)'); const ps = [];
+  for (let i = 0; i < n; i++) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false })); parent.add(sp); ps.push(sp); }
+  return (t) => ps.forEach((sp, i) => { const u = (t * (o.speed ?? 0.16) + i / n) % 1; sp.position.set(x + u * (o.drift ?? 2.2), y + u * (o.rise ?? 3.2), z + Math.sin(u * 3 + i) * 0.2); sp.scale.setScalar(0.5 + u * (o.grow ?? 2.0)); sp.material.opacity = Math.sin(u * Math.PI) * 0.8; });
+}

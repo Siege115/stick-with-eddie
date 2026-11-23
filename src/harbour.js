@@ -17,7 +17,7 @@ const { std, box, cyl, ink } = K;
 export const WATER_Y = -2;
 
 // palm: curved trunk of rings, a crown of frond cards, coconuts
-const PALM_FROND = {}; let palmBark = null;
+const PALM_FROND = {}; let palmBark = null; const PALMS = []; /* v2: palms sway in the sea breeze */
 export function palm(parent, x, z, h = 7, lean = 0.25, ry = 0, y = 0) {
   palmBark = palmBark || std({ map: T.bark([120, 98, 70]) });
   const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.y = ry; parent.add(g);
@@ -33,7 +33,7 @@ export function palm(parent, x, z, h = 7, lean = 0.25, ry = 0, y = 0) {
     const m = new THREE.Mesh(geo, fm); m.rotation.x = -0.15 + (i % 3) * 0.1; m.castShadow = true; fr.add(m);
   }
   for (let i = 0; i < 4; i++) { const c = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 8), std({ color: i % 2 ? 0x5a3e1e : 0x7a8a2a })); c.position.copy(top).add(new THREE.Vector3(Math.cos(i * 1.6) * 0.25, -0.25, Math.sin(i * 1.6) * 0.25)); g.add(ink(c, 1.08)); }
-  return g;
+  PALMS.push(g); return g;
 }
 // broad shade tree (breadfruit: big glossy leaves; banyan: wide crown + hanging aerial roots)
 function shadeTree(parent, x, z, kind, s = 1) {
@@ -284,6 +284,6 @@ export function buildHarbour(scene, opts = {}) {
     const blk = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.4, 0.42), std({ map: T.ice(3), roughness: 0.1, color: 0xeaf6ff, emissive: 0x2a5a80 })); blk.castShadow = true; mb.add(ink(blk, 1.03));
     H.open.mqMelt = (v) => { mb.visible = v > 0.02; const s = Math.max(0.05, v); blk.scale.set(0.35 + 0.65 * s, s, 0.35 + 0.65 * s); blk.position.y = 0.2 * s; }; H.openRest.mqMelt = 0; H.mqMeltAt = [9.05, -2.1]; }
   const gullTick = gulls(g, 4, 9, 2, 3, [], 8);
-  H.tick = (t, L, camera) => { water.tick(t); if (ship) ship.tick(t); gullTick(t, camera); };
+  H.tick = (t, L, camera) => { water.tick(t); if (ship) ship.tick(t); gullTick(t, camera); PALMS.forEach((p, i) => { p.rotation.z = Math.sin(t * 0.9 + i * 1.7) * 0.025; p.rotation.x = Math.sin(t * 0.7 + i) * 0.015; }); };
   return H;
 }

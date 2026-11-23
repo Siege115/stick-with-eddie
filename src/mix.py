@@ -182,7 +182,7 @@ MEN = ["am_adam", "am_eric", "am_liam", "am_onyx", "bm_george", "bm_daniel", "am
 WOMEN = ["af_bella", "af_sarah", "af_nicole", "bf_emma", "af_sky", "bf_isabella", "af_kore", "af_jessica"]
 def crowd_gasp(): return crowd_voice(["Ooooh!", "Whoa!", "Oh!", "Wow!"], WOMEN[:4] + MEN[:4], 0.18, 1.0, "gasp")
 def crowd_cheer():
-    if MIX: return crowd_voice(["Hooray!", "Bravo!", "Huzzah!", "Hurrah!"], MEN[:5] + WOMEN[:5], 0.3, 1.0, "cheerEn")  # S02+: English-only cheers (S01 keeps its own)
+    if TL.get("mix"): return crowd_voice(["Hooray!", "Bravo!", "Huzzah!", "Hurrah!"], MEN[:5] + WOMEN[:5], 0.3, 1.0, "cheerEn")  # S02+: English-only cheers (S01 keeps its own)
     return crowd_voice(["Hooray!", "Bravo!", "Yay!", "Wunderbar!"], MEN[:5] + WOMEN[:5], 0.3, 1.0, "cheer")
 def laugh(): return crowd_voice(["Ha ha ha ha!", "Ho ho ho!", "Hah hah hah!", "Ha ha ha!"], ["bm_george", "bm_lewis", "am_onyx", "bm_daniel", "am_adam", "bm_fable"], 0.35, 1.05, "laugh")
 

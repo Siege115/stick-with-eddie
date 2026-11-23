@@ -115,7 +115,7 @@ export function buildWharf(scene, opts = {}) {
     if (snowy) { K.snowPile(g, hs.x + hs.w / 2 - 0.4, -16.6, 0.9, 0.45, 1.4); K.snowPile(g, hs.x - hs.w / 2 + 0.6, -16.7, 0.7, 0.35, 1.2); }
   });
   // chimneys on the brick houses
-  for (const hs of houses.filter((q) => q.id === 'A' || q.id === 'C' || q.id === 'E')) { g.add(ink(box(0.7, 2.2, 0.7, std({ map: brickA }), hs.x + hs.w / 2 - 0.6, hs.h + 2.3, -25), 1.03)); if (snowy) K.snowSlab(0.8, 0.8, 0.12, hs.x + hs.w / 2 - 0.6, hs.h + 3.4, -25, 0, g); }
+  const smokes = []; for (const hs of houses.filter((q) => q.id === 'A' || q.id === 'C' || q.id === 'E')) { g.add(ink(box(0.7, 2.2, 0.7, std({ map: brickA }), hs.x + hs.w / 2 - 0.6, hs.h + 2.3, -25), 1.03)); smokes.push(K.smoke(g, hs.x + hs.w / 2 - 0.6, hs.h + 3.5, -25)); /* v2: chimney smoke */ if (snowy) K.snowSlab(0.8, 0.8, 0.12, hs.x + hs.w / 2 - 0.6, hs.h + 3.4, -25, 0, g); }
 
   // ---------------- the street inland: houses, the Old State House tower ----------------
   for (let i = 0; i < 5; i++) for (const s of [-1, 1]) {
@@ -268,7 +268,7 @@ export function buildWharf(scene, opts = {}) {
 
   // ---------------- per frame ----------------
   H.tick = (t, L, camera) => {
-    water.tick(t); if (ship) ship.tick(t); gullTick(t, camera); if (H.rigTick) H.rigTick();
+    water.tick(t); if (ship) ship.tick(t); gullTick(t, camera); if (H.rigTick) H.rigTick(); smokes.forEach((f) => f(t));
     // lamps are oil: lit only when it is dark (bright presets put them out)
     const c = new THREE.Color(L.bg); const lum = 0.3 * c.r + 0.59 * c.g + 0.11 * c.b;
     const lit = lum < 0.3 ? 1 : 0;
