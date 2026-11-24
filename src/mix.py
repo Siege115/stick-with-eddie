@@ -228,6 +228,9 @@ for t, kind, bi in EV["trans"]:
     elif kind == "push": place(sfx, whoosh(0.6, 150, 1200), t - 0.4, 0.4)
     elif kind == "wipe": place(sfx, whoosh(0.5, 250, 1800), t - 0.25, 0.35)
     elif kind == "pull": place(sfx, whoosh(0.9, 200, 2500), t, 0.3)
+    elif kind == "pushfade" and MIX_FIX:  # soft push whoosh, unless the beat already cues a whoosh just before this cut
+        if not any(nm.startswith("whoosh") and t - 0.7 <= ts <= t + 0.1 for ts, nm, _ in EV["sfx"]):
+            place(sfx, endfade(whoosh(0.55, 150, 1100), 0.06), t - 0.38, 0.28)
 
 # ---- S02 sounds (synthesised; soft and natural, nothing 8-bit) ----
 def _fade(x, a=0.004, r=0.06):
