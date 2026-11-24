@@ -59,3 +59,20 @@ Other checks: the cameo is in frame 792 only (26.40 s, the log behind the upper 
 
 ## Re-check after the fixes (previews only)
 2.50, 2.90, 3.20, 3.37 · 29.00, 30.03, 30.07, 30.10, 31.10, 31.17, 31.50 · 64.50, 64.90, 65.00, 65.40, 66.00, 66.30 · 66.57 (if S3 is done).
+
+## v3.1 re-check (2026-11-24, build d6af7dc, 70.64 s, timing unchanged)
+
+**Verdict: READY for the owner's board.** All three must-fixes and the three should-fixes pass. Stills checked: `projects/v3-fix2/` at 2.50, 2.90, 3.20, 3.37, 27.90–29.50, 29.95–32.20, 57.00 and 64.30–68.50.
+
+| # | Time | Result | Evidence |
+|---|---|---|---|
+| A | 29.95–32.25 s | **PASS** | One `holdChest` pose for the whole close-up. At 29.95, 30.03, 30.07, 30.10, 31.10, 31.17 and 31.50 the block stays at chest height in his hands, with no jump and no face shift as the bubble opens or closes. The bubble tail runs to his face. |
+| B | 2.5–3.4 s | **PASS** | The hat and pompom are inside the frame at 2.50, 2.90, 3.20 and 3.37. The two-handed grip on the crossbar is unchanged. |
+| C | 64.3–66.37 s | **PASS** | Both workers' heads are whole in every still (64.35–66.30). |
+| S1 | 27.87–29.95 s | **PASS** | The block is at chest height in his own visible hand, clear of the woman's face, and drips onto a puddle. |
+| S2 | shovel toss | **PASS** | The brown-hat worker scoops at the heap (64.35–64.5), lifts (64.9) and tosses into the barrel (65.0), with sawdust flecks leaving the blade (65.2). Minor: at the top of the toss (65.0–65.4) the blade touches the right edge. Not blocking. |
+| S3 | 66.4–68.5 s | **PASS** | The sun is now yellow with rays and fully in frame (66.45–67.2). By 68.5 the push moves it to the left edge, where it still reads as a sun. |
+
+No new problems in these shots.
+
+Still open, not blocking: the loop pair (see "NICE / open note" above).
