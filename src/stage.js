@@ -971,6 +971,19 @@ export async function setup(beatsUrl, tlUrl) {
       O.shadowColor = 'rgba(0,0,0,.45)'; O.shadowBlur = 36; O.shadowOffsetY = 16;
       if (h.unroll) { const r2 = ease.out(clamp(k / 0.5)); O.beginPath(); O.rect(-ww / 2, -hh / 2, ww * r2, hh); O.clip(); O.drawImage(cv, -ww / 2, -hh / 2, ww, hh); O.shadowColor = 'transparent'; if (r2 < 1) { O.fillStyle = '#c9b48a'; O.fillRect(-ww / 2 + ww * r2 - 18, -hh / 2, 36, hh); } }
       else O.drawImage(cv, -ww / 2, -hh / 2, ww, hh);
+      if (h.gull) { // S02 v3: a gull flies in and lands on the card's top edge (h.gull: { at, x } in seconds from the shot / card-width fraction)
+        O.shadowColor = 'transparent'; const ga = k - (h.gull.at ?? 0.6), gx = ww * ((h.gull.x ?? 0.75) - 0.5), gy = -hh / 2, gs = W * 0.0016;
+        if (ga > 0) { const f = clamp(ga / 0.8), fl = ease.out(f); const px = lerp(gx + W * 0.45, gx, fl), py = lerp(gy - H * 0.22, gy, fl) - Math.sin(f * Math.PI) * 40;
+          O.save(); O.translate(px, py); O.scale(gs, gs); const flap = f < 1 ? Math.sin(ga * 26) : -0.9 + 0.08 * Math.sin(ga * 3); const bob = f < 1 ? 0 : Math.max(0, Math.sin(ga * 4)) * 6;
+          O.lineJoin = 'round'; O.lineWidth = 7; O.strokeStyle = '#141414';
+          if (f >= 1) { O.beginPath(); O.moveTo(-8, -6); O.lineTo(-12, 0); O.moveTo(10, -6); O.lineTo(12, 0); O.strokeStyle = '#e08a2a'; O.lineWidth = 6; O.stroke(); O.strokeStyle = '#141414'; O.lineWidth = 7; }
+          O.fillStyle = '#ffffff'; O.beginPath(); O.ellipse(0, -34, 46, 26, 0, 0, 7); O.fill(); O.stroke(); // body
+          O.beginPath(); O.ellipse(-40, -58 + bob, 20, 18, 0, 0, 7); O.fill(); O.stroke(); // head
+          O.fillStyle = '#141414'; O.beginPath(); O.arc(-46, -62 + bob, 4, 0, 7); O.fill();
+          O.fillStyle = '#f2b53a'; O.beginPath(); O.moveTo(-58, -58 + bob); O.lineTo(-84, -54 + bob); O.lineTo(-58, -50 + bob); O.closePath(); O.fill(); O.stroke();
+          O.fillStyle = '#b8c2cc'; O.beginPath(); O.moveTo(-6, -44); O.quadraticCurveTo(30, -44 - 70 * flap, 70, -40 - 60 * flap); O.quadraticCurveTo(40, -30, 20, -26); O.closePath(); O.fill(); O.stroke(); // wing
+          O.fillStyle = '#ffffff'; O.beginPath(); O.moveTo(40, -40); O.lineTo(72, -30); O.lineTo(42, -24); O.closePath(); O.fill(); O.stroke(); // tail
+          O.restore(); } }
       O.restore();
     } else if (h.kind === 'newspaper') {
       blurredBackdrop(10, 0.35);

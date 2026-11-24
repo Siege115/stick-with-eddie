@@ -125,7 +125,7 @@ export const beats = [
     shots: [
       sh(0, [[0.6, 2.6, -1.6], [1.0, 2.75, -1.1]], [[6.2, 1.6, 5.2], [7.0, 1.5, 5.3]], [62, 60], 'cut', { ease: 'inout', captionY: 0.84 }),
       sh('w:all-0.1', [[0.9, 1.25, -5.6], [0.95, 1.3, -5.4]], [[6.4, 2.4, 8.0], [7.0, 3.0, 12.0]], [56, 54], 'cut', { captionY: 0.86 }),
-      sh('w:Caribbean-0.25', [[4.0, 2.2, 2.0], [4.0, 2.25, 2.3]], [[8.0, 2.4, 14], [8.0, 2.4, 14]], [56, 56], 'cut', { captionY: 0.88, hud: { kind: 'card', art: 'mapMq', w: 0.92, y: 0.42, route: [0, 1], unroll: true } }),
+      sh('w:Caribbean-0.25', [[4.0, 2.2, 2.0], [4.0, 2.25, 2.3]], [[8.0, 2.4, 14], [8.0, 2.4, 14]], [56, 56], 'cut', { captionY: 0.88, hud: { kind: 'card', art: 'mapMq', w: 0.92, y: 0.42, route: [0, 1], unroll: true, s: [1, 1.06] } }), /* v3: a slow push on the map */
     ],
     open: { tackle: [[0, 1], ['w:all-0.12', 0]], sails: [[0, 0], ['w:all-0.1', 0.15], ['end', 1]], hatch: [[0, 1]], moored: [[0, 1], ['w:all-0.12', 0]] },
     ship: [[0, FAV_DOCK, NORTH], ['w:all-0.1', FAV_DOCK, NORTH], ['end', [8.45, 15.5, -2], NORTH, 'sail']],
@@ -173,7 +173,7 @@ export const beats = [
     line: 'Boston laughed. A newspaper joked it might be a "slippery speculation."', breaks: [['laughed.', 0.6]], min: 4.8, light: 'snowWide', set: 'wharf', amb: 'harbour',
     shots: [
       sh(0, [[1.3, 2.1, -2.9], [1.25, 2.05, -3.15]], [[0.2, 1.4, -9.5], [0.2, 1.4, -9.5]], [52, 50], 'whip', { captionY: 0.86 }),
-      sh('w:newspaper-0.1', [[1.3, 2.1, -3.2], [1.3, 2.1, -3.2]], [[0.2, 1.4, -9.5], [0.2, 1.4, -9.5]], [50, 50], 'cut', { captionY: 0.86, hud: { kind: 'card', art: 'news', w: 0.84, y: 0.44, rot: -0.03, s: [1, 1.07] } }),
+      sh('w:newspaper-0.1', [[1.3, 2.1, -3.2], [1.3, 2.1, -3.2]], [[0.2, 1.4, -9.5], [0.2, 1.4, -9.5]], [50, 50], 'cut', { captionY: 0.86, hud: { kind: 'card', art: 'news', w: 0.84, y: 0.44, rot: -0.03, s: [1, 1.08], gull: { at: 0.7, x: 0.78 } } }), /* v3: a gull lands on the paper */
     ],
     pos: { eddie: [[0, [0.6, -4.2]]] },
     acts: { eddie: [[0, 'akimbo'], [1.6, 'handChin']] },
@@ -252,7 +252,7 @@ export const beats = [
   { // 12 — 1833: the map (round the southern tip of Africa to Calcutta); the Tuscany sets sail from Boston
     line: 'In 1833, he sent a ship of ice to Calcutta, in India.', min: 4.0, light: 'mayWarm', set: 'wharf33', amb: 'harbour',
     shots: [
-      sh(0, [[4, 2, 6], [4, 2, 6]], [[0, 2, -10], [0, 2, -10]], [50, 50], 'wipe:paper', { captionY: 0.82, hud: { kind: 'card', art: 'map', w: 0.96, y: 0.42, route: [0.02, 1.0], unroll: true } }),
+      sh(0, [[4, 2, 6], [4, 2, 6]], [[0, 2, -10], [0, 2, -10]], [50, 50], 'wipe:paper', { captionY: 0.82, hud: { kind: 'card', art: 'map', w: 0.94, y: 0.42, route: [0.02, 1.0], unroll: true, s: [1, 1.03] } }),
       sh('w:Calcutta+0.2', [[12.6, -0.6, -10.4], [12.4, -0.5, -10.0]], [[8.6, 1.8, -1.0], [8.6, 2.4, 2.5]], [54, 52], 'cut', { captionY: 0.86 }),
     ],
     ship: [['w:Calcutta+0.2', TUS_DOCK, NORTH], ['end', [8.75, 12.5, -2], NORTH, 'sail']],
