@@ -229,9 +229,9 @@ export const beats = [
     line: 'So he tried packing the ice in hay. He tried straw. He tried rice husks.', min: 4.4, light: 'snowWide', set: 'wharf', amb: [[0, 'harbour'], ['w:hay-0.12', 'room']],
     shots: [
       sh(0, [[-8.8, 1.7, -9.4], [-9.0, 1.55, -11.4]], [[-9.0, 1.5, -13.6], [-9.0, 1.45, -15]], [52, 54], 'whip', { ease: 'in', captionY: 0.8 }), /* stops at the doorway: never enters the dark */
-      sh('w:in-0.08', [[-1.8, 2.55, -0.2], [-1.85, 2.45, -0.35]], [[-2.2, 0.62, -1.62], [-2.2, 0.62, -1.62]], [54, 52], 'cut', { set: 'workshop', light: 'warm', captionY: 0.86 }), /* clean cut into the shed: the block nested in hay */
-      sh('w:straw-0.12', [[0.4, 2.55, -0.2], [0.35, 2.45, -0.35]], [[0, 0.62, -1.62], [0, 0.62, -1.62]], [54, 52], 'cut', { set: 'workshop', light: 'warm', captionY: 0.86 }),
-      sh('w:rice-0.12', [[2.6, 2.55, -0.2], [2.55, 2.45, -0.35]], [[2.2, 0.62, -1.62], [2.2, 0.62, -1.62]], [54, 52], 'cut', { set: 'workshop', light: 'warm', captionY: 0.86 }),
+      sh('w:in-0.08', [[-3.35, 2.15, 0.75], [-3.25, 2.05, 0.6]], [[-2.15, 0.8, -1.5], [-2.15, 0.8, -1.5]], [56, 54], 'cut', /* v3: high from the left, the whole 1 · HAY slate */ { set: 'workshop', light: 'warm', captionY: 0.86 }), /* clean cut into the shed: the block nested in hay */
+      sh('w:straw-0.12', [[0.0, 2.55, 0.85], [0.0, 2.45, 0.7]], [[0.0, 0.8, -1.45], [0.0, 0.8, -1.45]], [56, 54], 'cut', /* v3: high and straight on */ { set: 'workshop', light: 'warm', captionY: 0.86 }),
+      sh('w:rice-0.12', [[3.0, 2.35, 0.85], [2.95, 2.25, 0.7]], [[2.05, 0.9, -1.6], [2.05, 0.9, -1.6]], [60, 58], 'cut', /* v3: high from the right, Eddie whole behind the bin */ { set: 'workshop', light: 'warm', captionY: 0.86 }),
     ],
     doors: [[0, 0.1], [0.3, 1]],
     open: { melt: [[0, 0]], season: [[0, 0]] },
@@ -242,9 +242,9 @@ export const beats = [
   },
   { // 11 — time-lapse: the blocks shrink a lot but not to nothing; Eddie sighs
     line: 'Too much of it still melted.', min: 2.2, light: 'warm', set: 'workshop', amb: 'room',
-    shots: [sh(0, [[2.9, 2.6, -2.7], [2.85, 2.55, -2.65]], [[-0.9, 0.55, -1.0], [-0.9, 0.55, -1.0]], [62, 62], 'cut', { captionY: 0.86 })], /* along the row: three shrunken blocks still there, puddles, Eddie sighs */
+    shots: [sh(0, [[3.9, 2.6, -1.0], [3.8, 2.55, -1.02]], [[-1.2, 0.2, -1.25], [-1.2, 0.2, -1.25]], [58, 58], 'cut', { captionY: 0.86 })], /* v3: down the row: all three shrunken blocks, Eddie whole */ /* along the row: three shrunken blocks still there, puddles, Eddie sighs */
     open: { melt: [[0, 0.05], ['end', 1]], season: [[0, 0]] },
-    pos: { eddie: [[0, [-0.95, -0.4]]] },
+    pos: { eddie: [[0, [-3.0, -0.9]]] },
     acts: { eddie: [[0, 'handChin'], [0.9, 'sigh']] },
     look: { eddie: [0, 0.6, -1.6] }, cast: ['eddie'],
     sfx: [[0.2, 'drip'], [0.8, 'drip'], [1.3, 'drip']],

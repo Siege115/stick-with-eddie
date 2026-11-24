@@ -117,6 +117,7 @@ export function buildWorkshop(scene, opts = {}) {
   // roof: rafters and boards
   g.add(box(2 * X, 0.1, 2 * Z, boardM, 0, HT + 0.05, 0)); for (let x = -X + 0.5; x < X; x += 1.0) g.add(ink(box(0.16, 0.2, 2 * Z, darkM, x, HT - 0.1, 0), 1.02));
   // the three test bins
+  const collars = [];
   const packs = [{ word: 'HAY', m: std({ map: T.hay() }) }, { word: 'STRAW', m: std({ map: T.straw([2, 2]) }) }, { word: 'RICE HUSKS', m: std({ map: T.riceHusks() }) }];
   const blocks = [], puddles = [];
   BIN_X.forEach((bx, i) => {
@@ -125,13 +126,17 @@ export function buildWorkshop(scene, opts = {}) {
     bin.add(box(1.5, 0.08, 1.1, darkM, 0, 0.1, 0)); for (const [x, z] of [[-0.7, -0.5], [0.7, -0.5], [-0.7, 0.5], [0.7, 0.5]]) bin.add(box(0.08, 0.1, 0.08, darkM, x, 0.05, z));
     const fill = new THREE.Mesh(new THREE.BoxGeometry(1.36, 0.5, 0.98), packs[i].m); fill.position.y = 0.4; bin.add(fill);
     const blk = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.42, 0.44), iceMat()); blk.position.y = 0.72; blk.castShadow = true; bin.add(ink(blk, 1.03)); blocks.push(blk);
+    { /* S02 v3: the block is packed INTO the material: a collar of it heaped round the block's sides (lower two thirds), lumpy on top */
+      const col = new THREE.Group(); bin.add(col); collars.push(col);
+      for (const [w, d, x, z] of [[0.38, 0.98, -0.49, 0], [0.38, 0.98, 0.49, 0], [0.62, 0.28, 0, 0.35], [0.62, 0.28, 0, -0.35]]) col.add(box(w, 0.22, d, packs[i].m, x, 0.75, z, 0, false));
+      for (let q = 0; q < 10; q++) { const a = q / 10 * 6.283, m = new THREE.Mesh(new THREE.SphereGeometry(0.13 + (q % 3) * 0.03, 10, 6, 0, 6.3, 0, 1.5), packs[i].m); m.scale.y = 0.75; m.position.set(Math.cos(a) * 0.42, 0.84, Math.sin(a) * 0.3); col.add(m); } }
     const tray = box(1.7, 0.04, 1.3, std({ color: 0x5a5e66, metalness: 0.5, roughness: 0.4 }), 0, 0.02, 0); tray.position.y = 0.0; bin.add(tray);
     const sg = new THREE.Mesh(new THREE.PlaneGeometry(1.26, 0.42), std({ map: T.slate(i + 1, packs[i].word) })); sg.position.set(0, 1.08, 0.64); sg.rotation.x = -0.12; bin.add(sg); for (const sx of [-0.45, 0.45]) bin.add(box(0.05, 0.6, 0.05, darkM, sx, 0.82, 0.55)); // slate on two posts
     // measuring stick with marks only, standing at the bin's right front corner
     const ms = new THREE.Group(); ms.position.set(0.85, 0, 0.45); bin.add(ms); ms.add(ink(box(0.06, 1.3, 0.04, std({ color: 0xe9dcb8 }), 0, 0.65, 0), 1.06)); for (let y = 0.15; y < 1.3; y += 0.1) ms.add(box(Math.round(y * 10) % 5 === 0 ? 0.06 : 0.035, 0.012, 0.045, std({ color: 0x1b1b1b }), 0.02, y, 0));
     const pd = new THREE.Mesh(new THREE.CircleGeometry(1, 24), new THREE.MeshStandardMaterial({ color: 0x8fb4cc, roughness: 0.05, metalness: 0.5, transparent: true, opacity: 0.85, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 })); pd.rotation.x = -Math.PI / 2; pd.position.set(bx + 0.2, 0.015, bz + 0.9); pd.scale.set(0.01, 0.01, 1); g.add(pd); puddles.push(pd);
   });
-  H.open.melt = (v) => { v = Math.min(1, Math.max(0, v)); blocks.forEach((b, i) => { const s = 1 - v * [0.45, 0.55, 0.35][i]; b.scale.set(s, s, s); b.position.y = 0.6 + 0.21 * s; /* sits a little higher so even the shrunken block shows above the packing */ }); puddles.forEach((p, i) => { const s = 0.05 + v * [0.55, 0.65, 0.42][i]; p.scale.set(s * 1.4, s, 1); p.visible = v > 0.01; }); };
+  H.open.melt = (v) => { v = Math.min(1, Math.max(0, v)); blocks.forEach((b, i) => { const s = 1 - v * [0.45, 0.55, 0.35][i]; if (collars[i]) collars[i].position.y = -(1 - s) * 0.55; /* the packing slumps as the block shrinks: the small block stays in view */ b.scale.set(s, s, s); b.position.y = 0.6 + 0.21 * s; /* sits a little higher so even the shrunken block shows above the packing */ }); puddles.forEach((p, i) => { const s = 0.05 + v * [0.55, 0.65, 0.42][i]; p.scale.set(s * 1.4, s, 1); p.visible = v > 0.01; }); };
   H.binAt = BIN_X.map((x) => [x, 0.72, -1.6]);
   // sacks "RICE HUSKS", a hay bale, a straw bundle, pitchfork + shovel, workbench with the notebook and an ink pot, lantern
   for (const [x, z, ry] of [[3.2, -0.2, 0.3], [3.4, 0.5, -0.4]]) { const s = K.sack(g, x, 0, z, ry, 0xc9b07a); const lb = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.18), std({ map: T.signText('RICE HUSKS', { bg: '#efe2bd', fg: '#3a2410', w: 512, h: 210, border: null, grain: false }) })); lb.position.set(0, 0.22, 0.24); lb.rotation.x = -0.4; s.add(lb); }
