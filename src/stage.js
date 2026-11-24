@@ -799,7 +799,7 @@ export async function setup(beatsUrl, tlUrl) {
     // speech bubble
     if (b.bubble) {
       const bb = b.bubble; const t0 = R(bb.from, bi), t1 = R(bb.to, bi);
-      if (t >= t0 && t <= t1) { const c = chars[bb.who]; const q = project(new THREE.Vector3(c.g.position.x, c.baseY + 1.95, c.g.position.z)); bubble(bb.text, q[0], q[1], t - t0); }
+      if (t >= t0 && t <= t1) { const c = chars[bb.who]; const q = project(new THREE.Vector3(c.g.position.x, c.baseY + 1.95, c.g.position.z)); const qt = bb.tailY != null ? project(new THREE.Vector3(c.g.position.x, c.baseY + bb.tailY, c.g.position.z)) : null; bubble(bb.text, q[0], q[1], t - t0, qt); } /* tailY: world height the tail points at (S02 v3: the speaker's face in a close-up) */
     }
     if (hud && hud.kind === 'stamp') stampHud(hud, shot, t, S);
     // camera-move transitions on the whole frame
@@ -989,10 +989,10 @@ export async function setup(beatsUrl, tlUrl) {
       O.restore();
     }
   }
-  function bubble(text, x, y, age) {
+  function bubble(text, x, y, age, tail) {
     const s = backOut(clamp(age / 0.18));
     O.save(); O.font = 'bold 72px "DejaVu Sans", sans-serif';
-    if (O.measureText(text).width + 70 > W - 60) { O.restore(); return bubbleWrap(text, x, y, s); } // too wide for one line (S02)
+    if (O.measureText(text).width + 70 > W - 60) { O.restore(); return bubbleWrap(text, x, y, s, tail); } // too wide for one line (S02)
     const tw = O.measureText(text).width + 70, th = 120;
     let bx = clamp(x - tw / 2 - 60, 30, W - tw - 30), by = clamp(y - th - 150, 140, H - 600);
     O.translate(bx + tw / 2, by + th / 2); O.scale(s, s); O.translate(-(bx + tw / 2), -(by + th / 2));
@@ -1009,7 +1009,7 @@ export async function setup(beatsUrl, tlUrl) {
     if (g.contrast && g.contrast !== 1) { TM.setTransform(1, 0, 0, 1, 0, 0); TM.clearRect(0, 0, W, H); TM.drawImage(out, 0, 0); O.save(); O.filter = `contrast(${g.contrast}) saturate(${g.saturate ?? 1})`; O.drawImage(tmp, 0, 0); O.restore(); }
     if (g.lift) { const tn = g.liftTint || [0.9, 0.95, 1.15]; O.save(); O.globalCompositeOperation = 'lighter'; O.fillStyle = `rgb(${tn.map((k) => Math.round(255 * g.lift * k)).join(',')})`; O.fillRect(0, 0, W, H); O.restore(); }
   }
-  function bubbleWrap(text, x, y, s) { // multi-line speech bubble, tail to the speaker, kept inside the frame
+  function bubbleWrap(text, x, y, s, tail) { // multi-line speech bubble, tail to the speaker, kept inside the frame
     O.save(); O.font = 'bold 66px "DejaVu Sans", sans-serif';
     const words = text.split(' '), lines = []; let cur = '';
     for (const w of words) { const t2 = cur ? cur + ' ' + w : w; if (O.measureText(t2).width > W * 0.78 && cur) { lines.push(cur); cur = w; } else cur = t2; }
@@ -1017,7 +1017,7 @@ export async function setup(beatsUrl, tlUrl) {
     const tw = Math.max(...lines.map((l) => O.measureText(l).width)) + 80, th = lines.length * 84 + 44;
     const bx = clamp(x - tw / 2 - 60, 30, W - tw - 30), by = clamp(y - th - 150, 140, H - 600);
     O.translate(bx + tw / 2, by + th / 2); O.scale(s, s); O.translate(-(bx + tw / 2), -(by + th / 2));
-    outlined(O, (k) => { k.roundRect(bx, by, tw, th, 50); k.moveTo(bx + tw * 0.45, by + th - 4); k.lineTo(x, y - 40); k.lineTo(bx + tw * 0.65, by + th - 4); }, '#fff', 7);
+    outlined(O, (k) => { k.roundRect(bx, by, tw, th, 50); const tx = tail ? tail[0] : x, ty = tail ? Math.max(tail[1], by + th + 60) : y - 40; k.moveTo(bx + tw * 0.45, by + th - 4); k.lineTo(tx, ty); k.lineTo(bx + tw * 0.6, by + th - 4); }, '#fff', 7);
     O.fillStyle = '#fff'; O.fillRect(bx + tw * 0.45, by + th - 14, tw * 0.2, 12);
     O.fillStyle = '#111'; O.textAlign = 'center'; O.textBaseline = 'middle';
     lines.forEach((l, i) => O.fillText(l, bx + tw / 2, by + 22 + 42 + i * 84));

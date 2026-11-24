@@ -139,7 +139,7 @@ export const beats = [
   { // 3 — 1806 kitchen: no fridges (year card; the outline pops in and away)
     line: 'You see, in 1806, there were no fridges.', min: 3.0, light: 'warm', set: 'kitchen', amb: 'room',
     shots: [
-      sh(0, [[0.95, 1.0, 2.5], [0.8, 1.05, 2.1]], [[0.3, 1.1, -0.6], [0.3, 1.15, -0.6]], [52, 50], 'whip', { captionY: 0.8, hud: { kind: 'card', art: 'year', y: 0.115, w: 0.42, blur: false } }),
+      sh(0, [[0.55, 1.05, 2.5], [0.45, 1.1, 2.1]], [[-0.1, 1.15, -0.6], [-0.1, 1.2, -0.6]], [54, 52], 'whip', { captionY: 0.8, hud: { kind: 'card', art: 'year', y: 0.115, w: 0.42, blur: false } }),
       sh('w:fridges-0.15', [[-1.6, 1.45, 2.6], [-1.45, 1.45, 2.35]], [[3.4, 1.1, -0.8], [3.4, 1.1, -0.75]], [60, 58], 'cut', { captionY: 0.82, hud: { kind: 'card', art: 'year', y: 0.115, w: 0.42, blur: false, pop: false } }),
     ],
     open: { fridge: [[0, 0], ['w:fridges', 0], ['w:fridges+0.3', 1], ['w:fridges+1.0', 1], ['w:fridges+1.3', 0]] },
@@ -160,8 +160,8 @@ export const beats = [
   { // 5 — Boston: Eddie holds the ice up like a jewel; "Frederic Tudor"
     line: 'Frederic Tudor, from Boston, wanted to sell them winter.', min: 3.4, light: 'snowWide', set: 'wharf', amb: 'harbour',
     shots: [
-      sh(0, [[1.2, 1.34, -2.35], [1.15, 1.32, -2.2]], [[1.15, 1.32, -3.2], [1.1, 1.3, -3.2]], [30, 34], 'match', { captionY: 0.8 }),
-      sh('w:Boston-0.1', [[0.9, 1.35, -1.2], [0.8, 1.4, 0.0]], [[0.6, 1.45, -3.2], [0.6, 1.6, -5.0]], [44, 46], 'cut', { ease: 'out', captionY: 0.82 }),
+      sh(0, [[1.05, 1.5, -0.95], [1.0, 1.5, -1.2]], [[0.84, 1.6, -3.2], [0.82, 1.6, -3.2]], [50, 46], 'match', { captionY: 0.84 }), /* v3: Eddie in shot, the block raised in his hand */
+      sh('w:Boston-0.1', [[1.05, 1.35, -1.2], [0.95, 1.4, 0.0]], [[0.85, 1.45, -3.2], [0.8, 1.6, -5.0]], [46, 48], 'cut', { ease: 'out', captionY: 0.82 }),
     ],
     ship: [[0, [30, 120, -2], NORTH]], open: { moored: [[0, 0]], sails: [[0, 1]] },
     pos: { eddie: [[0, [0.6, -3.2]]] },
@@ -193,17 +193,17 @@ export const beats = [
   { // 8 — nowhere to keep it cold: the merchant holds the dripping block, polite and puzzled; his line
     line: 'But there was nowhere to keep it cold.', line2: { text: 'Lovely. And... what do I do with it?', voice: 'merchant', caption: false /* bubble only (fact-check) */ }, min: 4.2, light: 'tropic', set: 'mq', amb: 'tropic',
     shots: [
-      sh(0, [[12.0, 0.65, 0.2], [11.8, 0.7, 0.0]], [[8.9, 1.25, -2.4], [8.9, 1.3, -2.4]], [50, 48], 'cut', { captionY: 0.84 }),
-      sh('w2:Lovely-0.1', [[10.3, 1.6, -0.9], [10.2, 1.6, -1.0]], [[9.25, 1.75, -2.3], [9.25, 1.75, -2.3]], [40, 38], 'cut', { captionY: 0.86 }),
+      sh(0, [[10.4, 1.15, 0.35], [10.2, 1.2, 0.05]], [[8.45, 1.25, -2.25], [8.45, 1.25, -2.25]], [52, 50], 'cut', { captionY: 0.86 }), /* v3: the block upper-middle, drips and puddle in frame */
+      sh('w2:Lovely-0.1', [[9.25, 1.62, -0.55], [9.2, 1.62, -0.7]], [[8.8, 1.52, -2.4], [8.8, 1.52, -2.4]], [42, 40], 'cut', { captionY: 0.86 }), /* v3: the speaker whole and centred, bubble above */
     ],
     ship: [[0, MQ_DOCK, Math.PI]], open: { sails: [[0, 0.25]], moored: [[0, 1]], hatch: [[0, 0]] },
-    pos: { mer: [[0, [8.8, -2.4]]], sMq: [[0, [10.3, -1.8]]] },
+    pos: { mer: [[0, [8.8, -2.4]]], sMq: [[0, [11.4, -3.4]]] },
     acts: { mer: [[0, 'holdAtArm', { item: 'iceBlock' }], [1.5, 'holdAtArm', { item: 'iceBlock' }], ['w2:Lovely', 'ask', { item: 'iceBlock', talk: ['w2:Lovely', 'end'] }], ['w2:what', 'holdAtArm', { item: 'iceBlock', talk: ['w2:Lovely', 'end'] }]],
       sMq: [[0, 'carry'], [1.2, 'watch']] },
     look: { mer: [9.6, 1.4, -0.6], sMq: 'mer' }, mood: { mq: 'watch' }, lookAll: [8.8, 1.4, -2.4],
     cast: ['mer', 'sMq', 'mq1', 'mq2', 'mq3'],
-    bubble: { who: 'mer', text: 'Lovely. And… what do I do with it?', from: 'w2:Lovely', to: 'end' },
-    fx: [{ kind: 'drip', at: 0, pos: [9.19, 0.98, -2.87], rate: 2.6 }, { kind: 'puddle', at: 0, pos: [9.19, -2.87], r: [0.06, 0.5], grow: 4.0 }],
+    bubble: { who: 'mer', text: 'Lovely. And… what do I do with it?', from: 'w2:Lovely', to: 'end', tailY: 1.45 },
+    fx: [{ kind: 'drip', at: 0, pos: [8.32, 0.92, -2.08], rate: 2.6 }, { kind: 'puddle', at: 0, pos: [8.32, -2.08], r: [0.08, 0.5], grow: 4.0 }], /* v3: under the block in his hand */
     sfx: [[0.3, 'drip'], [0.9, 'drip'], [1.5, 'drip'], [2.2, 'drip']],
   },
   { // 9 — it melts (puddle spreads); Boston: the letter, the hat droops; the crowd laughs harder
@@ -216,7 +216,7 @@ export const beats = [
     ],
     ship: [[0, MQ_DOCK, Math.PI]],
     open: { mqMelt: [[0, 1], [0.3, 1], ['w:and', 0.2]] },
-    fx: [{ kind: 'puddle', at: 0.15, until: 'w:lost-0.05', pos: [9.05, -2.05], r: [0.12, 0.95], grow: 0.9 }, { kind: 'puddle', set: 'wharf', at: 0, pos: [1.1, -12.9], r: [0.7, 0.7], grow: 0.1, color: 0x6a7684 }],
+    fx: [{ kind: 'puddle', at: 0.15, until: 'w:lost-0.05', pos: [8.4, -2.1], r: [0.12, 0.95], grow: 0.9 }, { kind: 'puddle', set: 'wharf', at: 0, pos: [1.1, -12.9], r: [0.7, 0.7], grow: 0.1, color: 0x6a7684 }],
     pos: { eddie: [[0, [0.9, -14.0]]], mer: [[0, [8.75, -2.45]]] },
     cast: ['eddie', 'mer', 'b1', 'b2', 'b3', 'b4', 'b5', 'b6', 'b7', 'b8', 'b9', 'b10', 'kid'],
     acts: { mer: [[0, 'watch', { item: null }], ['w:and-0.05', 'handsStill', { item: null, freeze: true }]], eddie: [[0, 'watch', { item: 'letter' }], ['w:lost', 'hatDroop', { item: 'letter' }], ['w:money+0.4', 'sigh', { item: 'letter' }]],

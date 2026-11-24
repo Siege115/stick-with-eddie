@@ -258,7 +258,7 @@ function item(ctx, kind, x, y, ang, c) {
     ctx.strokeStyle = '#555'; ctx.lineWidth = 2;
     for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.moveTo(-2, -42 + i * 8); ctx.lineTo(30, -42 + i * 8); ctx.stroke(); }
   } else if (S02_ITEMS[kind]) {
-    S02_ITEMS[kind](ctx, ang, c);
+    S02_ITEMS[kind](ctx, ang, c, x);
   } else if (kind === 'hanky') {
     outlined(ctx, (k) => { k.moveTo(-6, -4); k.lineTo(26, -14); k.lineTo(20, 22); k.closePath(); }, '#ffffff', 3);
   }
@@ -354,10 +354,28 @@ function sleeve(ctx, x0, y0, a, b, col) { // coloured upper sleeve over the stic
   const x1 = x0 + Math.sin(a) * 80, y1 = y0 + Math.cos(a) * 80, x2 = x1 + Math.sin(a + b) * 50, y2 = y1 + Math.cos(a + b) * 50;
   ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#111'; ctx.lineWidth = 24; ctx.stroke(); ctx.strokeStyle = col; ctx.lineWidth = 14; ctx.stroke();
 }
+// S02 v3: a hand-held ice block drawn as a solid: front, top and side faces in translucent blues, bubbles, cracks, a bright
+// edge, a glint star, and (drip) water running off the bottom. The hand grips it from below (hand at 0, 0).
+function iceCube(k, w, h, d, o = {}) {
+  const x0 = -w / 2 - (o.dx || 0), y0 = -h + 8, ox = d * 0.55, oy = -d * 0.45;
+  outlined(k, (q) => { q.moveTo(x0, y0); q.lineTo(x0 + ox, y0 + oy); q.lineTo(x0 + w + ox, y0 + oy); q.lineTo(x0 + w, y0); q.closePath(); }, '#eef9ff', 4); // top
+  outlined(k, (q) => { q.moveTo(x0 + w, y0); q.lineTo(x0 + w + ox, y0 + oy); q.lineTo(x0 + w + ox, y0 + oy + h); q.lineTo(x0 + w, y0 + h); q.closePath(); }, '#6fb3e0', 4); // side
+  const gr = k.createLinearGradient(x0, y0, x0 + w, y0 + h); gr.addColorStop(0, '#d8f2ff'); gr.addColorStop(0.55, '#a6dbf7'); gr.addColorStop(1, '#7cc0ea');
+  outlined(k, (q) => q.rect(x0, y0, w, h), gr, 4); // front
+  k.save(); k.beginPath(); k.rect(x0, y0, w, h); k.clip();
+  k.fillStyle = 'rgba(255,255,255,.55)'; for (const [u, v, r] of [[0.2, 0.3, 0.05], [0.32, 0.62, 0.035], [0.7, 0.45, 0.045], [0.56, 0.78, 0.03], [0.82, 0.2, 0.03], [0.44, 0.35, 0.025]]) { k.beginPath(); k.arc(x0 + u * w, y0 + v * h, r * w, 0, TAU); k.fill(); }
+  k.strokeStyle = 'rgba(255,255,255,.85)'; k.lineWidth = 2.5; k.beginPath(); k.moveTo(x0 + w * 0.15, y0 + h * 0.7); k.lineTo(x0 + w * 0.38, y0 + h * 0.52); k.lineTo(x0 + w * 0.5, y0 + h * 0.6); k.moveTo(x0 + w * 0.38, y0 + h * 0.52); k.lineTo(x0 + w * 0.42, y0 + h * 0.3); k.stroke();
+  k.fillStyle = 'rgba(255,255,255,.7)'; k.fillRect(x0 + 6, y0 + 6, w - 12, 5); k.fillRect(x0 + 6, y0 + 6, 5, h - 14); // bright inner edges
+  k.restore();
+  k.fillStyle = 'rgba(255,255,255,.5)'; k.beginPath(); k.moveTo(x0 + w + 6, y0 + 4); k.lineTo(x0 + w + ox - 4, y0 + oy + 8); k.lineTo(x0 + w + ox - 4, y0 + oy + 22); k.lineTo(x0 + w + 6, y0 + 18); k.fill();
+  const star = (x, y, r) => { k.fillStyle = '#ffffff'; k.beginPath(); for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, rr = i % 2 ? r * 0.22 : r; k.lineTo(x + Math.sin(a) * rr, y - Math.cos(a) * rr); } k.closePath(); k.fill(); };
+  star(x0 + w * 0.12, y0 + 4, o.glint ?? 22); star(x0 + w + ox * 0.6, y0 + oy * 0.6 + 6, (o.glint ?? 22) * 0.5);
+  if (o.drip) { k.fillStyle = '#8fd3ff'; k.strokeStyle = '#1f4a6a'; k.lineWidth = 2.5; for (const [u, dy] of [[0.2, 22], [0.55, 40], [0.85, 14]]) { const x = x0 + u * w, y = y0 + h + dy; k.beginPath(); k.moveTo(x, y - 12); k.quadraticCurveTo(x + 7, y + 2, x, y + 6); k.quadraticCurveTo(x - 7, y + 2, x, y - 12); k.fill(); k.stroke(); } k.fillStyle = 'rgba(143,211,255,.8)'; k.fillRect(x0 + w * 0.18, y0 + h - 2, 5, 12); k.fillRect(x0 + w * 0.53, y0 + h - 2, 5, 18); }
+}
 // hand-held props for S02
 const S02_ITEMS = {
-  ice: (k) => { outlined(k, (q) => { q.moveTo(-6, -38); q.lineTo(30, -46); q.lineTo(40, -10); q.lineTo(4, 0); q.closePath(); }, '#d6f0ff', 4); k.fillStyle = '#ffffff'; k.beginPath(); k.moveTo(-6, -38); k.lineTo(30, -46); k.lineTo(26, -36); k.lineTo(0, -30); k.closePath(); k.fill(); k.strokeStyle = 'rgba(255,255,255,.9)'; k.lineWidth = 2; k.beginPath(); k.moveTo(10, -28); k.lineTo(22, -18); k.stroke(); },
-  iceBlock: (k) => { outlined(k, (q) => rrect(q, -40, -52, 84, 58, 6), '#cfeaff', 4); k.fillStyle = 'rgba(255,255,255,.7)'; k.fillRect(-34, -46, 72, 8); k.strokeStyle = 'rgba(255,255,255,.9)'; k.lineWidth = 2; k.beginPath(); k.moveTo(-20, -30); k.lineTo(0, -16); k.lineTo(14, -24); k.stroke(); k.fillStyle = '#8fd3ff'; for (const x of [-30, -6, 20]) { k.beginPath(); k.moveTo(x, 8); k.quadraticCurveTo(x + 5, 16, x, 20); k.quadraticCurveTo(x - 5, 16, x, 8); k.fill(); } },
+  ice: (k, a, c, hx) => { k.rotate(-0.06); iceCube(k, 104, 86, 56, { glint: 28, dx: 58 * Math.sign(hx || 1) }); }, /* v3: a real block, held up like a jewel */
+  iceBlock: (k, a, c, hx) => { iceCube(k, 140, 104, 70, { drip: true, glint: 24, dx: 92 * Math.sign(hx || 1) }); /* toward the body: the block stays inside the card on either side */ }, /* v3: the merchant's dripping block */
   saw: (k, ang) => { k.rotate(-ang * 0.15 - 0.25); /* the long blade hangs down into the cut */ outlined(k, (q) => { q.moveTo(-6, -20); q.lineTo(6, -20); q.lineTo(10, 230); q.lineTo(-10, 230); q.closePath(); }, '#b8c0c8', 3); k.fillStyle = '#6b6f75'; for (let y = 10; y < 228; y += 12) { k.beginPath(); k.moveTo(-10, y); k.lineTo(-17, y + 6); k.lineTo(-10, y + 12); k.fill(); } outlined(k, (q) => rrect(q, -34, -30, 68, 14, 6), '#8a5a32', 3); },
   tongs: (k, ang) => { k.rotate(-ang * 0.5); k.strokeStyle = '#111'; k.lineWidth = 11; k.lineCap = 'round'; for (const s2 of [-1, 1]) { k.beginPath(); k.moveTo(0, 0); k.quadraticCurveTo(s2 * 46, 40, s2 * 16, 92); k.stroke(); } k.strokeStyle = '#4a4e55'; k.lineWidth = 5; for (const s2 of [-1, 1]) { k.beginPath(); k.moveTo(0, 0); k.quadraticCurveTo(s2 * 46, 40, s2 * 16, 92); k.stroke(); } outlined(k, (q) => rrect(q, -26, -12, 52, 12, 5), '#8a5a32', 3); },
   pike: (k, ang) => { k.rotate(-ang + 0.35); k.beginPath(); k.moveTo(0, 70); k.lineTo(0, -230); k.strokeStyle = '#111'; k.lineWidth = 13; k.stroke(); k.strokeStyle = '#9a7048'; k.lineWidth = 7; k.stroke(); outlined(k, (q) => { q.moveTo(-6, -228); q.lineTo(0, -258); q.lineTo(6, -228); q.closePath(); }, '#4a4e55', 3); k.strokeStyle = '#111'; k.lineWidth = 5; k.beginPath(); k.arc(12, -222, 12, Math.PI, Math.PI * 2.4); k.stroke(); },
