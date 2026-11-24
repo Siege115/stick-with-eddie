@@ -36,7 +36,7 @@ export const meta = {
     workshop: {}, sea: { base: 'water', tint: 'sea', ship: 'tuscany', sails: 1, wake: true }, hold: {}, sawmill: {}, cutaway: {},
   },
   // the running easter egg: the log peeks through the open upper window in Saint-Pierre for exactly one frame (beat 7)
-  cameo: { t: 26.4667, pos: [-0.6, 4.6, -15.0], set: 'mq' }, /* frame 794 (v2 timing: 1.40 s into beat 7) */ // = cameoSpot in src/harbour.js
+  cameo: { t: 26.4, pos: [-0.6, 4.6, -15.0], set: 'mq' }, /* frame 792 (v3 timing: 1.40 s into beat 7) */ // = cameoSpot in src/harbour.js
   // sound: no tense section; room tones per beat (`amb`), soft acoustic bed from src/mix.py
   mix: { music: 'acoustic' },
 };
