@@ -81,8 +81,10 @@ const P = {
   holdAtArm: { armR: { a: 1.45, b: 0.05 }, armL: { a: 1.4, b: 0.1 }, brow: 0.9, mouth: 'smile', lean: -0.06, headTilt: -0.08 },
   kneeSlap: { armL: { a: 0.2, b: 0.5 }, armR: { a: 0.3, b: 0.7 }, lean: 0.18, mouth: 'laugh', brow: 1, shake: 1, eyes: 0.1 },
   shovel: { armL: { a: 0.9, b: 0.6 }, armR: { a: 0.5, b: 0.4 }, lean: 0.12, brow: -0.2, mouth: 'flat', lookY: 1 },
+  lift: { armR: { a: 1.25, b: -0.35 }, armL: { a: 0.35, b: -1.3 }, lean: 0.02, brow: 0.0, mouth: 'flat' }, // S02 v3.1: the loaded blade raised level
+  holdChest: { armR: { a: 0.6, b: -1.3 }, armL: { a: 0.6, b: -1.3 }, brow: 0.9, mouth: 'smile', lean: -0.03 }, // both hands under a block held at the chest
   dig: { armR: { a: 0.2, b: -1.6 }, armL: { a: 0.2, b: -0.4 }, lean: 0.16, brow: -0.2, mouth: 'flat', lookY: 1 }, // S02 v3 (shovel2): blade down into the heap
-  toss: { armR: { a: 1.4, b: 0.3 }, armL: { a: 0.1, b: -0.9 }, lean: -0.04, brow: 0.1, mouth: 'flat' }, // the blade swung up over the barrel / cart
+  toss: { armR: { a: 2.3, b: -0.25 }, armL: { a: 0.55, b: -1.6 }, lean: -0.06, brow: 0.1, mouth: 'flat', fly: 1 }, // the blade swung up over the barrel / cart
   oldStand: { lean: 0.05, headTilt: 0.04, armR: { a: 0.35, b: 0.1 }, armL: { a: 0.15, b: 0.15 }, brow: 0.3, mouth: 'smile' },
   holdUmbrella: { armR: { a: 2.3, b: 0.45 }, armL: { a: 0.2, b: 0.2 }, brow: 0.3, mouth: 'smile' },
   holdParasol: { armR: { a: 2.3, b: 0.45 }, armL: { a: 0.25, b: 0.3 }, brow: 0.4, mouth: 'smile', headTilt: 0.04 },

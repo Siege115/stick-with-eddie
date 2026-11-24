@@ -241,6 +241,7 @@ export function buildWharf(scene, opts = {}) {
   if (year === 1806) { const iceM = std({ map: T.ice(3), roughness: 0.2, color: 0xd6ecff }); for (let i = 0; i < 6; i++) g.add(ink(box(0.6, 0.4, 0.42, iceM, 2.3 + (i % 3) * 0.64, 0.2 + Math.floor(i / 3) * 0.4, -6.0 + (i % 2) * 0.05), 1.03)); K.hayBale(g, 2.9, -7.1, 0, 0.4); }
   // 1833: a busier wharf
   if (year === 1833) {
+    for (const [x, y, z] of [[12.2, 0.8, -6.5], [12.6, 1.0, 3.0]]) { const f = new THREE.PointLight(0xffd6a0, 130, 26, 1.1); f.position.set(x, y, z); g.add(f); } /* S02 v3.1: warm fill on the Tuscany's stern quarter as she leaves (hull out of near-black) */
     for (const [x, z, s] of [[-3.5, 7.0, 0.9], [-2.6, 7.2, 0.7], [-3.4, 7.9, 0.8], [-2.0, -4.0, 0.8], [-1.3, -4.2, 0.6]]) capCrate(x, z, s);
     for (const [x, z] of [[2.6, -6.2], [3.3, -6.0], [2.9, -6.8], [-1.0, 10.5], [-1.7, 10.4]]) K.barrel(g, x, z);
     for (let i = 0; i < 5; i++) K.sack(g, 2.2 + (i % 3) * 0.7, Math.floor(i / 3) * 0.3, -9.8 + (i % 2) * 0.1, i * 0.4, 0xbfa36b);

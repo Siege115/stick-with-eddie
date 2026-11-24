@@ -107,8 +107,8 @@ export function buildCutaway(scene, opts = {}) {
   const paint = (w, h, fn) => { const c = document.createElement('canvas'); c.width = w; c.height = h; fn(c.getContext('2d'), w, h); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; };
   // OUTSIDE: hot sky with the sun and sea waves, on the left
   const outT = paint(512, 1024, (k, w, h) => { const gr = k.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#ff7a1a'); gr.addColorStop(0.6, '#ffc25a'); gr.addColorStop(0.61, '#1f6fa0'); gr.addColorStop(1, '#155a86'); k.fillStyle = gr; k.fillRect(0, 0, w, h);
-    k.fillStyle = '#fff2a8'; k.beginPath(); k.arc(230, 300, 110, 0, 7); k.fill(); k.strokeStyle = '#1b1b1b'; k.lineWidth = 10; k.stroke();
-    k.strokeStyle = '#ffe680'; k.lineWidth = 12; k.lineCap = 'round'; for (let i = 0; i < 10; i++) { const a = i / 10 * 6.283; k.beginPath(); k.moveTo(230 + Math.cos(a) * 140, 300 + Math.sin(a) * 140); k.lineTo(230 + Math.cos(a) * 185, 300 + Math.sin(a) * 185); k.stroke(); }
+    const SX = 392, SY = 210, SR = 38; /* v3.1: a small yellow sun inside the strip the camera sees (no cut-off disc) */ k.fillStyle = '#ffd23a'; k.beginPath(); k.arc(SX, SY, SR, 0, 7); k.fill(); k.strokeStyle = '#1b1b1b'; k.lineWidth = 7; k.stroke();
+    k.strokeStyle = '#ffe680'; k.lineWidth = 7; k.lineCap = 'round'; for (let i = 0; i < 10; i++) { const a = i / 10 * 6.283; k.beginPath(); k.moveTo(SX + Math.cos(a) * (SR + 10), SY + Math.sin(a) * (SR + 10)); k.lineTo(SX + Math.cos(a) * (SR + 26), SY + Math.sin(a) * (SR + 26)); k.stroke(); }
     k.strokeStyle = 'rgba(255,255,255,.7)'; k.lineWidth = 8; for (let y = 660; y < h; y += 60) { k.beginPath(); for (let x = 0; x <= w; x += 40) k.quadraticCurveTo(x + 10, y - 14, x + 20, y), k.quadraticCurveTo(x + 30, y + 14, x + 40, y); k.stroke(); } });
   const out = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 5.2), new THREE.MeshBasicMaterial({ map: outT, fog: false })); out.position.set(-2.55, 1.2, -0.75); g.add(out);
   // INSIDE: the dark cool hold wall behind the ice

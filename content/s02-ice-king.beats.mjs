@@ -105,7 +105,7 @@ export const beats = [
     line: 'He filled a ship with ice from a frozen pond.', min: 4.25, light: 'nightReadable', set: 'pond', amb: 'night',
     shots: [
       sh(0, [HOOK_CAM, [-0.95, 0.4, -1.4]], [HOOK_LOOK, [-0.8, 0.74, -6.2]], [HOOK_FOV, 56] /* v3: a gentler push so Eddie stays whole on the right */, 'cut', { ease: 'out', captionY: 0.88, grade: GRADE_NIGHT }),
-      sh(0.9, [[6.2, 1.8, -3.6], [5.6, 1.45, -4.45]], [[5.25, 0.95, -6.4], [5.2, 0.95, -6.3]], [54, 48], 'cut', { ease: 'inout', captionY: 0.88, grade: GRADE_NIGHT }),
+      sh(0.9, [[6.2, 1.8, -3.6], [5.65, 1.5, -4.4]], [[5.25, 0.95, -6.4], [5.2, 1.08, -6.3]], [54, 50], /* v3.1: the push stops short and tilts up: the red hat and pompom stay in frame */ 'cut', { ease: 'inout', captionY: 0.88, grade: GRADE_NIGHT }),
       sh(3.4, [[1.2, 2.3, -2.3], [1.0, 2.1, -3.4]], [[-0.7, 0.2, -5.0], [0.1, 0.2, -7.1]], [56, 52], 'cut', /* v3: high and in front: the block slides away across the ice, the pushers behind it, no post in the way */ { captionY: 0.88, grade: GRADE_NIGHT }),
     ],
     open: { burst: [[0, 0.22], [0.95, 1]], saw: [[0, 0], [0.9, 0.12], [3.35, 0.95]] },
@@ -198,12 +198,12 @@ export const beats = [
     ],
     ship: [[0, MQ_DOCK, Math.PI]], open: { sails: [[0, 0.25]], moored: [[0, 1]], hatch: [[0, 0]] },
     pos: { mer: [[0, [8.8, -2.4]]], sMq: [[0, [11.4, -3.4]]] },
-    acts: { mer: [[0, 'holdAtArm', { item: 'iceBlock' }], [1.5, 'holdAtArm', { item: 'iceBlock' }], ['w2:Lovely', 'ask', { item: 'iceBlock', talk: ['w2:Lovely', 'end'] }], ['w2:what', 'holdAtArm', { item: 'iceBlock', talk: ['w2:Lovely', 'end'] }]],
+    acts: { mer: [[0, 'holdChest', { item: 'iceBlock' }], [1.5, 'holdChest', { item: 'iceBlock' }], ['w2:Lovely', 'holdChest', { item: 'iceBlock', talk: ['w2:Lovely', 'end'] }]], /* v3.1: one hold for the whole beat: the block at his chest in both hands, no pop between poses */
       sMq: [[0, 'carry'], [1.2, 'watch']] },
     look: { mer: [9.6, 1.4, -0.6], sMq: 'mer' }, mood: { mq: 'watch' }, lookAll: [8.8, 1.4, -2.4],
     cast: ['mer', 'sMq', 'mq1', 'mq2', 'mq3'],
     bubble: { who: 'mer', text: 'Lovely. And… what do I do with it?', from: 'w2:Lovely', to: 'end', tailY: 1.45 },
-    fx: [{ kind: 'drip', at: 0, pos: [8.32, 0.92, -2.08], rate: 2.6 }, { kind: 'puddle', at: 0, pos: [8.32, -2.08], r: [0.08, 0.5], grow: 4.0 }], /* v3: under the block in his hand */
+    fx: [{ kind: 'drip', at: 0, until: 'end', pos: [8.62, 0.98, -2.2], rate: 2.6 }, { kind: 'puddle', at: 0, pos: [8.62, -2.2], r: [0.08, 0.5], grow: 4.0 }], /* v3.1: under the block at his chest; the drips stop with the beat (never into beat 9) */
     sfx: [[0.3, 'drip'], [0.9, 'drip'], [1.5, 'drip'], [2.2, 'drip']],
   },
   { // 9 — it melts (puddle spreads); Boston: the letter, the hat droops; the crowd laughs harder
@@ -287,7 +287,7 @@ export const beats = [
     mood: { ca: 'watch' }, lookAll: [6.6, -0.4, 3.85],
     look: { ca1: [0, 0.6, 0], ca3: [0, 0.6, 0] },
     sparkles: [['w:most', [-0.65, 1.05, 0.35], 'hold'], ['w:most+0.25', [-0.3, 1.5, 0.3], 'hold'], ['w:ice', [-0.05, 0.95, 0.5], 'hold']],
-    fx: [{ kind: 'puddle', set: 'hold', at: 0, pos: [-1.05, 0.75], r: [0.22, 0.22], grow: 0.1 }, { kind: 'puddle', set: 'hold', at: 0, pos: [1.1, 0.55], r: [0.16, 0.16], grow: 0.1 }, { kind: 'puddle', set: 'hold', at: 0, pos: [0.45, 1.15], r: [0.12, 0.12], grow: 0.1 }],
+    fx: [{ kind: 'puddle', set: 'hold', at: 0, pos: [-1.05, 0.75], r: [0.22, 0.22], grow: 0.1 }, { kind: 'puddle', set: 'hold', at: 0, pos: [1.1, 0.55], r: [0.16, 0.16], grow: 0.1 }, { kind: 'puddle', set: 'hold', at: 0, pos: [0.45, 1.15], r: [0.12, 0.12], grow: 0.1 }, { kind: 'puddle', set: 'hold', at: 0, pos: [0.55, -0.55], r: [0.2, 0.2], grow: 0.1 }, { kind: 'puddle', set: 'hold', at: 0, pos: [0.6, 0.55], r: [0.15, 0.15], grow: 0.1 }, { kind: 'puddle', set: 'hold', at: 0, pos: [-0.95, -0.7], r: [0.14, 0.14], grow: 0.1 }] /* v3.1: puddles at the foot of the pile */,
     sfx: [[0, 'crowdMurmur', 2.0], ['w:hatch-0.45', 'whoosh'], ['w:hatch-0.9', 'riser', 0.9], ['w:hatch', 'creak'], ['w:hatch+0.35', 'softImpact'], ['w:most', 'ping']],
   },
   { // 15 — the Ice King: Eddie (1833) lifts his top hat; the same Boston people now cheer; an ice-crown sparkle
@@ -308,16 +308,16 @@ export const beats = [
     shots: [
       sh(0, [[3.3, 1.35, 0.7], [2.8, 1.2, 0.6]], [[0.15, 0.5, 0.2], [0.15, 0.55, 0.2]], [42, 40], 'cut', { ease: 'inout', captionY: 0.86 }),
       sh('w:Sawdust-0.08', [[1.3, 2.15, 2.7], [1.1, 2.0, 2.35]], [[0.05, 1.3, -0.45], [0.05, 1.25, -0.45]], [54, 50], 'whip', /* v3: the blade, the chute under it and the stream off its lip */ { set: 'sawmill', light: 'warm', ease: 'inout', captionY: 0.88 }),
-      sh('w:sawmills-0.1', [[1.6, 2.55, -0.9], [1.6, 2.45, -1.1]], [[1.78, 0.55, -3.75], [1.78, 0.55, -3.75]], [60, 58], 'cut', { set: 'sawmill', light: 'warm', captionY: 0.88 }),
+      sh('w:sawmills-0.1', [[1.6, 2.55, -0.9], [1.6, 2.45, -1.1]], [[1.74, 0.6, -3.75], [1.74, 0.6, -3.75]], [63, 61], 'cut', { set: 'sawmill', light: 'warm', captionY: 0.88 }),
       sh('w:packed-0.15', [[-0.45, 1.05, 10.5], [-0.5, 0.95, 8.4]], [[-0.45, 1.0, 0], [-0.5, 0.9, 0]], [34, 34], 'match', /* v3: hold the whole slice so the heat arrows read: sun | hull | sawdust | ice */ { set: 'cutaway', light: 'cutaway', ease: 'inout', captionY: 0.86 }),
       sh('w:heat-0.2', [[-0.5, 0.95, 8.4], END_CAM], [[-0.5, 0.9, 0], END_LOOK], [34, HOOK_FOV], 'cut', { set: 'cutaway', light: 'nightReadable', ease: 'inout', captionY: 0.88, grade: GRADE_NIGHT }),
     ],
     open: { pile: [[0, 0]], crate: [[0, 1]], lid: [[0, 0], [0.35, 0], ['w:Sawdust-0.1', 0.55]], hatch: [[0, 1]] },
     movers: { crate: [[0, [0.15, 0.25]]] },
     fx: [{ kind: 'arrows', set: 'cutaway', at: 'w:packed-0.1', until: 'w:heat+0.6', from: [-2.55, 0.75, 0.8], to: [ICE_X - 0.36, 0.75, 0.8], n: 4, every: 0.32, life: 1.6, len: 0.75, spread: 0.9, faintStop: 0.58 }], /* v3: in frame, bigger, slowing and fading in the sawdust */
-    pos: { m1: [[0, [2.1, -3.45]]], m2: [[0, [0.95, -3.55]]] },
-    acts: { m1: [[0, 'dig', { item: 'shovel2' }], [0.5, 'toss', { item: 'shovel2' }], [1.0, 'dig', { item: 'shovel2' }], [1.5, 'toss', { item: 'shovel2' }], [2.0, 'dig', { item: 'shovel2' }], [2.5, 'toss', { item: 'shovel2' }], [3.0, 'dig', { item: 'shovel2' }], [3.5, 'toss', { item: 'shovel2' }], [4.0, 'dig', { item: 'shovel2' }], [4.5, 'toss', { item: 'shovel2' }], [5.0, 'dig', { item: 'shovel2' }], [5.5, 'toss', { item: 'shovel2' }], [6.0, 'dig', { item: 'shovel2' }]],
-      m2: [[0, 'toss', { item: 'shovel2' }], [0.55, 'dig', { item: 'shovel2' }], [1.1, 'toss', { item: 'shovel2' }], [1.65, 'dig', { item: 'shovel2' }], [2.2, 'toss', { item: 'shovel2' }], [2.75, 'dig', { item: 'shovel2' }], [3.3, 'toss', { item: 'shovel2' }], [3.85, 'dig', { item: 'shovel2' }], [4.4, 'toss', { item: 'shovel2' }], [4.95, 'dig', { item: 'shovel2' }], [5.5, 'toss', { item: 'shovel2' }]] }, /* v3: a real shovel (long handle, steel blade) in both hands */
+    pos: { m1: [[0, [1.98, -3.45]]], m2: [[0, [1.28, -3.55]]] }, /* v3.1: m2 0.33 m right: his head stays in frame */
+    acts: { m1: [[0, 'dig', { item: 'shovel2' }], [2.9, 'dig', { item: 'shovel2' }], [3.25, 'lift', { item: 'shovel2' }], [3.6, 'toss', { item: 'shovel2' }], [4.05, 'dig', { item: 'shovel2' }], [4.4, 'lift', { item: 'shovel2' }], [4.75, 'toss', { item: 'shovel2' }], [5.2, 'dig', { item: 'shovel2' }], [5.55, 'lift', { item: 'shovel2' }], [5.9, 'toss', { item: 'shovel2' }]],
+      m2: [[0, 'dig', { item: 'shovel2' }], [3.0, 'dig', { item: 'shovel2' }], [3.6, 'lift', { item: 'shovel2' }], [4.2, 'dig', { item: 'shovel2' }], [4.8, 'lift', { item: 'shovel2' }], [5.4, 'dig', { item: 'shovel2' }]] }, /* v3.1: scoop → lift → toss into the barrel, sawdust flying off the blade */ 
     look: { m1: [2.6, 0.9, -3.9], m2: [0.25, 0.9, -4.35] },
     sfx: [[-0.5, 'riser', 0.55], [0.3, 'creak'], ['w:Sawdust-0.08', 'sawmill', 2.6], ['w:packed-0.15', 'whoosh'], ['w:out', 'ding']],
   },
