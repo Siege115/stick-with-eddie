@@ -63,6 +63,17 @@ export function buildHold(scene, opts = {}) {
       K.snowSlab(x1 - x0, depth, 0.08, (x0 + x1) / 2, 1.3, z0 + s * depth / 2, 0, g).material = sawM; // a soft sawdust top
     }
   }
+  // S02 v3 proof shot ("most of the ice is still there"): a pile of blocks packed in sawdust in the middle of the hold, right under
+  // the light shaft, with glints; open.pile (0 hidden … 1 shown). Built from the same ice material as the side stacks.
+  { const pile = new THREE.Group(); pile.visible = false; pile.position.x = -0.3; g.add(pile);
+    const mound = new THREE.Mesh(new THREE.SphereGeometry(1.0, 24, 10, 0, 6.3, 0, 1.4), sawM); mound.scale.set(1.25, 0.34, 1.0); mound.position.set(0.05, 0, 0.05); mound.receiveShadow = true; pile.add(mound);
+    const blocks = [[-0.36, 0.2, -0.22, 0.05], [0.32, 0.2, -0.26, -0.06], [-0.4, 0.2, 0.3, -0.03], [0.3, 0.2, 0.28, 0.07], [-0.02, 0.63, -0.02, 0.1], [0.05, 0.63, 0.5, -0.12], [-0.05, 1.06, 0.18, 0.04]];
+    const pileM = std({ map: T.ice(3), roughness: 0.15, color: 0xeaf6ff, emissive: 0x4a7aa8, emissiveIntensity: 0.55 }); /* lit by the shaft: reads as ice, not dark glass */
+    for (const [x, y, z, ry] of blocks) { const b = box(0.6, 0.4, 0.46, pileM, x, y + 0.02, z, ry, false); b.castShadow = true; pile.add(ink(b, 1.02)); }
+    for (const [x, y, z, rr] of [[-0.02, 0.42, -0.3, 0.3], [-0.36, 0.42, 0.06, 0.22], [0.36, 0.42, 0.05, 0.22], [0.3, 0.42, 0.62, 0.2], [-0.32, 0.42, 0.62, 0.2], [0.02, 0.85, -0.2, 0.22], [0.0, 0.85, 0.72, 0.18]]) { const m = new THREE.Mesh(new THREE.SphereGeometry(rr, 10, 6, 0, 6.3, 0, 1.5), sawM); m.scale.y = 0.6; m.position.set(x, y, z); pile.add(m); } /* sawdust heaped between and on the layers */
+    for (let i = 0; i < 9; i++) { const a = i / 9 * 6.283, m = new THREE.Mesh(new THREE.SphereGeometry(0.16 + r() * 0.08, 10, 6, 0, 6.3, 0, 1.5), sawM); m.scale.y = 0.55; m.position.set(Math.cos(a) * 0.72, 0.18 + (i % 2) * 0.12, Math.sin(a) * 0.62); pile.add(m); } /* packed against the sides */
+    for (const [x, y, z] of [[-0.3, 0.45, 0.06], [0.36, 0.42, 0.05], [0.0, 0.88, 0.26], [-0.06, 1.3, 0.42], [0.12, 0.86, 0.74]]) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: glintTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })); sp.position.set(x, y, z); sp.userData.ph = r() * 6.3; sp.userData.big = 1.6; pile.add(sp); glints.push(sp); }
+    H.open.pile = (v) => { pile.visible = v > 0.5; }; H.openRest.pile = 0; }
   // sawdust spilled on the floor in the aisle, a shovel, a hanging lantern
   for (let i = 0; i < 6; i++) { const m = new THREE.Mesh(new THREE.CircleGeometry(0.12 + r() * 0.12, 10), new THREE.MeshStandardMaterial({ map: sawT, transparent: true, opacity: 0.7 })); m.rotation.x = -Math.PI / 2; m.position.set(-5 + r() * 10, 0.01, (r() - 0.5) * 1.6); g.add(m); }
   { const sh = new THREE.Group(); sh.position.set(3.2, 0, -1.0); sh.rotation.z = 0.25; g.add(sh); sh.add(cyl(0.025, 0.025, 1.2, ribM, 0, 0.75, 0, 6)); sh.add(ink(box(0.26, 0.32, 0.03, std({ color: 0x5a5e66, metalness: 0.6 }), 0, 0.14, 0), 1.08)); }
@@ -79,7 +90,7 @@ export function buildHold(scene, opts = {}) {
     const glow = new THREE.PointLight(0xffc070, 0, 1.6, 1.5); glow.position.set(0, 0.75, 0.1); cr.add(glow);
     H.open.lid = (v) => { v = Math.min(1, Math.max(0, v)); top.rotation.x = -v * 0.55; top.position.y = 0.78 + v * 0.04; glow.intensity = v * 2.2; }; H.openRest.lid = 0;
     cr.visible = opts.crate ?? false; H.movers.crate = cr; H.open.crate = (v) => { cr.visible = v > 0.5; }; H.openRest.crate = opts.crate ? 1 : 0; }
-  H.tick = (t) => { for (const sp of glints) { const k = Math.max(0, Math.sin(t * 3 + sp.userData.ph)); const s = 0.08 + k * 0.22; sp.scale.set(s, s, 1); sp.material.opacity = k; } };
+  H.tick = (t) => { for (const sp of glints) { const k = Math.max(0, Math.sin(t * 3 + sp.userData.ph)); const s = (0.08 + k * 0.22) * (sp.userData.big || 1); sp.scale.set(s, s, 1); sp.material.opacity = k; } };
   return H;
 }
 

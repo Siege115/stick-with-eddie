@@ -5,7 +5,7 @@ import { createRequire } from 'node:module';
 import { spawn, spawnSync, execFileSync } from 'node:child_process';
 import fs from 'node:fs'; import path from 'node:path'; import { pathToFileURL } from 'node:url';
 import { serve } from './src/server.mjs';
-import { buildTimeline, compile } from './src/timeline.js';
+import { buildTimeline, compile, partsOf } from './src/timeline.js';
 const { chromium } = createRequire(import.meta.url)('playwright');
 
 const args = process.argv.slice(2);
@@ -20,7 +20,7 @@ const mod = await import(pathToFileURL(path.resolve(beatsPath)).href);
 const { meta, beats } = mod;
 
 // 1. narration
-const lines = beats.map((b) => ({ parts: [{ text: b.line, ...((b.voice || meta.voice) ? { voice: b.voice || meta.voice } : {}) }, ...(b.line2 ? [{ text: b.line2.text, voice: b.line2.voice }] : [])] })); // meta.voice: per-Short narrator pacing
+const lines = beats.map((b) => ({ parts: partsOf(b, meta).map(({ text, voice }) => ({ text, ...(voice ? { voice } : {}) })) })); // meta.voice: per-Short narrator pacing; `breaks` split a line into parts
 const audioDir = `audio/${meta.id}`; fs.mkdirSync(audioDir, { recursive: true });
 fs.writeFileSync(`${audioDir}/lines.json`, JSON.stringify(lines, null, 1));
 execFileSync('python3', ['src/tts.py', `${audioDir}/lines.json`, audioDir], { stdio: 'inherit' });

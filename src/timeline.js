@@ -22,15 +22,31 @@ export function wordTimes(text, on, off) {
   return out;
 }
 
+// The spoken parts of a beat: `line` (split at `breaks: [[word, pause], ...]`, a pause in seconds after that word of the line)
+// and `line2` (another voice). Used by render-episode.mjs (what to synthesise) and buildTimeline (the gap before each part).
+export function partsOf(b, meta) {
+  const v = b.voice || meta.voice; const out = [];
+  if (b.breaks && b.breaks.length) {
+    const words = b.line.split(/\s+/).filter(Boolean); let cur = [], gap = null;
+    words.forEach((w, i) => {
+      cur.push(w); const br = b.breaks.find(([bw]) => bw === w);
+      if (br && i < words.length - 1) { out.push({ text: cur.join(' '), voice: v, gap }); cur = []; gap = br[1]; }
+    });
+    out.push({ text: cur.join(' '), voice: v, gap });
+  } else out.push({ text: b.line, voice: v, gap: null });
+  if (b.line2) out.push({ text: b.line2.text, voice: b.line2.voice, gap: null, line2: true });
+  return out.map((p) => (p.voice ? p : (({ voice, ...q }) => q)(p)));
+}
+
 export function buildTimeline(meta, beats, audio) {
   const LEAD = 0.1, TAIL = 0.2, PART_GAP = 0.1;
   let t = 0; const B = [];
   beats.forEach((b, i) => {
-    const a = audio[i]; const parts = []; let pt = t + LEAD;
-    a.parts.forEach((p) => {
+    const a = audio[i]; const parts = []; let pt = t + LEAD; const spec = partsOf(b, meta);
+    a.parts.forEach((p, k) => {
       const start = pt;
-      parts.push({ file: p.file, start, end: start + p.dur, words: wordTimes(p.text, start + p.on, start + p.off), voice: p.voice });
-      pt = start + p.dur + PART_GAP;
+      parts.push({ file: p.file, start, end: start + p.dur, words: wordTimes(p.text, start + p.on, start + p.off), voice: p.voice, ...(spec[k] && spec[k].line2 ? { line2: true } : {}) });
+      const g = spec[k + 1] && spec[k + 1].gap; pt = start + p.dur + (g != null ? g : PART_GAP);
     });
     const speechEnd = parts[parts.length - 1].end;
     const dur = Math.max(b.min || 0, speechEnd - t + TAIL);
@@ -49,7 +65,7 @@ export function resolver(tl) {
     if (spec === 'end') return bt.parts[bt.parts.length - 1].end;
     const m = /^w(\d?):([A-Za-z0-9']+)([+-][\d.]+)?$/.exec(spec);
     if (!m) throw new Error('bad time spec ' + spec);
-    const parts = m[1] ? [bt.parts[+m[1] - 1]] : bt.parts;
+    const parts = m[1] ? (m[1] === '2' && bt.parts.some((p) => p.line2) ? bt.parts.filter((p) => p.line2) : [bt.parts[+m[1] - 1]]) : bt.parts;
     for (const p of parts) for (const w of p.words) if (clean(w.w) === clean(m[2])) return w.t0 + (m[3] ? parseFloat(m[3]) : 0);
     throw new Error(`word "${m[2]}" not in beat ${bi + 1}`);
   };
@@ -90,7 +106,7 @@ export function compile(meta, beats, tl) {
     });
     // captions: 1–2 words per chunk; break after punctuation
     for (const [pi, p] of bt.parts.entries()) {
-      if (pi === 1 && b.line2 && b.line2.caption === false) continue; // a spoken line shown only as a speech bubble
+      if ((p.line2 || (pi === 1 && !b.breaks)) && b.line2 && b.line2.caption === false) continue; // a spoken line shown only as a speech bubble
       const ws = p.words; let i = 0;
       while (i < ws.length) {
         const a = ws[i], b2 = ws[i + 1];

@@ -144,7 +144,7 @@ const col = (c) => new THREE.Color(c);
 const rgba = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; }; // sRGB hex → css
 const mod = (a, n) => ((a % n) + n) % n;
 // two-render transitions: how long each side of the cut they run (s)
-const MIX = { match: 0.1, 'wipe:flare': 0.25, 'wipe:paper': 0.3 };
+const MIX = { match: 0.1, 'wipe:flare': 0.25, 'wipe:paper': 0.3, pushfade: 0.16 }; // pushfade: the push-in dolly with a cross-dissolve, never through black
 const IRIS = 0.32;
 
 // =====================================================================
@@ -652,6 +652,7 @@ export async function setup(beatsUrl, tlUrl) {
       if (nx.trans === 'whip' && k > -0.16) { const q = (k + 0.16) / 0.16; yaw += 0.75 * q * q; blurX = q; }
       if (nx.trans === 'zoom' && k > -0.3) { const q = (k + 0.3) / 0.3; fovMul *= 1 - 0.55 * q * q; zoomBlur = q; }
       if (nx.trans === 'push' && k > -0.3) { const q = (k + 0.3) / 0.3; dolly = 2.2 * q * q; dark = q; }
+      if (nx.trans === 'pushfade' && k > -0.45) { const q = clamp((k + 0.45) / 0.45); dolly = 1.6 * q * q; }
       if (nx.trans === 'wipe' && k > -0.22) wipe = { w: (k + 0.22) / 0.44, s: nx };
       if (nx.trans === 'iris' && k > -IRIS) iris = { r: 1 - ease.in(clamp((k + IRIS) / IRIS)), at: irisPoint(nx, 'out') };
     }
@@ -661,6 +662,7 @@ export async function setup(beatsUrl, tlUrl) {
       if (shot.trans === 'zoomout' && k < 0.4) { const q = 1 - k / 0.4; fovMul *= 1 - 0.6 * q * q; zoomBlur = Math.max(zoomBlur, q * 0.8); if (k < 0.07) flash = 1 - k / 0.07; }
       if (shot.trans === 'zoom' && k < 0.3) { const q = 1 - k / 0.3; zoomBlur = Math.max(zoomBlur, q); if (k < 0.06) flash = 0.7; }
       if (shot.trans === 'push' && k < 0.25) dark = Math.max(dark, 1 - k / 0.25);
+      if (shot.trans === 'pushfade' && k < 0.4) { const q = 1 - k / 0.4; dolly -= 0.5 * q * q; } /* the new shot settles in from slightly behind */
       if (shot.trans === 'wipe' && k < 0.22) wipe = { w: 0.5 + k / 0.44, s: shot };
       if (shot.trans === 'iris' && k < IRIS && k >= 0) iris = { r: ease.out(clamp(k / IRIS)), at: irisPoint(shot, 'in') };
     }
@@ -779,7 +781,7 @@ export async function setup(beatsUrl, tlUrl) {
     if (hud && hud.kind !== 'stamp') drawHud(hud, shot, t, hp);
     // sparkle on Hans (proud)
     for (const sT of sparkles) { const a = t - sT; if (a >= 0 && a < 0.7) sparkleAt(W * 0.74, H * 0.24, a); }
-    if (b.sparkle) { const sT = R(b.sparkle[0], bi), a = t - sT; if (a >= 0 && a < 0.9) { const q = project(new THREE.Vector3(...b.sparkle[1])); sparkleAt(q[0], q[1], a); } } // S02: sparkle at a world point (ice crown)
+    for (const sp of (b.sparkle ? [b.sparkle] : []).concat(b.sparkles || [])) { const sT = R(sp[0], bi), a = t - sT; if (a >= 0 && a < 0.9 && (!sp[2] || sp[2] === setName)) { const q = project(new THREE.Vector3(...sp[1])); sparkleAt(q[0], q[1], a); } } // S02: sparkles at world points (ice crown; `sparkles: [[at, pos, set?]]`)
     const calT = b.calendarSparkle ? R(b.calendarSparkle, bi) : null;
     if (calT != null && S.calendarPos && t >= calT && t < calT + 0.8 && (!hud)) { const q = project(S.calendarPos); sparkleAt(q[0] + 230, q[1] + 40, t - calT); }
     // tap counters
@@ -860,7 +862,7 @@ export async function setup(beatsUrl, tlUrl) {
   // `out` holds the outgoing shot, `bufB` the incoming one; k runs 0 → 1 across the transition
   function mixShots(kind, k, B) {
     O.save(); O.setTransform(1, 0, 0, 1, 0, 0);
-    if (kind === 'match') { // short dissolve; frame the two shots so the shapes line up
+    if (kind === 'match' || kind === 'pushfade') { // short dissolve; frame the two shots so the shapes line up
       O.globalAlpha = ease.inout(k); O.drawImage(bufB, 0, 0);
     } else if (kind === 'wipe:flare') { // a hot sun-flare edge sweeps left → right, the new shot behind it
       const e = lerp(-0.35 * W, 1.35 * W, ease.inout(k)), slope = 0.28;

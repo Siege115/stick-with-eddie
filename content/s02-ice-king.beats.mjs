@@ -59,7 +59,7 @@ export const cast = {
   // Martinique: the merchant and three townspeople (calm, curious)
   mer: P('mqMerchant', 'hero', [8.8, -2.4], ['mq'], { def: { mood: 'mq' } }),
   mq1: P('mqWoman', 'mid', [6.4, -4.2], ['mq'], { def: { mood: 'mq' } }),
-  mq2: P('mqMan', 'mid', [7.4, -5.2], ['mq'], { def: { mood: 'mq' } }),
+  mq2: P('mqMan', 'mid', [7.4, -5.2], ['mq'], { def: { mood: 'mq' }, c: { coat: { color: '#3f6a8a', long: true }, hatColor: '#4a3020', hatBand: '#c0392b', cravat: '#e8c55a' } }), // v3: a dark hat and a blue coat, never the merchant's look-alike
   mq3: P('mqFisher', 'mid', [11.6, -4.6], ['mq'], { def: { mood: 'mq' } }),
   // Calcutta (now Kolkata): merchants, dockworkers, British residents; two also look down into the hold (beat 14B)
   ca1: P('caMerchant1', 'mid', [5.0, -2.2], ['ca', 'hold'], { def: { mood: 'ca' } }),
@@ -82,7 +82,7 @@ export const cast = {
   kid: P('b06kid', 'extra', [-0.25, -7.0], ['wharf']),
   // Boston crowd 1833 (the same people, cheering) — same marks on the 1833 wharf
   k1: P('b33man', 'extra', [-1.9, -7.6], ['wharf33']), k2: P('b33woman', 'extra', [-0.8, -7.7], ['wharf33']),
-  k3: P('b33work', 'extra', [0.3, -7.6], ['wharf33']), k4: { card: 'extra', home: [1.4, -7.8], set: ['wharf33'], c: tint('b06old', { hat: 'topTall' }) },
+  k3: P('b33work', 'extra', [0.3, -7.6], ['wharf33']), k4: { card: 'extra', home: [2.7, -8.4], set: ['wharf33'], c: tint('b06old', { hat: 'roundHat', hatColor: '#3a3028', hatBand: '#2a2018' }) }, // v3: a low round hat, off to the right: never under Eddie's raised top hat
   k5: { card: 'extra', home: [-1.3, -8.9], set: ['wharf33'], c: tint('b33woman', { empire: { color: '#efe2c4', waist: 'natural', sash: '#3f6a52', bodice: '#efe2c4' }, puffSleeves: '#efe2c4', hatBand: '#3f6a52' }) },
   k6: { card: 'extra', home: [-0.2, -8.9], set: ['wharf33'], c: tint('b33man', { coat: { color: '#3a2a22', long: true } }) },
   k7: { card: 'extra', home: [0.9, -8.8], set: ['wharf33'], c: tint('b33woman', { empire: { color: '#e8cfd8', waist: 'natural', sash: '#7a2a5a', bodice: '#e8cfd8' }, puffSleeves: '#e8cfd8' }) },
@@ -121,7 +121,7 @@ export const beats = [
   },
   { // 2 — (v2) loading by a real block and tackle: sailors haul, the block swings in on tongs and drops into the hatch; the brig
     //     leaves (sails filling, Eddie waves, hat in hand); the route card: Boston → Martinique, the ship riding the dotted line
-    line: 'Then he sent it all the way to the Caribbean.', min: 4.6, light: 'snowWide', set: 'wharf', amb: 'harbour',
+    line: 'Then he sent it all the way to the Caribbean.', min: 4.0, light: 'snowWide', set: 'wharf', amb: 'harbour',
     shots: [
       sh(0, [[0.6, 2.6, -1.6], [1.0, 2.75, -1.1]], [[6.2, 1.6, 5.2], [7.0, 1.5, 5.3]], [62, 60], 'cut', { ease: 'inout', captionY: 0.84 }),
       sh('w:all-0.1', [[0.9, 1.25, -5.6], [0.95, 1.3, -5.4]], [[6.4, 2.4, 8.0], [7.0, 3.0, 12.0]], [56, 54], 'cut', { captionY: 0.86 }),
@@ -170,7 +170,7 @@ export const beats = [
     sfx: [[0.05, 'ping']],
   },
   { // 6 — Boston laughed; the newspaper ("slippery speculation" is the only readable line)
-    line: 'Boston laughed. A newspaper joked it might be a "slippery speculation."', min: 4.8, light: 'snowWide', set: 'wharf', amb: 'harbour',
+    line: 'Boston laughed. A newspaper joked it might be a "slippery speculation."', breaks: [['laughed.', 0.6]], min: 4.8, light: 'snowWide', set: 'wharf', amb: 'harbour',
     shots: [
       sh(0, [[1.3, 2.1, -2.9], [1.25, 2.05, -3.15]], [[0.2, 1.4, -9.5], [0.2, 1.4, -9.5]], [52, 50], 'whip', { captionY: 0.86 }),
       sh('w:newspaper-0.1', [[1.3, 2.1, -3.2], [1.3, 2.1, -3.2]], [[0.2, 1.4, -9.5], [0.2, 1.4, -9.5]], [50, 50], 'cut', { captionY: 0.86, hud: { kind: 'card', art: 'news', w: 0.84, y: 0.44, rot: -0.03, s: [1, 1.07] } }),
@@ -207,11 +207,11 @@ export const beats = [
     sfx: [[0.3, 'drip'], [0.9, 'drip'], [1.5, 'drip'], [2.2, 'drip']],
   },
   { // 9 — it melts (puddle spreads); Boston: the letter, the hat droops; the crowd laughs harder
-    line: 'It melted away, and he lost a lot of money. Boston laughed harder.', min: 4.2, light: 'tropic', set: 'mq',
+    line: 'It melted away, and he lost a lot of money. Boston laughed harder.', breaks: [['money.', 0.65]], min: 4.2, light: 'tropic', set: 'mq',
     shots: [
       sh(0, [[8.0, 0.95, -0.05], [8.05, 0.95, -0.15]], [[8.95, 0.72, -2.3], [8.95, 0.72, -2.3]], [58, 58], 'match', { captionY: 0.88 }),
       sh('w:lost-0.05', [[1.25, 0.8, -11.3], [1.1, 1.55, -11.0]], [[1.0, 0.1, -13.3], [0.9, 1.95, -14.2]], [50, 48], 'match', { set: 'wharf', light: 'snowWide', ease: 'inout', captionY: 0.84 }),
-      sh('w:money-0.05', [[1.1, 1.55, -11.0], [1.1, 1.55, -11.0]], [[0.9, 1.95, -14.2], [0.9, 1.95, -14.2]], [48, 48], 'cut', { set: 'wharf', light: 'snowWide', captionY: 0.86, hud: { kind: 'card', art: 'letter', w: 0.66, y: 0.42, rot: 0.04 } }),
+      sh('w:money-0.35', [[1.1, 1.55, -11.0], [1.1, 1.55, -11.0]], [[0.9, 1.95, -14.2], [0.9, 1.95, -14.2]], [48, 48], 'cut', { set: 'wharf', light: 'snowWide', captionY: 0.86, hud: { kind: 'card', art: 'letter', w: 0.66, y: 0.42, rot: 0.04 } }),
       sh('w:Boston-0.05', [[0.6, 1.5, -4.8], [0.5, 1.45, -5.2]], [[0.4, 1.4, -9.0], [0.4, 1.4, -9.0]], [54, 52], 'whip', { set: 'wharf', light: 'snowWide', captionY: 0.86 }),
     ],
     ship: [[0, MQ_DOCK, Math.PI]],
@@ -253,14 +253,14 @@ export const beats = [
     line: 'In 1833, he sent a ship of ice to Calcutta, in India.', min: 4.0, light: 'mayWarm', set: 'wharf33', amb: 'harbour',
     shots: [
       sh(0, [[4, 2, 6], [4, 2, 6]], [[0, 2, -10], [0, 2, -10]], [50, 50], 'wipe:paper', { captionY: 0.82, hud: { kind: 'card', art: 'map', w: 0.96, y: 0.42, route: [0.02, 1.0], unroll: true } }),
-      sh('w:India-0.35', [[12.6, -0.6, -10.4], [12.4, -0.5, -10.0]], [[8.6, 1.8, -1.0], [8.6, 2.4, 2.5]], [54, 52], 'cut', { captionY: 0.86 }),
+      sh('w:Calcutta+0.2', [[12.6, -0.6, -10.4], [12.4, -0.5, -10.0]], [[8.6, 1.8, -1.0], [8.6, 2.4, 2.5]], [54, 52], 'cut', { captionY: 0.86 }),
     ],
-    ship: [['w:India-0.3', TUS_DOCK, NORTH], ['end', [8.75, 12.5, -2], NORTH, 'sail']],
-    open: { sails: [[0, 0], ['w:India-0.3', 0.1], ['end', 1]], moored: [[0, 1], ['w:India-0.4', 0]], hatch: [[0, 0]] },
+    ship: [['w:Calcutta+0.2', TUS_DOCK, NORTH], ['end', [8.75, 12.5, -2], NORTH, 'sail']],
+    open: { sails: [[0, 0], ['w:Calcutta+0.2', 0.1], ['end', 1]], moored: [[0, 1], ['w:Calcutta+0.2', 0]], hatch: [[0, 0]] },
     mood: { crowd: 'watch' }, lookAll: [8.7, 2, 4],
     pos: { eddie33: [[0, [3.6, -1.6]]] },
     acts: { eddie33: [[0, 'oldStand'], ['w:India', 'wave']] },
-    sfx: [[0.05, 'paper'], ['w:India-0.3', 'creak'], ['w:India-0.3', 'gulls', 1.6]],
+    sfx: [[0.05, 'paper'], ['w:Calcutta+0.2', 'creak'], ['w:Calcutta+0.2', 'gulls', 2.0]],
   },
   { // 13 — the open sea, blazing: about 15,000 miles; the deck thermometer climbs (no numbers)
     line: 'About 15,000 miles. His longest, hottest trip yet.', min: 3.6, light: 'blaze', set: 'sea', amb: 'sea',
@@ -273,19 +273,22 @@ export const beats = [
     cast: [],
     sfx: [[0, 'waves', 3.6], [0, 'wind', 3.6], [0.3, 'splash']],
   },
-  { // 14 — Calcutta (now Kolkata): the Tuscany docks, the crowd gathers; the hatch opens: most of the ice is still there
+  { // 14 — Calcutta (now Kolkata): (v3) a wide of the riverfront first: the ghat steps, the colonnades, country boats and the
+    //     Tuscany at the quay with the crowd on her deck; then a push with a cross-dissolve (no black) down into the hold: the proof
+    //     shot: a pile of blocks packed in sawdust under the light shaft, puddles, glints, two Calcutta faces peering down
     line: 'The ship docks. The hatch opens, and most of the ice is still there.', min: 4.2, light: 'tropicHaze', set: 'ca', amb: [[0, 'river'], ['w:hatch-0.1', 'hold']],
     shots: [
-      sh(0, [[6.45, 2.55, -0.45], [6.5, 2.45, -0.15]], [[6.6, 0.55, 4.6], [6.6, 0.5, 4.6]], [50, 48], 'push', { captionY: 0.88 }),
-      sh('w:hatch-0.1', [[3.6, 0.85, 0.55], [3.25, 0.9, 0.45]], [[-0.6, 1.95, 0.0], [-0.6, 1.85, 0.0]], [66, 64], 'push', { set: 'hold', light: 'hold', captionY: 0.86 }), /* proof shot: the stacked ice in sawdust, puddles, the shaft and a lit sky in the hatch */
+      sh(0, [[-9.5, 2.6, 17.5], [-7.2, 2.9, 14.0]], [[1.5, 2.6, -6.0], [4.5, 2.2, -2.0]], [60, 56], 'pushfade', { ease: 'inout', captionY: 0.88 }),
+      sh('w:hatch-0.1', [[2.15, 0.8, 0.55], [1.95, 0.78, 0.5]], [[-0.7, 2.05, 0.15], [-0.75, 2.1, 0.15]], [72, 70], 'pushfade', { set: 'hold', light: 'hold', ease: 'out', captionY: 0.86 }), /* proof shot: the pile in sawdust under the shaft, the faces at the hatch rim */
     ],
-    ship: [[0, CA_DOCK, Math.PI]], open: { sails: [[0, 0.25]], moored: [[0, 1]], hatch: [[0, 0.18], ['w:hatch', 0.18], ['w:hatch+0.6', 1]], crate: [[0, 0]] }, /* ajar at first: a sliver of light, never a black frame */
-    pos: { ca1: [[0, [5.55, 5.0, -0.6]], ['w:hatch-0.1', [-1.25, 1.12, 2.72]]], ca3: [[0, [7.7, 5.05, -0.6]], ['w:hatch-0.1', [1.3, 1.1, 2.72]]], ca2: [[0, [6.6, 5.4, -0.6]]], ca4: [[0, [4.6, 4.6, -0.6]]], ca6: [[0, [8.65, 4.55, -0.6]]] },
-    acts: { ca1: [[0, 'holdLedger'], [1.2, 'point'], ['w:hatch', 'watch'], ['w:most', 'clap']], ca3: [[0, 'watch'], [1.0, 'point'], ['w:most', 'cheerOne']], ca6: [[0, 'watch'], [1.5, 'clap']] },
+    ship: [[0, CA_DOCK, Math.PI]], open: { sails: [[0, 0.25]], moored: [[0, 1]], hatch: [[0, 0.3], ['w:hatch', 0.3], ['w:hatch+0.5', 1]], crate: [[0, 0]], pile: [[0, 1]] },
+    pos: { ca1: [[0, [5.55, 5.0, -0.6]], ['w:hatch-0.1', [-1.2, 0.02, 2.66]]], ca3: [[0, [7.7, 5.05, -0.6]], ['w:hatch-0.1', [-1.2, 0.68, 2.66]]], ca2: [[0, [6.6, 5.4, -0.6]]], ca4: [[0, [4.6, 4.6, -0.6]]], ca6: [[0, [8.65, 4.55, -0.6]]] },
+    acts: { ca1: [[0, 'holdLedger'], [0.6, 'point'], ['w:hatch', 'watch'], ['w:most', 'clap']], ca3: [[0, 'watch'], [0.5, 'point'], ['w:most', 'cheerOne']], ca6: [[0, 'watch'], [0.9, 'clap']] },
     mood: { ca: 'watch' }, lookAll: [6.6, -0.4, 3.85],
-    look: { ca1: [6.6, -0.4, 3.85], ca3: [6.6, -0.4, 3.85] },
-    fx: [{ kind: 'puddle', set: 'hold', at: 0, pos: [-1.3, 0.55], r: [0.22, 0.22], grow: 0.1 }, { kind: 'puddle', set: 'hold', at: 0, pos: [1.6, -0.4], r: [0.16, 0.16], grow: 0.1 }, { kind: 'puddle', set: 'hold', at: 0, pos: [0.3, 0.9], r: [0.12, 0.12], grow: 0.1 }],
-    sfx: [[0, 'crowdMurmur', 2.0], ['w:hatch-0.9', 'riser', 0.9], ['w:hatch', 'creak'], ['w:hatch+0.35', 'softImpact'], ['w:most', 'ping']],
+    look: { ca1: [0, 0.6, 0], ca3: [0, 0.6, 0] },
+    sparkles: [['w:most', [-0.65, 1.05, 0.35], 'hold'], ['w:most+0.25', [-0.3, 1.5, 0.3], 'hold'], ['w:ice', [-0.05, 0.95, 0.5], 'hold']],
+    fx: [{ kind: 'puddle', set: 'hold', at: 0, pos: [-1.05, 0.75], r: [0.22, 0.22], grow: 0.1 }, { kind: 'puddle', set: 'hold', at: 0, pos: [1.1, 0.55], r: [0.16, 0.16], grow: 0.1 }, { kind: 'puddle', set: 'hold', at: 0, pos: [0.45, 1.15], r: [0.12, 0.12], grow: 0.1 }],
+    sfx: [[0, 'crowdMurmur', 2.0], ['w:hatch-0.45', 'whoosh'], ['w:hatch-0.9', 'riser', 0.9], ['w:hatch', 'creak'], ['w:hatch+0.35', 'softImpact'], ['w:most', 'ping']],
   },
   { // 15 — the Ice King: Eddie (1833) lifts his top hat; the same Boston people now cheer; an ice-crown sparkle
     line: 'They called him the Ice King.', min: 2.4, light: 'mayWarm', set: 'wharf33', amb: 'harbour',
@@ -300,7 +303,7 @@ export const beats = [
   { // 16 — payoff (v2, normal reading pace, ~8–9 s): "His secret?" the cover of a crate in the hold starts to lift (curiosity) →
     //     "Sawdust" the mill: sawdust pours off the saw, held → "the stuff sawmills threw away" workers shovel it into barrels and
     //     a cart → "packed thick around the ice…" the cutaway, slow; arrows fade in the sawdust; the push settles on the block (loop)
-    line: 'His secret? Sawdust, the stuff sawmills threw away, packed thick around the ice to keep the heat out.', voice: 'narrator', min: 7.7, light: 'hold', set: 'hold',
+    line: 'His secret? Sawdust, the stuff sawmills threw away, packed thick around the ice to keep the heat out.', voice: 'narrator', breaks: [['Sawdust,', 0.75], ['away,', 0.75]], min: 9.3, light: 'hold', set: 'hold',
     amb: [[0, 'hold'], ['w:Sawdust-0.1', 'mill'], ['w:packed-0.15', 'hold']],
     shots: [
       sh(0, [[3.3, 1.35, 0.7], [2.8, 1.2, 0.6]], [[0.15, 0.5, 0.2], [0.15, 0.55, 0.2]], [42, 40], 'cut', { ease: 'inout', captionY: 0.86 }),
@@ -309,7 +312,7 @@ export const beats = [
       sh('w:packed-0.15', [[-0.45, 1.05, 10.5], [0.45, 0.5, 2.6]], [[-0.45, 1.0, 0], [0.5, 0.42, 0]], [34, 30], 'match', { set: 'cutaway', light: 'cutaway', ease: 'inout', captionY: 0.86 }),
       sh('w:heat-0.2', [[0.45, 0.5, 2.6], END_CAM], [[0.5, 0.42, 0], END_LOOK], [30, HOOK_FOV], 'cut', { set: 'cutaway', light: 'nightReadable', ease: 'out', captionY: 0.88, grade: GRADE_NIGHT }),
     ],
-    open: { crate: [[0, 1]], lid: [[0, 0], [0.35, 0], ['w:Sawdust-0.1', 0.55]], hatch: [[0, 1]] },
+    open: { pile: [[0, 0]], crate: [[0, 1]], lid: [[0, 0], [0.35, 0], ['w:Sawdust-0.1', 0.55]], hatch: [[0, 1]] },
     movers: { crate: [[0, [0.15, 0.25]]] },
     fx: [{ kind: 'arrows', set: 'cutaway', at: 'w:packed', until: 'w:heat+0.3', from: [-2.7, 0.45, 0.76], to: [ICE_X - 0.36, 0.45, 0.76], n: 4, every: 0.45, life: 1.8 }],
     pos: { m1: [[0, [2.35, -2.95]]], m2: [[0, [0.95, -3.7]]] },
