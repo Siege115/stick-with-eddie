@@ -14,7 +14,7 @@ const ICE_X = 0.55, ICE_Y = 0.40; // hero block in the cutaway (src/hold.js); it
 // LOOP (editing guide 18, loopable ending): frame 0 frames the hauled pond block (0.66 m wide, centre HOOK_C) from HOOK_CAM;
 // the last frame frames the cutaway block (0.74 m wide, centre CUT_C) from the same relative position scaled by 0.74 / 0.66,
 // at the same fov and in the same light, so the block has the same size and place in frame.
-const HOOK_C = [-1.0, 0.11, -3.35], HOOK_CAM = [-1.0, 0.42, -1.1], HOOK_LOOK = [-0.95, 0.8, -6.2], HOOK_FOV = 54;
+const HOOK_C = [-1.0, 0.11, -3.35], HOOK_CAM = [-1.0, 0.42, -1.1], HOOK_LOOK = [-0.95, 0.8, -6.2], HOOK_FOV = 58; // v3: 58 (was 54) so Eddie fits whole at the right of frame 0
 const CUT_C = [ICE_X, 0.40, 0.35], K_LOOP = 0.74 / 0.66;
 const rel = (c, p) => p.map((v, i) => v - c[i]), add = (c, d, k) => c.map((v, i) => v + d[i] * k);
 const END_CAM = add(CUT_C, rel(HOOK_C, HOOK_CAM), K_LOOP), END_LOOK = add(CUT_C, rel(HOOK_C, HOOK_LOOK), K_LOOP);
@@ -104,13 +104,13 @@ export const beats = [
     //     the saw cut held ~2.5 s (strokes, groove deepening, chips) → the block slides ON the ice toward the ramp.
     line: 'He filled a ship with ice from a frozen pond.', min: 4.25, light: 'nightReadable', set: 'pond', amb: 'night',
     shots: [
-      sh(0, [HOOK_CAM, [-1.0, 0.36, -1.75]], [HOOK_LOOK, [-0.98, 0.72, -6.2]], [HOOK_FOV, 50], 'cut', { ease: 'out', captionY: 0.88, grade: GRADE_NIGHT }),
+      sh(0, [HOOK_CAM, [-0.95, 0.4, -1.4]], [HOOK_LOOK, [-0.8, 0.74, -6.2]], [HOOK_FOV, 56] /* v3: a gentler push so Eddie stays whole on the right */, 'cut', { ease: 'out', captionY: 0.88, grade: GRADE_NIGHT }),
       sh(0.9, [[6.2, 1.8, -3.6], [5.6, 1.45, -4.45]], [[5.25, 0.95, -6.4], [5.2, 0.95, -6.3]], [54, 48], 'cut', { ease: 'inout', captionY: 0.88, grade: GRADE_NIGHT }),
       sh(3.4, [[1.2, 2.3, -2.3], [1.0, 2.1, -3.4]], [[-0.7, 0.2, -5.0], [0.1, 0.2, -7.1]], [56, 52], 'cut', /* v3: high and in front: the block slides away across the ice, the pushers behind it, no post in the way */ { captionY: 0.88, grade: GRADE_NIGHT }),
     ],
     open: { burst: [[0, 0.22], [0.95, 1]], saw: [[0, 0], [0.9, 0.12], [3.35, 0.95]] },
     movers: { pblock: [[0, [-1.0, -3.35, -0.12], 0], [0.4, [-1.0, -3.5, 0.12], 0, 'sail'], [0.95, [-1.0, -4.4, 0.0], 0, 'sail'], [3.4, [-0.8, -4.65, 0.0], 0], [4.25, [0.1, -7.2, 0.0], 0.15, 'sail']] }, // out of the water ONTO the ice, then slid along the ice
-    pos: { eddie: [[0, [0.3, -8.1]], [0.9, [0.6, -7.2]], [3.4, [1.75, -8.6]]], w2: [[0, [-1.55, -5.05]], [3.4, [-0.35, -5.45]], [4.25, [0.6, -7.95]]], w1: [[0, [5.2, -6.48]]] /* v3: right behind the block, his saw blade down into the groove */, w5: [[0, [-0.45, -5.1]], [3.4, [-1.55, -5.1]], [4.25, [-0.75, -7.3]]] },
+    pos: { eddie: [[0, [0.95, -8.4]], [0.9, [0.6, -7.2]], [3.4, [1.75, -8.6]]], w2: [[0, [-1.55, -5.05]], [3.4, [-0.35, -5.45]], [4.25, [0.6, -7.95]]], w1: [[0, [5.2, -6.48]]] /* v3: right behind the block, his saw blade down into the groove */, w5: [[0, [-0.45, -5.1]], [3.4, [-1.55, -5.1]], [4.25, [-0.75, -7.3]]] },
     acts: {
       w2: [[0, 'tongsLift'], [0.45, 'hoist'], [0.95, 'tongsLift'], [3.4, 'tongsLift'], [4.1, 'hoist']], w5: [[0, 'tongsLift'], [0.6, 'hoist'], [3.4, 'pushPole'], [4.05, 'pushPole']],
       w1: [[0, 'saw'], [0.9, 'saw'], [1.25, 'sawUp'], [1.6, 'saw'], [1.95, 'sawUp'], [2.3, 'saw'], [2.65, 'sawUp'], [3.0, 'saw']], w3: [[0, 'pushPole'], [1.4, 'watch']], w4: [[0, 'saw'], [0.55, 'sawUp'], [1.1, 'saw'], [1.65, 'sawUp'], [2.2, 'saw']], /* v3: two-handed strokes on the crossbar */
@@ -121,7 +121,7 @@ export const beats = [
   },
   { // 2 — (v2) loading by a real block and tackle: sailors haul, the block swings in on tongs and drops into the hatch; the brig
     //     leaves (sails filling, Eddie waves, hat in hand); the route card: Boston → Martinique, the ship riding the dotted line
-    line: 'Then he sent it all the way to the Caribbean.', min: 4.0, light: 'snowWide', set: 'wharf', amb: 'harbour',
+    line: 'Then he sent it all the way to the Caribbean.', breaks: [['it', 0.45]], min: 4.4, light: 'snowWide', set: 'wharf', amb: 'harbour',
     shots: [
       sh(0, [[0.6, 2.6, -1.6], [1.0, 2.75, -1.1]], [[6.2, 1.6, 5.2], [7.0, 1.5, 5.3]], [62, 60], 'cut', { ease: 'inout', captionY: 0.84 }),
       sh('w:all-0.1', [[0.9, 1.25, -5.6], [0.95, 1.3, -5.4]], [[6.4, 2.4, 8.0], [7.0, 3.0, 12.0]], [56, 54], 'cut', { captionY: 0.86 }),
@@ -129,12 +129,12 @@ export const beats = [
     ],
     open: { tackle: [[0, 1], ['w:all-0.12', 0]], sails: [[0, 0], ['w:all-0.1', 0.15], ['end', 1]], hatch: [[0, 1]], moored: [[0, 1], ['w:all-0.12', 0]] },
     ship: [[0, FAV_DOCK, NORTH], ['w:all-0.1', FAV_DOCK, NORTH], ['end', [8.45, 15.5, -2], NORTH, 'sail']],
-    movers: { block: [[0, [4.35, 5.15, 0.0], 0], [0.15, [4.35, 5.15, 0.0], 0], [0.75, [4.7, 5.15, 1.9], 0, 'sail'], [1.25, [7.8, 5.2, 2.4], 0, 'sail'], [1.8, [8.4, 5.15, -1.4], 0, 'sail'], ['w:all-0.12', [3.2, -5.5, -5], 0]] },
+    movers: { block: [[0, [4.35, 5.15, 0.0], 0], [0.1, [4.35, 5.15, 0.0], 0], [0.55, [4.7, 5.15, 1.9], 0, 'sail'], [0.95, [7.8, 5.2, 2.4], 0, 'sail'], [1.4, [8.4, 5.15, 0.9], 0, 'sail'], ['w:all-0.12', [3.2, -5.5, -5], 0]] }, /* v3: the whole swing happens inside the loading shot, always on its rope; then it is stowed (hidden) before the cut */
     pos: { eddie: [[0, [1.4, 5.6]], ['w:all-0.1', [2.4, -1.4]]], s1: [[0, [9.3, 4.35, -0.6]]], s3: [[0, [9.45, 3.55, -0.6]]], s2: [[0, [3.4, 7.2]]] },
-    acts: { eddie: [[0, 'watch'], ['w:all-0.1', 'hatWave'], ['w:way', 'hatWave2'], ['w:Caribbean', 'hatWave']], s1: [[0, 'hoist'], [0.45, 'pushPole'], [0.9, 'hoist'], [1.35, 'pushPole']], s3: [[0, 'pushPole'], [0.45, 'hoist'], [0.9, 'pushPole'], [1.35, 'hoist']], s2: [[0, 'watch']] },
+    acts: { eddie: [[0, 'watch'], ['w:all-0.1', 'hatWave'], ['w:way', 'hatWave2'], ['w:Caribbean', 'hatWave']], s1: [[0, 'hoist'], [0.35, 'pushPole'], [0.7, 'hoist'], [1.05, 'pushPole'], [1.4, 'hoist']], s3: [[0, 'pushPole'], [0.35, 'hoist'], [0.7, 'pushPole'], [1.05, 'hoist'], [1.4, 'pushPole']], s2: [[0, 'watch']] },
     look: { eddie: [8.4, 2, 12], s1: [7.8, 3.0, 5.2], s3: [7.8, 3.0, 5.2], s2: [5.5, 1.5, 5.15] },
     cast: ['eddie', 's1', 's2', 's3'],
-    sfx: [[0, 'creak'], [0.6, 'creak'], [0.1, 'gulls', 4.5], [0, 'waves', 4.6], [1.85, 'softImpact'], ['w:all', 'creak'], ['w:Caribbean-0.25', 'paper']],
+    sfx: [[0, 'creak'], [0.6, 'creak'], [0.1, 'gulls', 4.5], [0, 'waves', 4.6], [1.4, 'softImpact'], ['w:all', 'creak'], ['w:Caribbean-0.25', 'paper']],
   },
   { // 3 — 1806 kitchen: no fridges (year card; the outline pops in and away)
     line: 'You see, in 1806, there were no fridges.', min: 3.0, light: 'warm', set: 'kitchen', amb: 'room',
