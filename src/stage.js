@@ -69,7 +69,8 @@ const P = {
   hatDroop: { armL: { a: 0.05, b: 0.05 }, armR: { a: 0.9, b: 1.4 }, brow: 1, mouth: 'frown', headTilt: 0.12, lean: 0.06, hatDroop: 1 },
   presentIce: { armR: { a: 2.2, b: -0.35 }, armL: { a: 0.25, b: 0.2 }, brow: 0.8, mouth: 'grin', lookY: -1 },
   sigh: { armL: { a: 0.05, b: 0 }, armR: { a: 0.05, b: 0 }, brow: 0.9, mouth: 'wobbly', headTilt: 0.1, lean: 0.05, sweat: 1, eyes: 0.6 },
-  saw: { armL: { a: 1.0, b: 0.9 }, armR: { a: 1.1, b: 0.7 }, lean: 0.12, brow: -0.3, mouth: 'flat', lookY: 1 },
+  saw: { armL: { a: 0.2, b: -0.75 }, armR: { a: 0.2, b: -0.75 }, lean: 0.12, brow: -0.3, mouth: 'flat', lookY: 1 }, // S02 v3: both hands on the crossbar, the down stroke
+  sawUp: { armL: { a: 0.5, b: -1.9 }, armR: { a: 0.5, b: -1.9 }, lean: 0.04, brow: -0.3, mouth: 'flat', lookY: 1 }, // the up stroke (the saw rises with the hands)
   tongsLift: { armL: { a: 0.7, b: 0.4 }, armR: { a: 0.7, b: 0.4 }, lean: 0.08, brow: -0.2, mouth: 'flat', lookY: 1 },
   pushPole: { armL: { a: 1.3, b: 0.3 }, armR: { a: 1.0, b: 0.5 }, lean: 0.14, brow: -0.4, mouth: 'flat' },
   hoist: { armL: { a: 2.5, b: 0.2 }, armR: { a: 2.2, b: 0.3 }, lean: -0.08, brow: -0.4, mouth: 'flat', lookY: -1 },

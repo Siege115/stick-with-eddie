@@ -105,15 +105,15 @@ export const beats = [
     line: 'He filled a ship with ice from a frozen pond.', min: 4.25, light: 'nightReadable', set: 'pond', amb: 'night',
     shots: [
       sh(0, [HOOK_CAM, [-1.0, 0.36, -1.75]], [HOOK_LOOK, [-0.98, 0.72, -6.2]], [HOOK_FOV, 50], 'cut', { ease: 'out', captionY: 0.88, grade: GRADE_NIGHT }),
-      sh(0.9, [[6.1, 1.75, -3.7], [5.45, 1.1, -4.7]], [[5.2, 0.85, -6.4], [5.2, 0.6, -6.2]], [52, 42], 'cut', { ease: 'inout', captionY: 0.88, grade: GRADE_NIGHT }),
-      sh(3.4, [[1.9, 0.45, -4.5], [1.65, 0.42, -5.5]], [[-0.7, 0.25, -5.1], [-0.05, 0.22, -6.9]], [52, 50], 'cut', { captionY: 0.88, grade: GRADE_NIGHT }),
+      sh(0.9, [[6.2, 1.8, -3.6], [5.6, 1.45, -4.45]], [[5.25, 0.95, -6.4], [5.2, 0.95, -6.3]], [54, 48], 'cut', { ease: 'inout', captionY: 0.88, grade: GRADE_NIGHT }),
+      sh(3.4, [[1.2, 2.3, -2.3], [1.0, 2.1, -3.4]], [[-0.7, 0.2, -5.0], [0.1, 0.2, -7.1]], [56, 52], 'cut', /* v3: high and in front: the block slides away across the ice, the pushers behind it, no post in the way */ { captionY: 0.88, grade: GRADE_NIGHT }),
     ],
-    open: { burst: [[0, 0.12], [0.95, 1]], saw: [[0, 0], [0.9, 0.12], [3.35, 0.95]] },
+    open: { burst: [[0, 0.22], [0.95, 1]], saw: [[0, 0], [0.9, 0.12], [3.35, 0.95]] },
     movers: { pblock: [[0, [-1.0, -3.35, -0.12], 0], [0.4, [-1.0, -3.5, 0.12], 0, 'sail'], [0.95, [-1.0, -4.4, 0.0], 0, 'sail'], [3.4, [-0.8, -4.65, 0.0], 0], [4.25, [0.1, -7.2, 0.0], 0.15, 'sail']] }, // out of the water ONTO the ice, then slid along the ice
-    pos: { eddie: [[0, [0.6, -7.2]], [3.4, [1.75, -8.6]]], w2: [[0, [-1.55, -5.05]], [3.4, [-0.35, -5.45]], [4.25, [0.6, -7.95]]], w1: [[0, [5.3, -6.75]]], w5: [[0, [-0.45, -5.1]], [3.4, [-1.55, -5.1]], [4.25, [-0.75, -7.3]]] },
+    pos: { eddie: [[0, [0.3, -8.1]], [0.9, [0.6, -7.2]], [3.4, [1.75, -8.6]]], w2: [[0, [-1.55, -5.05]], [3.4, [-0.35, -5.45]], [4.25, [0.6, -7.95]]], w1: [[0, [5.2, -6.48]]] /* v3: right behind the block, his saw blade down into the groove */, w5: [[0, [-0.45, -5.1]], [3.4, [-1.55, -5.1]], [4.25, [-0.75, -7.3]]] },
     acts: {
       w2: [[0, 'tongsLift'], [0.45, 'hoist'], [0.95, 'tongsLift'], [3.4, 'tongsLift'], [4.1, 'hoist']], w5: [[0, 'tongsLift'], [0.6, 'hoist'], [3.4, 'pushPole'], [4.05, 'pushPole']],
-      w1: [[0, 'saw'], [0.9, 'saw'], [1.5, 'pushPole'], [1.8, 'saw'], [2.45, 'pushPole'], [2.75, 'saw']], w3: [[0, 'pushPole'], [1.4, 'watch']], w4: [[0, 'saw'], [0.55, 'pushPole'], [1.1, 'saw']],
+      w1: [[0, 'saw'], [0.9, 'saw'], [1.25, 'sawUp'], [1.6, 'saw'], [1.95, 'sawUp'], [2.3, 'saw'], [2.65, 'sawUp'], [3.0, 'saw']], w3: [[0, 'pushPole'], [1.4, 'watch']], w4: [[0, 'saw'], [0.55, 'sawUp'], [1.1, 'saw'], [1.65, 'sawUp'], [2.2, 'saw']], /* v3: two-handed strokes on the crossbar */
       eddie: [[0, 'pointRight'], [0.9, 'point'], [3.4, 'point']],
     },
     look: { eddie: [9, 1.5, -6], w2: [-1.0, 0.2, -4.0], w5: [-1.0, 0.2, -4.0] },

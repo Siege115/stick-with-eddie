@@ -48,10 +48,10 @@ export function buildPond(scene, opts = {}) {
     H.movers.pblock = pb; H.pblock = pb;
     // S02 v2 hook: the block bursts up out of the dark water (open.burst 0 … 1 = the splash's life) and a lantern glint sweeps
     // across its face in the first second
-    const SPN = 110, spp = new Float32Array(SPN * 3), spg = new THREE.BufferGeometry(); spg.setAttribute('position', new THREE.BufferAttribute(spp, 3));
-    const spl = new THREE.Points(spg, new THREE.PointsMaterial({ color: 0xe6f2ff, size: 0.07, map: T.radial('rgba(255,255,255,1)', 'rgba(255,255,255,0)'), transparent: true, opacity: 0.95, depthWrite: false })); spl.frustumCulled = false; spl.visible = false; g.add(spl);
+    const SPN = 170, spp = new Float32Array(SPN * 3), spg = new THREE.BufferGeometry(); spg.setAttribute('position', new THREE.BufferAttribute(spp, 3));
+    const spl = new THREE.Points(spg, new THREE.PointsMaterial({ color: 0xe6f2ff, size: 0.11, /* v3: bigger drops, so frame 0 reads as a splash burst */ map: T.radial('rgba(255,255,255,1)', 'rgba(255,255,255,0)'), transparent: true, opacity: 0.95, depthWrite: false })); spl.frustumCulled = false; spl.visible = false; g.add(spl);
     const sr = K.rng(5); const sseed = []; for (let i = 0; i < SPN; i++) sseed.push([sr() * 6.283, 0.4 + sr() * 1.1, 1.0 + sr() * 1.6]);
-    const foam = new THREE.Mesh(new THREE.RingGeometry(0.3, 0.55, 28), new THREE.MeshBasicMaterial({ map: T.radial('rgba(235,245,255,.9)', 'rgba(235,245,255,0)'), transparent: true, depthWrite: false })); foam.rotation.x = -Math.PI / 2; foam.position.set(-1.0, -0.1, -3.35); foam.visible = false; g.add(foam);
+    const foam = new THREE.Mesh(new THREE.RingGeometry(0.28, 0.7, 28), new THREE.MeshBasicMaterial({ map: T.radial('rgba(245,250,255,1)', 'rgba(235,245,255,0)'), transparent: true, depthWrite: false })); foam.rotation.x = -Math.PI / 2; foam.position.set(-1.0, -0.1, -3.35); foam.visible = false; g.add(foam);
     H.open.burst = (v) => { spl.visible = foam.visible = v > 0.001 && v < 0.999;
       for (let i = 0; i < SPN; i++) { const [a, sp, up] = sseed[i]; const tt = v * 1.1; spp[i * 3] = -1.0 + Math.cos(a) * (0.3 + sp * tt * 0.6); spp[i * 3 + 1] = -0.08 + up * tt - 2.6 * tt * tt; spp[i * 3 + 2] = -3.35 + Math.sin(a) * (0.25 + sp * tt * 0.45); }
       spg.attributes.position.needsUpdate = true; spl.material.opacity = 0.95 * (1 - v * 0.7); foam.scale.setScalar(0.8 + v * 1.6); foam.material.opacity = 1 - v; };
@@ -67,9 +67,9 @@ export function buildPond(scene, opts = {}) {
     g.add(box(0.025, 0.012, 0.46, std({ color: 0x1a3a56 }), HERO[0], 0.425, HERO[1], 0, false)); // the saw groove along the top
     const chipsT = T.radial('rgba(235,248,255,1)', 'rgba(235,248,255,0)'); const chips = [];
     for (let i = 0; i < 10; i++) { const c = new THREE.Sprite(new THREE.SpriteMaterial({ map: chipsT, transparent: true, depthWrite: false })); c.visible = false; g.add(c); chips.push(c); }
-    let sawV = 0; H.open.saw = (v) => { sawV = v; saw.visible = v > 0.01; };
+    let sawV = 0; H.open.saw = (v) => { sawV = v; saw.visible = false; }; /* v3: the saw is the cutter's own two-handed saw (drawn on his card); only the groove and the chips stay in 3D */
     H.openRest.saw = 0; saw.visible = false;
-    H.sawTick = (t) => { if (!saw.visible) { chips.forEach((c) => (c.visible = false)); return; } saw.position.y = 0.44 - sawV * 0.22 + Math.sin(t * 14) * 0.06; saw.position.x = HERO[0] + Math.sin(t * 14) * 0.004;
+    H.sawTick = (t) => { if (sawV <= 0.05) { chips.forEach((c) => (c.visible = false)); return; } saw.position.y = 0.44 - sawV * 0.22 + Math.sin(t * 14) * 0.06; saw.position.x = HERO[0] + Math.sin(t * 14) * 0.004;
       chips.forEach((c, i) => { const a = ((t * 2.2 + i / 10) % 1); c.visible = sawV > 0.05; c.position.set(HERO[0] + (i % 2 ? 0.05 : -0.05) * (1 + a * 3), 0.43 + a * 0.25 - a * a * 0.4, HERO[1] + 0.1 + (i % 3) * 0.04); const s = 0.03 * (1 - a); c.scale.set(s, s, 1); }); };
   }
 
@@ -161,7 +161,7 @@ export function buildPond(scene, opts = {}) {
     sp.add(ink(box(2.06, 0.96, 0.06, wd, 0, 1.45, 0.02), 1.02)); K.snowSlab(2.1, 0.14, 0.06, 0, 1.93, 0.03, 0, sp); K.snowPile(sp, 0, 0.1, 0.6, 0.22, 1.8); }
 
   // ---------------- lanterns on poles at the work area (warm pools on cold ice) ----------------
-  for (const [x, z, ry] of [[-7.5, -6.2, 0.3], [0.8, -6.0, -0.4], [-3.0, 0.6, 2.6]]) { const L = K.lanternPole(g, x, z, { ry, h: 2.5 }); H.lamps.push(L); K.snowPile(g, x, z, 0.35, 0.12, 1.0); }
+  for (const [x, z, ry] of [[-7.5, -6.2, 0.3], [2.4, -5.0, -0.4] /* v3: moved off the block's slide path */, [-3.0, 0.6, 2.6]]) { const L = K.lanternPole(g, x, z, { ry, h: 2.5 }); H.lamps.push(L); K.snowPile(g, x, z, 0.35, 0.12, 1.0); }
 
   // ---------------- trees: snow-capped pines (one smooth lathe each) and bare trees ----------------
   const pineGeo = (() => { const pts = [new THREE.Vector2(0.001, 0)]; const tiers = 5; for (let i = 0; i < tiers; i++) { const y0 = 0.9 + i * 1.15, rr = 2.0 - i * 0.36; pts.push(new THREE.Vector2(rr, y0), new THREE.Vector2(rr * 0.45, y0 + 1.15)); } pts.push(new THREE.Vector2(0.001, 0.9 + tiers * 1.15 + 0.5)); const geo = new THREE.LatheGeometry(pts, 10); geo.computeVertexNormals();
