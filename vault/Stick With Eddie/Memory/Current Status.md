@@ -13,7 +13,7 @@ tags:
 | Project | Stage | Next |
 |---|---|---|
 | [[S01 The Horse That Could Do Math]] | Rendered, 63.7 s, −14.1 LUFS (`deliver/s01-clever-hans.mp4`, not in git) | `qa-reviewer` pass; owner picks a posting date |
-| [[S02 The Man Who Shipped Ice to the Tropics]] | Final v3.1 video rendered 2026-11-24 (70.63 s, −14.0 LUFS, sea shanty) and sent: `deliver/s02-ice-king.mp4` | **Owner listens** (voice, cheers, music) → owner picks a posting date |
+| [[S02 The Man Who Shipped Ice to the Tropics]] | v4 video rendered 2026-11-24 after owner notes (calmer hook, ice past the workers, slower loading, crane stays, normal pace; 77.73 s, −14.0 LUFS) and sent: `deliver/s02-ice-king.mp4` | **Owner listens** (voice, cheers, music) → owner picks a posting date |
 | Ideas | 8 ranked in `studio/IDEAS.md`; alternates: Cabbage Trick, Lifted City | Owner picks Short #3 when ready |
 
 **Boards sent to the owner:** S02 round 0 sets parts 1–2, costumes, fixes; round 1 story (`deliver/`). Round 1b fixes board sent 2026-11-23.

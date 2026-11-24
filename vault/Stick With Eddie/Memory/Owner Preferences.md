@@ -27,3 +27,4 @@ tags:
 - Wants **more 3D motion** in every shot and **more detail** on props (jug handles attached, condensation beads not floating drops, detailed cups).
 - Wants a **strong, moving hook** in the first 2 seconds.
 - Birds and animals must move naturally (no following characters).
+- **Pacing (2026-11-24):** smooth and well paced, never rushed. Narration at normal speed; hold shots long enough to read the action; props and rigs never pop out mid-scene; nothing passes through a character.

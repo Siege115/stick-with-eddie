@@ -60,7 +60,7 @@ Wording checks: "sent" not "sailed" (script check beat 2); "almost nobody had ic
 (Posting and pinning need the owner's yes; this is the prepared text only.)
 
 ## File
-`deliver/s02-ice-king.mp4`: v3.1 final, rendered 2026-11-24 (70.63 s, 1080×1920, −14.0 LUFS, −1.3 dBTP, sea-shanty bed). No black, frozen or silent stretches. The old v1 is kept as `deliver/s02-ice-king-v1.mp4`.
+`deliver/s02-ice-king.mp4`: v4, rendered 2026-11-24 (77.73 s, 1080×1920, −14.0 LUFS, −1.7 dBTP, sea-shanty bed). Owner notes fixed: calmer hook, pushers walk beside the sliding block, slower loading, the crane stays up, normal narration pace. No black, frozen or silent stretches. Older versions: `deliver/s02-ice-king-v1.mp4`, `deliver/s02-ice-king-v3.mp4`.
 
 ## Hand-off note (packaging-lead → youtube-manager)
 **Done.** Package at `content/s02-ice-king-package.md`: owner's title plus 4 true alternates, first-frame and cover concept tied to beats 1A and 5A, description with the fact-checker's sources, 5 hashtags, pinned-comment question.
