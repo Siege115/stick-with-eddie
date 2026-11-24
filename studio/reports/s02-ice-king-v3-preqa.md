@@ -104,3 +104,17 @@ Timing: **70.64 s** (2120 frames at 30 fps), with 99 caption chunks. The owner a
 
 ## Hand-off note (qa-reviewer → youtube-manager)
 **Done: NOT READY, with one small item left.** Report: `studio/reports/s02-ice-king-v3-preqa.md`. My extra stills (pushfade frames, cameo 791–793, loop pair) are in `projects/v3-qa/`. All 11 v3 must-fix items, all 10 should-fix items, and the v2 click are resolved. Audio preview at the final timing: −14.0 LUFS, −1.6 dBTP, no click at 25.06 s, no gap before "His secret?", clean end fade. Cameo is in frame 792 only, the loop matches, captions and green numbers are fine, and the facts are unchanged. **Open:** floating drips at 32.25–33.69 s (beat 8 emitter leaking into beat 9); the package "File" line needs updating after the render; a human listen; vidIQ (25 credits, owner's call). No code changed, no paid credits, nothing published, no dates touched.
+
+---
+
+## v3.1 re-check (2026-11-24, at `d6af7dc`)
+Stills rendered with `node render-episode.mjs content/s02-ice-king.beats.mjs projects/v3-qa2 --aspect 9:16 --3d --preview …` (32 frames, in `projects/v3-qa2/`). Timing is unchanged at **70.64 s**; the sound designer's mix still matches it.
+
+| | Item | Result |
+|---|---|---|
+| ✅ | Floating drips, 32.25–33.69 s | Rendered at 32.28, 32.35, 32.50, 32.75, 33.00, 33.25, 33.50 and 33.66 s: no drops in the air. The block shrinks on the ground in its puddle, and nothing else moves near the merchant. **Fixed.** |
+| ✅ | *Tuscany* hull, 48.29–50.32 s | The stern now shows lit brown planking, the "TUSCANY / BOSTON" board and the windows (49.00, 50.00 s). Only the bow shadow side at 48.32–48.50 s stays dark (35% below 20/255, mean 94–98), which reads as shade, not black. Near-white is under 7.5% at 49–50 s. |
+| ✅ | Brightness of the reworked shots | Saw 1.0–3.37 s: mean 114–118. Cup 14.5 s: 102. Merchant 28.0–31.5 s: 123–149. Melt 32.3–33.7 s: 99–120. *Tuscany* 48.3–50.3 s: 94–192. Sea 51.0 s: 132. Hold with puddles 56.5–58.5 s: 94–97. Shovelling 64.4–66.2 s: 77–78. **No frame is below 35/255.** |
+| ✅ | Side changes looked at | Saw: the hat is kept and both hands are on the crossbar (2.00, 3.37 s). The merchant holds the block against his chest, with drips and a puddle (29.00, 31.50 s). Shovelling: both workers are whole, and the right one tosses sawdust off a raised blade (65.0, 66.2 s). Hold: the pile and the hatch faces are unchanged (57.5 s). |
+
+**Verdict v3.1: READY** for the full render once the owner OKs the board. Still open from above, none of it blocking: update the package "File" line after the render, a human listen once, and vidIQ scoring (25 credits, the owner's call).
