@@ -65,6 +65,7 @@ const P = {
   wave: { armR: { a: 2.6, b: 0.25 }, armL: { a: 0.15, b: 0.1 }, brow: 0.6, mouth: 'smile', hatLift: 1 },
   hatWave: { armR: { a: 2.35, b: -0.35 }, armL: { a: 0.15, b: 0.1 }, brow: 0.6, mouth: 'smile', hatLift: 1 }, // S02: arm out and up, hat held clear of the head
   hatWave2: { armR: { a: 2.5, b: -0.45 }, armL: { a: 0.15, b: 0.1 }, brow: 0.7, mouth: 'grin', hatLift: 1 },
+  hatHigh: { armR: { a: 2.85, b: -0.12 }, armL: { a: 0.15, b: 0.1 }, brow: 0.8, mouth: 'grin', hatLift: 1 }, // S02 v3: the hat raised straight up, clear of every head
   hatLift: { armR: { a: 2.75, b: 0.1 }, armL: { a: 0.2, b: 0.2 }, brow: 0.8, mouth: 'grin', hatLift: 1, lean: -0.03 },
   hatDroop: { armL: { a: 0.05, b: 0.05 }, armR: { a: 0.9, b: 1.4 }, brow: 1, mouth: 'frown', headTilt: 0.12, lean: 0.06, hatDroop: 1 },
   presentIce: { armR: { a: 2.2, b: -0.35 }, armL: { a: 0.25, b: 0.2 }, brow: 0.8, mouth: 'grin', lookY: -1 },
@@ -366,7 +367,7 @@ export async function setup(beatsUrl, tlUrl) {
     } else if (f.kind === 'arrows') {
       e.root = new THREE.Group(); e.root.rotation.y = f.ry || 0; parent.add(e.root);
       const from = new THREE.Vector3(...f.from), to = new THREE.Vector3(...f.to);
-      e.from = from; e.to = to; e.n = f.n || 4; e.every = f.every ?? 0.45; e.life = f.life ?? 1.6;
+      e.from = from; e.to = to; e.faintStop = f.faintStop; e.spread = f.spread; e.n = f.n || 4; e.every = f.every ?? 0.45; e.life = f.life ?? 1.6;
       const d = to.clone().sub(from); e.roll = Math.atan2(d.y, Math.hypot(d.x, d.z) * Math.sign(d.x || 1));
       e.arrows = []; for (let i = 0; i < e.n * 3; i++) { const m = new THREE.Mesh(new THREE.PlaneGeometry(f.len ?? 0.9, (f.len ?? 0.9) * 0.5), new THREE.MeshBasicMaterial({ map: arrowTex, transparent: true, depthWrite: false, side: THREE.DoubleSide, fog: false })); m.visible = false; e.root.add(m); e.arrows.push(m); }
     }
@@ -404,7 +405,7 @@ export async function setup(beatsUrl, tlUrl) {
           const age = t - (e.at + k * e.every); if (age < 0 || age > e.life) continue;
           const i = k % e.n, faint = i === e.n - 1; const tau = age / e.life;
           const m = e.arrows[j++]; m.visible = true;
-          const stop = faint ? 1 : stops[i % stops.length];
+          const stop = faint ? (e.faintStop ?? 1) : stops[i % stops.length]; /* faintStop < 1: even the faint arrow dies in the layer (S02 v3) */
           const p = stop * (1 - (1 - tau) ** (faint ? 1.6 : 3));
           const pos = e.from.clone().lerp(e.to, p); const lane = ((i * 0.37) % 1 - 0.5) * (e.spread ?? 0.5);
           m.position.set(pos.x, pos.y + (faint ? 0 : lane), pos.z); m.rotation.z = e.roll;

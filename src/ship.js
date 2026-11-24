@@ -358,10 +358,17 @@ export function buildWaterSet(scene, opts = {}) {
     H.open.sails = ship.sails; H.open.hatch = ship.hatch; H.openRest.sails = opts.sails ?? 1;
   }
   H.ship = ship;
+  if (ship && opts.wake) { // S02 v3 (open sea): a warm fill on the sunny side so the hull shows its planks and band, and a bow wave
+    for (const x of [ship.L * 0.25, -ship.L * 0.25]) { const f = new THREE.PointLight(0xffd6a0, 40, 16, 1.2); f.position.set(x, 1.2, 7.0); ship.group.add(f); }
+    const fT = T.radial('rgba(255,255,255,1)', 'rgba(255,255,255,0)'); const bx = ship.L / 2 - 0.8; const spr = [];
+    const add = (x, y, z, sc) => { const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: fT, transparent: true, depthWrite: false, opacity: 0.9, fog: false, toneMapped: false })); m.position.set(x, y, z); m.scale.set(sc * 1.6, sc, 1); m.userData = { y, sc, ph: spr.length * 1.3 }; ship.group.add(m); spr.push(m); };
+    for (const sd of [-1, 1]) { add(bx + 0.3, 0.35, sd * 0.9, 1.4); add(bx - 0.4, 0.25, sd * 1.8, 1.1); for (let i = 1; i < 8; i++) { const x = bx - i * 1.4, w = ship.bw ? ship.bw(x) : 3; add(x, 0.12, sd * (w + 0.15), 0.8 - i * 0.05); } } /* bow spray and the white water running down both sides */
+    H.wakeTick = (t) => { for (const m of spr) { const k = Math.sin(t * 6 + m.userData.ph); m.position.y = m.userData.y + 0.08 * k; m.material.opacity = 0.7 + 0.25 * k; } };
+  }
   // the sun: a big soft disc low over the sea (shown in bright looks; it grows hotter with `blaze`)
   const sunTex = T.radial('rgba(255,250,220,1)', 'rgba(255,200,120,0)');
   const sun = new THREE.Sprite(new THREE.SpriteMaterial({ map: sunTex, transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending })); sun.position.set(0, 16, -110); sun.scale.set(60, 60, 1); g.add(sun);
   const core = new THREE.Mesh(new THREE.CircleGeometry(7, 40), new THREE.MeshBasicMaterial({ color: 0xfff6d8, fog: false })); core.position.set(0, 16, -112); g.add(core);
-  H.tick = (t, L) => { w.tick(t); if (ship) ship.tick(t); const hot = L && L.sunI > 3.3 ? 1 : 0.55; sun.scale.setScalar(60 * hot + 20); core.scale.setScalar(0.6 + hot * 0.6); };
+  H.tick = (t, L) => { w.tick(t); if (ship) ship.tick(t); if (H.wakeTick) H.wakeTick(t); const hot = L && L.sunI > 3.3 ? 1 : 0.55; sun.scale.setScalar(60 * hot + 20); core.scale.setScalar(0.6 + hot * 0.6); };
   return H;
 }

@@ -33,7 +33,7 @@ export const meta = {
   sets: {
     pond: {}, wharf: { year: 1806 }, wharf33: { base: 'wharf', year: 1833 }, kitchen: {},
     mq: { base: 'harbour', place: 'martinique' }, ca: { base: 'harbour', place: 'calcutta' },
-    workshop: {}, sea: { base: 'water', tint: 'sea', ship: 'tuscany', sails: 1 }, hold: {}, sawmill: {}, cutaway: {},
+    workshop: {}, sea: { base: 'water', tint: 'sea', ship: 'tuscany', sails: 1, wake: true }, hold: {}, sawmill: {}, cutaway: {},
   },
   // the running easter egg: the log peeks through the open upper window in Saint-Pierre for exactly one frame (beat 7)
   cameo: { t: 26.4667, pos: [-0.6, 4.6, -15.0], set: 'mq' }, /* frame 794 (v2 timing: 1.40 s into beat 7) */ // = cameoSpot in src/harbour.js
@@ -210,8 +210,8 @@ export const beats = [
     line: 'It melted away, and he lost a lot of money. Boston laughed harder.', breaks: [['money.', 0.65]], min: 4.2, light: 'tropic', set: 'mq',
     shots: [
       sh(0, [[8.0, 0.95, -0.05], [8.05, 0.95, -0.15]], [[8.95, 0.72, -2.3], [8.95, 0.72, -2.3]], [58, 58], 'match', { captionY: 0.88 }),
-      sh('w:lost-0.05', [[1.25, 0.8, -11.3], [1.1, 1.55, -11.0]], [[1.0, 0.1, -13.3], [0.9, 1.95, -14.2]], [50, 48], 'match', { set: 'wharf', light: 'snowWide', ease: 'inout', captionY: 0.84 }),
-      sh('w:money-0.35', [[1.1, 1.55, -11.0], [1.1, 1.55, -11.0]], [[0.9, 1.95, -14.2], [0.9, 1.95, -14.2]], [48, 48], 'cut', { set: 'wharf', light: 'snowWide', captionY: 0.86, hud: { kind: 'card', art: 'letter', w: 0.66, y: 0.42, rot: 0.04 } }),
+      sh('w:lost-0.05', [[1.2, 1.15, -11.2], [1.1, 1.35, -10.8]], [[1.0, 1.15, -13.6], [0.9, 1.45, -14.2]], [54, 52], 'match', { set: 'wharf', light: 'snowWide', ease: 'inout', captionY: 0.84 }),
+      sh('w:money-0.35', [[1.1, 1.35, -10.8], [1.1, 1.35, -10.8]], [[0.9, 1.45, -14.2], [0.9, 1.45, -14.2]], [52, 52], 'cut', { set: 'wharf', light: 'snowWide', captionY: 0.86, hud: { kind: 'card', art: 'letter', w: 0.66, y: 0.42, rot: 0.04 } }),
       sh('w:Boston-0.05', [[0.6, 1.5, -4.8], [0.5, 1.45, -5.2]], [[0.4, 1.4, -9.0], [0.4, 1.4, -9.0]], [54, 52], 'whip', { set: 'wharf', light: 'snowWide', captionY: 0.86 }),
     ],
     ship: [[0, MQ_DOCK, Math.PI]],
@@ -292,12 +292,12 @@ export const beats = [
   },
   { // 15 — the Ice King: Eddie (1833) lifts his top hat; the same Boston people now cheer; an ice-crown sparkle
     line: 'They called him the Ice King.', min: 2.4, light: 'mayWarm', set: 'wharf33', amb: 'harbour',
-    shots: [sh(0, [[0.95, 0.9, -1.55], [0.8, 1.0, -2.0]], [[0.6, 1.75, -4.4], [0.6, 1.8, -4.4]], [46, 44], 'cut', { captionY: 0.84 })],
+    shots: [sh(0, [[1.0, 0.62, -1.0], [0.9, 0.66, -1.4]], [[0.75, 1.8, -4.4], [0.75, 1.85, -4.4]], [52, 50], 'cut', { captionY: 0.86 })], /* v3: wider: the raised hat against clear sky, the cheering crowd around */
     ship: [[0, [30, 120, -2], NORTH]], open: { moored: [[0, 0]] },
     pos: { eddie33: [[0, [0.6, -4.4]]] },
-    acts: { eddie33: [[0, 'oldStand'], ['w:called', 'hatWave2'], ['w:King', 'hatWave']] }, /* hat held in the raised hand, clear of the head */
+    acts: { eddie33: [[0, 'oldStand'], ['w:called', 'hatWave2'], ['w:Ice', 'hatHigh']] }, /* hat held in the raised hand, clear of the head */
     look: { eddie33: 'camera' }, mood: { crowd: 'cheer' }, lookAll: [0.6, 1.5, -4.4],
-    sparkle: ['w:King', [0.6, 2.75, -4.4]],
+    sparkle: ['w:King', [0.6, 2.25, -4.4]], /* v3: just above Eddie's head */
     sfx: [['w:called', 'cheer'], ['w:King', 'ding']],
   },
   { // 16 — payoff (v2, normal reading pace, ~8–9 s): "His secret?" the cover of a crate in the hold starts to lift (curiosity) →
@@ -309,12 +309,12 @@ export const beats = [
       sh(0, [[3.3, 1.35, 0.7], [2.8, 1.2, 0.6]], [[0.15, 0.5, 0.2], [0.15, 0.55, 0.2]], [42, 40], 'cut', { ease: 'inout', captionY: 0.86 }),
       sh('w:Sawdust-0.08', [[1.3, 2.15, 2.7], [1.1, 2.0, 2.35]], [[0.05, 1.3, -0.45], [0.05, 1.25, -0.45]], [54, 50], 'whip', /* v3: the blade, the chute under it and the stream off its lip */ { set: 'sawmill', light: 'warm', ease: 'inout', captionY: 0.88 }),
       sh('w:sawmills-0.1', [[1.6, 2.55, -0.9], [1.6, 2.45, -1.1]], [[1.78, 0.55, -3.75], [1.78, 0.55, -3.75]], [60, 58], 'cut', { set: 'sawmill', light: 'warm', captionY: 0.88 }),
-      sh('w:packed-0.15', [[-0.45, 1.05, 10.5], [0.45, 0.5, 2.6]], [[-0.45, 1.0, 0], [0.5, 0.42, 0]], [34, 30], 'match', { set: 'cutaway', light: 'cutaway', ease: 'inout', captionY: 0.86 }),
-      sh('w:heat-0.2', [[0.45, 0.5, 2.6], END_CAM], [[0.5, 0.42, 0], END_LOOK], [30, HOOK_FOV], 'cut', { set: 'cutaway', light: 'nightReadable', ease: 'out', captionY: 0.88, grade: GRADE_NIGHT }),
+      sh('w:packed-0.15', [[-0.45, 1.05, 10.5], [-0.5, 0.95, 8.4]], [[-0.45, 1.0, 0], [-0.5, 0.9, 0]], [34, 34], 'match', /* v3: hold the whole slice so the heat arrows read: sun | hull | sawdust | ice */ { set: 'cutaway', light: 'cutaway', ease: 'inout', captionY: 0.86 }),
+      sh('w:heat-0.2', [[-0.5, 0.95, 8.4], END_CAM], [[-0.5, 0.9, 0], END_LOOK], [34, HOOK_FOV], 'cut', { set: 'cutaway', light: 'nightReadable', ease: 'inout', captionY: 0.88, grade: GRADE_NIGHT }),
     ],
     open: { pile: [[0, 0]], crate: [[0, 1]], lid: [[0, 0], [0.35, 0], ['w:Sawdust-0.1', 0.55]], hatch: [[0, 1]] },
     movers: { crate: [[0, [0.15, 0.25]]] },
-    fx: [{ kind: 'arrows', set: 'cutaway', at: 'w:packed', until: 'w:heat+0.3', from: [-2.7, 0.45, 0.76], to: [ICE_X - 0.36, 0.45, 0.76], n: 4, every: 0.45, life: 1.8 }],
+    fx: [{ kind: 'arrows', set: 'cutaway', at: 'w:packed-0.1', until: 'w:heat+0.6', from: [-2.55, 0.75, 0.8], to: [ICE_X - 0.36, 0.75, 0.8], n: 4, every: 0.32, life: 1.6, len: 0.75, spread: 0.9, faintStop: 0.58 }], /* v3: in frame, bigger, slowing and fading in the sawdust */
     pos: { m1: [[0, [2.1, -3.45]]], m2: [[0, [0.95, -3.55]]] },
     acts: { m1: [[0, 'dig', { item: 'shovel2' }], [0.5, 'toss', { item: 'shovel2' }], [1.0, 'dig', { item: 'shovel2' }], [1.5, 'toss', { item: 'shovel2' }], [2.0, 'dig', { item: 'shovel2' }], [2.5, 'toss', { item: 'shovel2' }], [3.0, 'dig', { item: 'shovel2' }], [3.5, 'toss', { item: 'shovel2' }], [4.0, 'dig', { item: 'shovel2' }], [4.5, 'toss', { item: 'shovel2' }], [5.0, 'dig', { item: 'shovel2' }], [5.5, 'toss', { item: 'shovel2' }], [6.0, 'dig', { item: 'shovel2' }]],
       m2: [[0, 'toss', { item: 'shovel2' }], [0.55, 'dig', { item: 'shovel2' }], [1.1, 'toss', { item: 'shovel2' }], [1.65, 'dig', { item: 'shovel2' }], [2.2, 'toss', { item: 'shovel2' }], [2.75, 'dig', { item: 'shovel2' }], [3.3, 'toss', { item: 'shovel2' }], [3.85, 'dig', { item: 'shovel2' }], [4.4, 'toss', { item: 'shovel2' }], [4.95, 'dig', { item: 'shovel2' }], [5.5, 'toss', { item: 'shovel2' }]] }, /* v3: a real shovel (long handle, steel blade) in both hands */
