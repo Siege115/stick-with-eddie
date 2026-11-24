@@ -26,9 +26,9 @@ const MQ_DOCK = [10, 3.55, -2], CA_DOCK = [10, 3.85, -2]; // tropical quay berth
 export const meta = {
   id: 's02-ice-king', title: 'The Man Who Shipped Ice to the Tropics',
   aspect: '9:16', fps: 30, width: 1080, height: 1920,
-  gap: 0.12,
+  gap: 0.18, // v4 (owner, 2026-11-24): smoother, not too fast: a little more air between beats
   captionMode: 'phrase', // captions break at natural thought units (editing guide 08)
-  voice: 'narratorBrisk', // the same narrator (am_michael), read a little brisker so the Short lands near 63 s
+  voice: 'narrator', // v4 (owner, 2026-11-24): normal reading pace throughout (was narratorBrisk, 1.16x)
   set: 'wharf',
   sets: {
     pond: {}, wharf: { year: 1806 }, wharf33: { base: 'wharf', year: 1833 }, kitchen: {},
@@ -36,7 +36,7 @@ export const meta = {
     workshop: {}, sea: { base: 'water', tint: 'sea', ship: 'tuscany', sails: 1, wake: true }, hold: {}, sawmill: {}, cutaway: {},
   },
   // the running easter egg: the log peeks through the open upper window in Saint-Pierre for exactly one frame (beat 7)
-  cameo: { t: 26.4, pos: [-0.6, 4.6, -15.0], set: 'mq' }, /* frame 792 (v3 timing: 1.40 s into beat 7) */ // = cameoSpot in src/harbour.js
+  cameo: { t: 29.94, pos: [-0.6, 4.6, -15.0], set: 'mq' }, /* frame 898 (v4 timing: 1.40 s into beat 7) */ // = cameoSpot in src/harbour.js
   // sound: no tense section; room tones per beat (`amb`), soft acoustic bed from src/mix.py
   mix: { music: 'acoustic' },
 };
@@ -102,39 +102,39 @@ export const beats = [
   { // 1 — HOOK (v2): frame 0 is the burst: the block bursting up out of the dark channel (splash, ice crack, tongs biting,
     //     a lantern glint sweeping across it, the camera pushing in low, Eddie pointing toward the ship). Reveal staircase:
     //     the saw cut held ~2.5 s (strokes, groove deepening, chips) → the block slides ON the ice toward the ramp.
-    line: 'He filled a ship with ice from a frozen pond.', min: 4.25, light: 'nightReadable', set: 'pond', amb: 'night',
+    line: 'He filled a ship with ice from a frozen pond.', breaks: [['ice', 0.35]], min: 5.8, /* v4: a calmer hook: each shot held longer */ light: 'nightReadable', set: 'pond', amb: 'night',
     shots: [
       sh(0, [HOOK_CAM, [-0.95, 0.4, -1.4]], [HOOK_LOOK, [-0.8, 0.74, -6.2]], [HOOK_FOV, 56] /* v3: a gentler push so Eddie stays whole on the right */, 'cut', { ease: 'out', captionY: 0.88, grade: GRADE_NIGHT }),
-      sh(0.9, [[6.2, 1.8, -3.6], [5.65, 1.5, -4.4]], [[5.25, 0.95, -6.4], [5.2, 1.08, -6.3]], [54, 50], /* v3.1: the push stops short and tilts up: the red hat and pompom stay in frame */ 'cut', { ease: 'inout', captionY: 0.88, grade: GRADE_NIGHT }),
-      sh(3.4, [[1.2, 2.3, -2.3], [1.0, 2.1, -3.4]], [[-0.7, 0.2, -5.0], [0.1, 0.2, -7.1]], [56, 52], 'cut', /* v3: high and in front: the block slides away across the ice, the pushers behind it, no post in the way */ { captionY: 0.88, grade: GRADE_NIGHT }),
+      sh(1.7, [[6.2, 1.8, -3.6], [5.65, 1.5, -4.4]], [[5.25, 0.95, -6.4], [5.2, 1.08, -6.3]], [54, 50], /* v3.1: the push stops short and tilts up: the red hat and pompom stay in frame */ 'cut', { ease: 'inout', captionY: 0.88, grade: GRADE_NIGHT }),
+      sh(3.8, [[1.2, 2.3, -2.3], [1.0, 2.1, -3.4]], [[-0.7, 0.2, -5.0], [0.1, 0.2, -7.1]], [56, 52], 'cut', /* v3: high and in front: the block slides away across the ice, the pushers behind it, no post in the way */ { captionY: 0.88, grade: GRADE_NIGHT }),
     ],
-    open: { burst: [[0, 0.22], [0.95, 1]], saw: [[0, 0], [0.9, 0.12], [3.35, 0.95]] },
-    movers: { pblock: [[0, [-1.0, -3.35, -0.12], 0], [0.4, [-1.0, -3.5, 0.12], 0, 'sail'], [0.95, [-1.0, -4.4, 0.0], 0, 'sail'], [3.4, [-0.8, -4.65, 0.0], 0], [4.25, [0.1, -7.2, 0.0], 0.15, 'sail']] }, // out of the water ONTO the ice, then slid along the ice
-    pos: { eddie: [[0, [0.95, -8.4]], [0.9, [0.6, -7.2]], [3.4, [1.75, -8.6]]], w2: [[0, [-1.55, -5.05]], [3.4, [-0.35, -5.45]], [4.25, [0.6, -7.95]]], w1: [[0, [5.2, -6.48]]] /* v3: right behind the block, his saw blade down into the groove */, w5: [[0, [-0.45, -5.1]], [3.4, [-1.55, -5.1]], [4.25, [-0.75, -7.3]]] },
+    open: { burst: [[0, 0.22], [1.7, 1]], saw: [[0, 0], [1.7, 0.12], [3.75, 0.95]] },
+    movers: { pblock: [[0, [-1.0, -3.35, -0.12], 0], [0.75, [-1.0, -3.5, 0.12], 0, 'sail'], [1.65, [-1.0, -4.4, 0.0], 0, 'sail'], [3.8, [-0.8, -4.65, 0.0], 0], [5.8, [0.1, -7.2, 0.0], 0.15, 'sail']] }, // out of the water ONTO the ice, then slid along the ice
+    pos: { eddie: [[0, [0.95, -8.4]], [1.7, [0.6, -7.2]], [3.8, [2.1, -8.9]]], w2: [[0, [-1.55, -5.05]], [3.8, [0.2, -4.15]], [5.8, [1.1, -6.7], 'walk']], w1: [[0, [5.2, -6.48]]] /* v4: the pushers walk beside the block (right and left of its path), never in front of it */ /* v3: right behind the block, his saw blade down into the groove */, w5: [[0, [-0.45, -5.1]], [3.8, [-1.6, -4.7]], [5.8, [-0.7, -7.25], 'walk']] },
     acts: {
-      w2: [[0, 'tongsLift'], [0.45, 'hoist'], [0.95, 'tongsLift'], [3.4, 'tongsLift'], [4.1, 'hoist']], w5: [[0, 'tongsLift'], [0.6, 'hoist'], [3.4, 'pushPole'], [4.05, 'pushPole']],
-      w1: [[0, 'saw'], [0.9, 'saw'], [1.25, 'sawUp'], [1.6, 'saw'], [1.95, 'sawUp'], [2.3, 'saw'], [2.65, 'sawUp'], [3.0, 'saw']], w3: [[0, 'pushPole'], [1.4, 'watch']], w4: [[0, 'saw'], [0.55, 'sawUp'], [1.1, 'saw'], [1.65, 'sawUp'], [2.2, 'saw']], /* v3: two-handed strokes on the crossbar */
-      eddie: [[0, 'pointRight'], [0.9, 'point'], [3.4, 'point']],
+      w2: [[0, 'tongsLift'], [0.8, 'hoist'], [1.65, 'tongsLift'], [3.8, 'pushPole'], [4.8, 'pushPole']], w5: [[0, 'tongsLift'], [0.9, 'hoist'], [3.8, 'pushPole'], [4.8, 'pushPole']],
+      w1: [[0, 'saw'], [1.7, 'saw'], [2.2, 'sawUp'], [2.7, 'saw'], [3.2, 'sawUp'], [3.7, 'saw']], w3: [[0, 'pushPole'], [2.0, 'watch']], w4: [[0, 'saw'], [0.8, 'sawUp'], [1.6, 'saw'], [2.4, 'sawUp'], [3.2, 'saw']], /* v4: slower, steadier strokes */ /* v3: two-handed strokes on the crossbar */
+      eddie: [[0, 'pointRight'], [1.7, 'point'], [3.8, 'point']],
     },
     look: { eddie: [9, 1.5, -6], w2: [-1.0, 0.2, -4.0], w5: [-1.0, 0.2, -4.0] },
-    sfx: [[0, 'wind', 4.25], [0, 'splash'], [0.02, 'iceCrack'], [0.93, 'iceCrack'], [0.97, 'iceSaw', 2.4], [3.15, 'iceCrack'], [3.45, 'whoosh']],
+    sfx: [[0, 'wind', 5.8], [0, 'splash'], [0.02, 'iceCrack'], [1.7, 'iceCrack'], [1.75, 'iceSaw', 2.0], [3.55, 'iceCrack'], [3.85, 'whooshLong']],
   },
   { // 2 — (v2) loading by a real block and tackle: sailors haul, the block swings in on tongs and drops into the hatch; the brig
     //     leaves (sails filling, Eddie waves, hat in hand); the route card: Boston → Martinique, the ship riding the dotted line
-    line: 'Then he sent it all the way to the Caribbean.', breaks: [['it', 0.45]], min: 4.4, light: 'snowWide', set: 'wharf', amb: 'harbour',
+    line: 'Then he sent it all the way to the Caribbean.', lead: 0.5, breaks: [['it', 0.7]], min: 4.4, /* v4: the loading plays slower, under a longer pause */ light: 'snowWide', set: 'wharf', amb: 'harbour',
     shots: [
       sh(0, [[0.6, 2.6, -1.6], [1.0, 2.75, -1.1]], [[6.2, 1.6, 5.2], [7.0, 1.5, 5.3]], [62, 60], 'cut', { ease: 'inout', captionY: 0.84 }),
       sh('w:all-0.1', [[0.9, 1.25, -5.6], [0.95, 1.3, -5.4]], [[6.4, 2.4, 8.0], [7.0, 3.0, 12.0]], [56, 54], 'cut', { captionY: 0.86 }),
       sh('w:Caribbean-0.25', [[4.0, 2.2, 2.0], [4.0, 2.25, 2.3]], [[8.0, 2.4, 14], [8.0, 2.4, 14]], [56, 56], 'cut', { captionY: 0.88, hud: { kind: 'card', art: 'mapMq', w: 0.92, y: 0.42, route: [0, 1], unroll: true, s: [1, 1.06] } }), /* v3: a slow push on the map */
     ],
-    open: { tackle: [[0, 1], ['w:all-0.12', 0]], sails: [[0, 0], ['w:all-0.1', 0.15], ['end', 1]], hatch: [[0, 1]], moored: [[0, 1], ['w:all-0.12', 0]] },
+    open: { tackle: [[0, 1]] /* v4: the crane stays up the whole beat, also while she sails */, sails: [[0, 0], ['w:all-0.1', 0.15], ['end', 1]], hatch: [[0, 1]], moored: [[0, 1], ['w:all-0.12', 0]] },
     ship: [[0, FAV_DOCK, NORTH], ['w:all-0.1', FAV_DOCK, NORTH], ['end', [8.45, 15.5, -2], NORTH, 'sail']],
-    movers: { block: [[0, [4.35, 5.15, 0.0], 0], [0.1, [4.35, 5.15, 0.0], 0], [0.55, [4.7, 5.15, 1.9], 0, 'sail'], [0.95, [7.8, 5.2, 2.4], 0, 'sail'], [1.4, [8.4, 5.15, 0.9], 0, 'sail'], ['w:all-0.12', [3.2, -5.5, -5], 0]] }, /* v3: the whole swing happens inside the loading shot, always on its rope; then it is stowed (hidden) before the cut */
+    movers: { block: [[0, [4.35, 5.15, 0.0], 0], [0.35, [4.35, 5.15, 0.0], 0], [1.0, [4.7, 5.15, 1.9], 0, 'sail'], [1.75, [7.8, 5.2, 2.4], 0, 'sail'], [2.35, [8.4, 5.15, 0.9], 0, 'sail'], ['w:all-0.1', [8.4, 5.15, -1.1], 0, 'sail'], ['end', [8.4, 17.15, -1.1], 0, 'sail']] }, /* v4: a slower swing, then lowered into the hold; it rides in the hold with the ship (same ease and timing as the ship), so the crane's rope always ends on it */
     pos: { eddie: [[0, [1.4, 5.6]], ['w:all-0.1', [2.4, -1.4]]], s1: [[0, [9.3, 4.35, -0.6]]], s3: [[0, [9.45, 3.55, -0.6]]], s2: [[0, [3.4, 7.2]]] },
-    acts: { eddie: [[0, 'watch'], ['w:all-0.1', 'hatWave'], ['w:way', 'hatWave2'], ['w:Caribbean', 'hatWave']], s1: [[0, 'hoist'], [0.35, 'pushPole'], [0.7, 'hoist'], [1.05, 'pushPole'], [1.4, 'hoist']], s3: [[0, 'pushPole'], [0.35, 'hoist'], [0.7, 'pushPole'], [1.05, 'hoist'], [1.4, 'pushPole']], s2: [[0, 'watch']] },
+    acts: { eddie: [[0, 'watch'], ['w:all-0.1', 'hatWave'], ['w:way', 'hatWave2'], ['w:Caribbean', 'hatWave']], s1: [[0, 'hoist'], [0.5, 'pushPole'], [1.0, 'hoist'], [1.5, 'pushPole'], [2.0, 'hoist']], s3: [[0, 'pushPole'], [0.5, 'hoist'], [1.0, 'pushPole'], [1.5, 'hoist'], [2.0, 'pushPole']], s2: [[0, 'watch']] },
     look: { eddie: [8.4, 2, 12], s1: [7.8, 3.0, 5.2], s3: [7.8, 3.0, 5.2], s2: [5.5, 1.5, 5.15] },
     cast: ['eddie', 's1', 's2', 's3'],
-    sfx: [[0, 'creak'], [0.6, 'creak'], [0.1, 'gulls', 4.5], [0, 'waves', 4.6], [1.4, 'softImpact'], ['w:all', 'creak'], ['w:Caribbean-0.25', 'paper']],
+    sfx: [[0, 'creak'], [1.0, 'creak'], [0.1, 'gulls', 5.0], [0, 'waves', 5.2], [2.35, 'softImpact'], ['w:all', 'creak'], ['w:Caribbean-0.25', 'paper']],
   },
   { // 3 — 1806 kitchen: no fridges (year card; the outline pops in and away)
     line: 'You see, in 1806, there were no fridges.', min: 3.0, light: 'warm', set: 'kitchen', amb: 'room',

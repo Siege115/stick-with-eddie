@@ -42,7 +42,7 @@ export function buildTimeline(meta, beats, audio) {
   const LEAD = 0.1, TAIL = 0.2, PART_GAP = 0.1;
   let t = 0; const B = [];
   beats.forEach((b, i) => {
-    const a = audio[i]; const parts = []; let pt = t + LEAD; const spec = partsOf(b, meta);
+    const a = audio[i]; const parts = []; let pt = t + (b.lead ?? LEAD); const spec = partsOf(b, meta); // `lead`: seconds of picture before the first word
     a.parts.forEach((p, k) => {
       const start = pt;
       parts.push({ file: p.file, start, end: start + p.dur, words: wordTimes(p.text, start + p.on, start + p.off), voice: p.voice, ...(spec[k] && spec[k].line2 ? { line2: true } : {}) });
