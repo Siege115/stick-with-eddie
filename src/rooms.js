@@ -198,6 +198,10 @@ export function buildSawmill(scene, opts = {}) {
   const PN = 260; const pp = new Float32Array(PN * 3); const pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.BufferAttribute(pp, 3));
   const pour = new THREE.Points(pg, new THREE.PointsMaterial({ color: 0xf0c98a, size: 0.1, transparent: true, opacity: 0.95, depthWrite: false })); pour.frustumCulled = false; g.add(pour);
   const seeds = []; for (let i = 0; i < PN; i++) seeds.push([r(), r(), r()]);
+  { /* S02 v3: a short wooden chute from the cut, right under the blade, out over the pile: the stream starts at its lip, never in mid-air */
+    const ch = new THREE.Group(); ch.position.set(0.04, 1.13, -0.36); ch.rotation.x = 0.32; g.add(ch);
+    ch.add(ink(box(0.3, 0.03, 0.62, woodL, 0, 0, 0), 1.04)); for (const sx of [-1, 1]) ch.add(ink(box(0.03, 0.1, 0.62, woodL, sx * 0.15, 0.05, 0), 1.04));
+    ch.add(box(0.24, 0.02, 0.6, sawM, 0, 0.025, 0)); /* sawdust riding down the chute */ }
   { const pile = new THREE.Mesh(new THREE.LatheGeometry([[0.5, 0], [0.38, 0.07], [0.2, 0.14], [0.001, 0.17]].map(([x, y]) => new THREE.Vector2(x, y)), 20), sawM); pile.position.set(0.12, 0.245, 0.3); pile.scale.set(1, 1, 0.7); pile.receiveShadow = true; g.add(K.inkOffset(pile, 0.015)); } /* the little pile under the pour */
   { const ch = new THREE.Group(); ch.position.set(3.7, 0.7, -2.4); ch.rotation.z = -0.35; g.add(ch); ch.add(ink(box(2.8, 0.06, 0.6, woodD, 0, 0, 0), 1.03)); for (const s of [-1, 1]) ch.add(box(2.8, 0.25, 0.05, woodD, 0, 0.12, s * 0.3)); ch.add(box(2.6, 0.05, 0.5, sawM, 0, 0.05, 0)); for (const [x, y] of [[-1.0, -0.5], [0.9, -0.95]]) ch.add(box(0.1, 1.0, 0.1, woodD, x, y, 0)); }
   { const sp = new THREE.Mesh(new THREE.CircleGeometry(1.6, 18), new THREE.MeshStandardMaterial({ map: sawT, transparent: true, opacity: 0.8 })); sp.rotation.x = -Math.PI / 2; sp.position.set(7.4, -0.78, -2.2); sp.scale.set(1.6, 0.8, 1); g.add(sp); } // sawdust drifting on the river (fact-check row 20)
@@ -218,7 +222,7 @@ export function buildSawmill(scene, opts = {}) {
   H.tick = (t) => {
     wheel.rotation.z = -t * 0.9; foamT.offset.x = t * 0.4;
     sash.position.y = Math.sin(t * 9) * 0.22; // up-and-down sash saw
-    for (let i = 0; i < PN; i++) { const [a, b, c] = seeds[i]; const age = (t * 0.9 + a) % 1; pp[i * 3] = 0.05 + (b - 0.5) * 0.22 + age * 0.12; pp[i * 3 + 1] = 1.05 - age * age * 0.8 + (c - 0.5) * 0.04; pp[i * 3 + 2] = -0.1 + age * 0.35 + (c - 0.5) * 0.12; } /* sawdust pouring out of the front of the cut onto a small pile in the foreground (the big heap sits behind) */
+    for (let i = 0; i < PN; i++) { const [a, b, c] = seeds[i]; const age = (t * 0.9 + a) % 1; pp[i * 3] = 0.05 + (b - 0.5) * 0.16 + age * 0.04; pp[i * 3 + 1] = 1.02 - age * age * 0.62 + (c - 0.5) * 0.03; pp[i * 3 + 2] = -0.05 + age * 0.28 + (c - 0.5) * 0.08; } /* sawdust pouring out of the front of the cut onto a small pile in the foreground (the big heap sits behind) */
     pg.attributes.position.needsUpdate = true;
   };
   return H;

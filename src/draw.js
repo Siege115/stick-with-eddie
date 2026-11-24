@@ -154,9 +154,10 @@ export function drawPerson(ctx, c, p, rim) {
   hand(ctx, aR[2], aR[3], c.gloves);
   if (c.puffSleeves) for (const [sx, a] of [[-62, -p.armL.a], [62, p.armR.a]]) { ctx.save(); ctx.translate(sx + Math.sin(a) * 26, shY + Math.cos(a) * 26); ctx.rotate(-a); outlined(ctx, (k) => k.ellipse(0, 0, 24, 36, 0, 0, TAU), c.puffSleeves, 5); ctx.strokeStyle = 'rgba(0,0,0,.25)'; ctx.lineWidth = 2.5; for (const dx of [-9, 0, 9]) { ctx.beginPath(); ctx.moveTo(dx, -28); ctx.quadraticCurveTo(dx * 1.4, 0, dx, 28); ctx.stroke(); } ctx.restore(); }
   if (c.sleeves) for (const [sx, a, b] of [[-62, -p.armL.a, -p.armL.b], [62, p.armR.a, p.armR.b]]) sleeve(ctx, sx, shY, a, b, c.sleeves);
-  if (c.item === 'saw' || c.item === 'shovel2') twoHanded(ctx, c.item, aL, aR, c); /* S02 v3: two-handed tools held by both hands */
-  else if (c.item) item(ctx, c.item, aR[2], aR[3], p.armR.a + p.armR.b, c);
-  if (c.itemL) item(ctx, c.itemL, aL[2], aL[3], -(p.armL.a + p.armL.b), c);
+  const two = ['saw', 'shovel2'].find((k) => c.item === k || c.itemL === k); /* S02 v3: two-handed tools held by both hands (either side after mirroring) */
+  if (two) twoHanded(ctx, two, aL, aR, c);
+  else { if (c.item) item(ctx, c.item, aR[2], aR[3], p.armR.a + p.armR.b, c);
+    if (c.itemL) item(ctx, c.itemL, aL[2], aL[3], -(p.armL.a + p.armL.b), c); }
 
   // head
   ctx.save();
@@ -222,12 +223,12 @@ function twoHanded(ctx, kind, aL, aR, c) {
     ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.fillRect(2, 12, 3, 220);
     outlined(ctx, (q) => rrect(q, -half, -12, half * 2, 24, 10), '#8a5a32', 4); /* the crossbar, under both hands */
   } else {
-    const [hx, hy, lx, ly] = yl < yr ? [xl, yl, xr, yr] : [xr, yr, xl, yl]; // upper hand, lower hand
-    const ang = Math.atan2(ly - hy, lx - hx), len = 260;
+    const [hx, hy, lx, ly] = Math.abs(xl) < Math.abs(xr) ? [xl, yl, xr, yr] : [xr, yr, xl, yl]; // the grip hand (nearer the body), the hand toward the blade
+    const ang = Math.atan2(ly - hy, lx - hx), len = 290;
     ctx.translate(hx, hy); ctx.rotate(ang);
     ctx.beginPath(); ctx.moveTo(-30, 0); ctx.lineTo(len, 0); ctx.strokeStyle = '#111'; ctx.lineWidth = 13; ctx.lineCap = 'round'; ctx.stroke(); ctx.strokeStyle = '#9a7048'; ctx.lineWidth = 7; ctx.stroke();
     outlined(ctx, (q) => rrect(q, -48, -12, 22, 24, 6), '#9a7048', 3); /* D-grip */
-    outlined(ctx, (q) => { q.moveTo(len - 4, -26); q.lineTo(len + 58, -24); q.quadraticCurveTo(len + 72, 0, len + 58, 24); q.lineTo(len - 4, 26); q.closePath(); }, '#7a7f87', 4); /* the steel blade */
+    outlined(ctx, (q) => { q.moveTo(len - 6, -40); q.lineTo(len + 84, -36); q.quadraticCurveTo(len + 104, 0, len + 84, 36); q.lineTo(len - 6, 40); q.closePath(); }, '#7a7f87', 5); ctx.fillStyle = '#d9b26a'; ctx.beginPath(); ctx.ellipse(len + 44, -8, 34, 20, 0, 0, TAU); ctx.fill(); /* the steel blade with a scoop of sawdust */
     if (c.shovelLoad) { ctx.fillStyle = c.shovelLoad; ctx.beginPath(); ctx.ellipse(len + 30, -2, 26, 16, 0, 0, TAU); ctx.fill(); }
   }
   ctx.restore();
