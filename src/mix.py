@@ -19,7 +19,18 @@ N = int(DUR * SR)
 SHANTY = (TL.get("mix") or {}).get("music") == "shanty" or os.path.basename(BEATS or "").startswith("s02-ice-king")
 voice = np.zeros((N, 2)); sfx = np.zeros((N, 2)); music = np.zeros((N, 2)); amb = np.zeros((N, 2))
 
+MIX_FIX = bool(TL.get("mix"))  # S02+ only: click-proof sound fixes; S01 (no meta.mix) keeps its approved mix bit for bit
 def t2i(t): return int(round(t * SR))
+def endfade(x, r=0.06, a=0.001):
+    """1 ms raised-cosine onset (keeps a crack crisp but never a one-sample step) and a raised-cosine release over the
+    last r s (at most a quarter of the sound): no sound starts or stops above silence."""
+    n = len(x); nr = min(int(r * SR), n // 4); na = min(int(a * SR), n // 4)
+    if nr < 2: return x
+    x = np.array(x, dtype="float64"); e = np.ones(n)
+    e[n - nr:] = 0.5 + 0.5 * np.cos(np.pi * (np.arange(nr) + 1) / nr)
+    if na >= 2: e[:na] = 0.5 - 0.5 * np.cos(np.pi * np.arange(na) / na)
+    x *= e if x.ndim == 1 else e[:, None]
+    return x
 def env(n, a=0.005, d=0.1):
     t = np.arange(n) / SR
     return np.minimum(1, t / max(a, 1e-4)) * np.exp(-t / d)
@@ -62,7 +73,10 @@ def whoosh(dur=0.35, lo=300, hi=3000, rev=False):
         f = lo + (hi - lo) * np.sin(np.pi * s / n)
         out[s:s + seg] = bp(x[max(0, s - 2048):s + seg], f * 0.6, min(f * 1.6, 20000))[-len(x[s:s + seg]):]
     e = np.sin(np.pi * np.arange(n) / n) ** 2
-    if rev: e = (np.arange(n) / n) ** 2
+    if rev:
+        e = (np.arange(n) / n) ** 2
+        if MIX_FIX:  # S02+: the reversed whoosh peaks on the cut, then a 60 ms raised-cosine release (no stop at full level)
+            nr = int(0.06 * SR); e[-nr:] *= 0.5 + 0.5 * np.cos(np.pi * (np.arange(nr) + 1) / nr)
     y = out * e
     return y / (np.abs(y).max() + 1e-9)
 
@@ -294,8 +308,14 @@ if SHANTY:  # ship timbers instead of the old door creak (no square-ish source)
     import shanty
     NAMED["creak"] = lambda a: (shanty.timber_creak(0.9), 0.4)
 SILENCE = [(t, t + (arg or 0.4)) for t, name, arg in EV["sfx"] if name == "silence"]
+if SHANTY:  # the owner hated the pause before "His secret?": no silence drop may cut the bed in the 2.5 s before the payoff
+    _pb = shanty.section_map(TL["beats"])["payoff"]; _t_his = TL["beats"][_pb]["start"]
+    _keep = [(a, z) for a, z in SILENCE if z <= _t_his - 2.5 or a >= _t_his + 0.5]
+    if len(_keep) < len(SILENCE): print("mix: ignored a silence drop in the lead-in to the payoff (no dead air before 'His secret?')")
+    SILENCE = _keep
 for t, name, arg in EV["sfx"]:
     x, g = NAMED[name](arg)
+    if MIX_FIX: x = endfade(x, 0.12 if name == "ding" else 0.06)  # ding / ping / pop / impacts used to stop mid-ring
     place(sfx, x, t, g, rng.uniform(-0.25, 0.25))
     if name == "cheer": place(sfx, applause(2.2), t, 0.25)
 
@@ -365,6 +385,14 @@ k = int(0.15 * SR); venv = np.convolve(venv, np.ones(k) / k, mode="same")
 venv /= venv.max() + 1e-9
 duck = 1 - (0.62 if SHANTY else 0.55) * np.clip(venv * 4, 0, 1)
 music *= duck[:, None]
+if SHANTY:  # no pause before "His secret?": the shanty's held swell comes up +4 dB in the narration gap after "...the Ice King"
+    _sm = shanty.section_map(TL["beats"]); _a = max(p["end"] for p in TL["beats"][_sm["king"]]["parts"])
+    _z = min(p["start"] for p in TL["beats"][_sm["payoff"]]["parts"])
+    if _z - _a > 0.3:
+        lift = np.ones(N); ia, iz, r = t2i(_a), t2i(_z), int(0.15 * SR)
+        lift[ia:iz] = 10 ** (4 / 20); ramp = 0.5 - 0.5 * np.cos(np.pi * np.arange(r) / r)
+        lift[ia:ia + r] = 1 + (10 ** (4 / 20) - 1) * ramp; lift[iz - r:iz] = 1 + (10 ** (4 / 20) - 1) * ramp[::-1]
+        music *= lift[:, None]
 
 # ---------------- room tone ----------------
 def birds(dur):
@@ -422,6 +450,34 @@ if MIX:  # loop seam: fade the last 3 frames (0.1 s) into the video's last frame
     ie, f = t2i(TL["duration"]), int(0.1 * SR)
     if ie < len(mix): mix[ie:] = 0.0
     mix[max(0, ie - f):ie] *= np.linspace(1, 0, ie - max(0, ie - f))[:, None]
+def lufs(x):
+    """Integrated loudness (ITU-R BS.1770-4: K-weighting, 400 ms blocks, -70 LUFS and -10 LU gates), 48 kHz stereo."""
+    k = sosfilt(np.array([[1.53512485958697, -2.69169618940638, 1.19839281085285, 1, -1.69065929318241, 0.73248077421585],
+                          [1, -2, 1, 1, -1.99004745483398, 0.99007225036621]]), x, axis=0)
+    b, h = int(0.4 * SR), int(0.1 * SR); ms = (k ** 2).sum(1)
+    c = np.concatenate([[0], np.cumsum(ms)]); z = np.array([(c[i + b] - c[i]) / b for i in range(0, len(ms) - b + 1, h)])
+    lk = -0.691 + 10 * np.log10(z + 1e-15); z = z[lk > -70]
+    rel = -0.691 + 10 * np.log10(z.mean()) - 10; z = z[-0.691 + 10 * np.log10(z) > rel]
+    return -0.691 + 10 * np.log10(z.mean())
+def tp_limit(x, ceil_db=-2.0, hold=0.025, att=0.004, rel=0.08):
+    """Look-ahead true-peak limiter: the gain dips smoothly (4 ms ramp, starting before the peak) under the few peaks above
+    the ceiling, holds 25 ms and recovers over 80 ms. No hard clipping, so nothing clicks."""
+    from scipy.ndimage import minimum_filter1d, uniform_filter1d
+    c = 10 ** (ceil_db / 20); pk = np.abs(resample_poly(x, 4, 1, axis=0)).max(1)[: len(x) * 4].reshape(-1, 4).max(1)
+    g = np.minimum(1.0, c / (pk + 1e-12))
+    g = uniform_filter1d(minimum_filter1d(g, int(2 * hold * SR) + 1), int(att * SR) + 1)
+    r = 1 - g; dec = np.exp(-1 / (rel * SR)); out = np.empty_like(r); prev = 0.0
+    for i in range(len(r)):  # release: the reduction falls back exponentially, never faster
+        prev = r[i] if r[i] > prev * dec else prev * dec; out[i] = prev
+    return x * (1 - out)[:, None], 20 * np.log10(1 - out.max() + 1e-12)
+if MIX:  # S02+: loudness to -14 LUFS here, then a gentle look-ahead true-peak limiter at -2 dBTP, so the renderer's two-pass
+    # loudnorm runs in true linear mode (it falls back to dynamic compression when peaks would pass -1.5 dBTP) and lands on -14.0
+    gain = -14.0 - lufs(mix)
+    for _ in range(6):  # limiting lowers the loudness a little: raise the drive and re-limit until it reads -14.0
+        y, gr = tp_limit(mix * 10 ** (gain / 20), -2.0); d = -14.0 - lufs(y); gain += d
+        if abs(d) < 0.02: break
+    mix = y
+    print(f"mix: {lufs(mix):.2f} LUFS pre-master, limiter max {gr:.1f} dB at -2 dBTP")
 if MIX:  # true-peak guard: 4x oversampled peak kept under -1 dBTP before loudness normalisation re-checks it
     tp = np.abs(resample_poly(mix, 4, 1, axis=0)).max()
     if tp > 10 ** (-1.5 / 20): mix *= 10 ** (-1.5 / 20) / tp
